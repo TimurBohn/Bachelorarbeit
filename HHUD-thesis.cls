@@ -73,7 +73,7 @@
 
 {\Large \thesistype}
 
-\IfLanguageName{ngerman}{Vorgelegt am Lehrstuhl für Rechnernetze.}{Presented at the Chair of Computer Networks.}
+\IfLanguageName{ngerman}{Vorgelegt am Lehrstuhl für Softwaretechnik und Programmiersprachen.}{Presented at the Chair of Computer Networks.}
 
 \vfill
 
