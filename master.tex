@@ -1,0 +1,116 @@
+% !TeX TXS-program:compile = txs:///pdflatex/[--shell-escape]
+\documentclass[12pt,a4paper,twoside=false,% twoside=true zum drucken!
+%BCOR=12mm,% Bindungskorrektur. aka, wieviel von der Seite geht durch die Bindung in der Mitte verloren? 
+ngerman % ngerman für Deutsch, english für Englisch
+]
+{hhud-thesis}
+
+\usepackage[calc]{datetime2}
+\usepackage{ifthen}
+\usepackage{subfigure}
+\usepackage{graphicx}
+\usepackage{iflang}
+\usepackage{makeidx}
+\usepackage{nomencl}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{todonotes}
+
+% Used for Code Listings
+\usepackage{listings}
+\usepackage[chapter]{minted}
+
+\usepackage{csquotes}
+\usepackage[%
+    per-mode=symbol,
+    exponent-product=\cdot,
+    prefix-mode=combine-exponent,
+    drop-zero-decimal
+    ]{siunitx}
+
+% Pretty references using \cref eg: \cref{fig:example} -> "Figure 1" compare to "\ref{fig:example}" -> 1
+\usepackage[nameinlink, capitalise]{cleveref}
+
+\renewcommand{\listoflistingscaption}{Listings}
+
+\input{thesis_meta}
+
+\IfLanguageName{ngerman}{
+    \newcommand{\thesistype}{\graduationlevel{}arbeit}
+}{
+    \ifthenelse{\equal{\graduationlevel}{Seminar}}
+    {% Seminararbeit
+        \newcommand{\thesistype}{Seminar Paper}
+    }
+    {% Abschlussarbeit
+        \newcommand{\thesistype}{\graduationlevel{}'s Thesis}
+    }
+}
+
+\listfiles
+\makeindex
+
+% Include all BibTeX resources in the preambel
+\addbibresource{bib/example.bib}
+
+\begin{document}
+\onehalfspacing
+
+\frontmatter
+\maketitle
+
+\cleardoublepage
+
+\input{abstract}
+
+\cleardoublepage
+
+\input{acknowledgements}
+
+\cleardoublepage
+
+\pdfbookmark[0]{\contentsname}{content}
+\tableofcontents
+
+\listoffigures % entfernen, wenn leer
+\todo{sofern diese Verzeichnisse leer sind, in der master.tex entfernen}
+
+\listoftables % entfernen, wenn leer
+
+\listoflistings % entfernen, wenn leer
+
+\mainmatter
+
+\cleardoublepage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%    Beginning of the main document        %%
+%%                                          %%
+%%    Include your tex-files with \input{}  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\input{intro}
+
+\input{latex-hilfe}
+
+% Auskommentieren, falls kein Anhang notwendig
+\input{anhang}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%    End of the main document              %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\backmatter
+
+\printbibliography
+
+\cleardoublepage
+
+\printindex
+
+\input{static/declaration} % Input nicht include, damit es nur eine Seite wird.
+\input{ki-nutzung}  % Input nicht include, damit es nur eine Seite wird.
+
+\cleardoublepage
+
+\end{document}
