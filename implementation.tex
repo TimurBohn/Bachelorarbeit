@@ -1,12 +1,37 @@
-- Implementation
+\chapter{Implementierung} % oder Implementation?
     - beschreibung was du persönlich während der Arbeit gemacht hast (Probleme nicht verstecken)
-    - setup (sowieso nötig für benchmarks)
-    - blinky
-    - vm usb probleme (wohin?)
+\section{Setup}
+        Linux mint vm (155GB Festplattenspeicher, 17MB Grafikspeicher, 4GB Arbeitsspeicher (?)) %Was sind die relevanten Größen für eine VM?
+            mit serv-repo, riscv-gnu-toolchain, verilator, zephyr, west buildtool, vivado
+        Windows-Rechner mit Vivado-Installation
+
+\section{SERV-Simulation mit Verilator}
+    Es wurde das FuseSoC build tool mit Verilator-Einbindung genutzt, setup wie bei github.com/olofk/serv
+    Memsize-Parameter war teilweise zu klein für die Programme, die im Verlauf der Bachelorarbeit getestet wurden.
+
+
+\section{SERV-Synthese mit Vivado}
     - serv synthese (auf Target, das noch nicht existierte)
+        fusesoc run ... arty7 statt basys3/artix7, anschließend Anpassung in Vivado-Projekt auf korrekte Version des FPGAs
     - hardware mapping auf ports
+        Über Constraint-Datei, Reset-Knopf U18, LED U16,  \todo{Constraint-Datei in Anhang einbinden}
     - simulation in vivado
+        Wurde genutzt, um Signale zu prüfen, insbesondere q/LED-output und program counter sowie Reset-Signale
     - reset probleme
-    - zephyr probleme
-    - baremetal assembly
-    - serv verilator
+        Reset war invertiert: Knopf gedrückt gehalten: Programm läuft, Knopf losgelassen: Programm friert ein, beim erneuten Drücken startet Programm von Vorne
+        Führten dazu, dass separate Dummy-Synthesen erfolgten, die Knöpfe und die LED nutzten, um Funktionalität sicherzustellen
+        Lösung: Invertierung des Reset-Signals bei Übergabe in ... entfernen, Signal ohne Invertierung übergeben
+    - vm usb probleme (wohin?)
+        Problem: USB-Geräte (angeschlossener FPGA) wurden in VM nicht erkannt (USB-throughput funktionierte nicht). Selbst nach einem Fix wäre dies eine weitere mögliche Fehlerquelle gewesen.
+        Lösung: Vivado-Installation auf nativem Windows, dort wurde nur der Hardware-Manager genutzt, um den FPGA mit dem Bitstream, der auf Vivado-Installation in Linux-VM generiert wurde, zu programmieren
+
+\section{Programme/Benchmarks für FPGA} % anderer Titel
+        blinky.S wurde in serv-Repo mitgeliefert.
+            Erstes Problem: Delay war zu lang: In Verilator-Simulation funktionierte es, auf FPGA nicht, Simulation in Verilog dauerte zu lange
+            Zweites Problem: Es wurde mit 0er-Flanke gestartet, dadurch verzögerte sich der sichtbare Teil (LED an) um eine Delay-Periode
+            Deshalb wurde blinky.S so angepasst, dass es mit einer 1er Flanke (LED an) startet und der Delay um zwei Stellen
+        - zephyr probleme
+            C-Code, der für Zephyr-RTOS mittels west buildtool kompiliert und in eine hex-Datei umgewandelt wurde, funktionierte in Verilator-Simulation, aber nicht auf FPGA/Vivado-Simulation. Dies galt selbst für simple Programme wie blinky. Unter anderem gab es zu viel Overhead, die Dateien waren deutlich größer
+            --> C-Code wurde mit west buildtool gebaut, die entstehende .elf-Datei wurde disassembliert und der RISC-V Assembly-Code aus dem Main-Teil (Collatz-Schleife) als Delay in funktionierendes Blinky-Programm eingefügt.
+                Auf Zephyr wurde anschließend verzichtet und mittels baremetal assembly eine Hexdatei generiert, die sowohl in Verilator-Simulation als auch auf FPGA funktionierte.
+                    C --gcc--> .elf --objcopy--> .bin --pythonSkript--> .hex
