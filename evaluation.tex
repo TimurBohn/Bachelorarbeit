@@ -1,5 +1,12 @@
-- Evaluation
+\chapter{Evaluation}
     - Methodologie
-        - welche benchmarks, welche messungen, etc
+        - welche benchmarks, welche messungen, etc.
+        Benchmark: Collatz-Reihenberechnung von 1 bis 1000, LED wechselt Phase nach jedem erfolgreichen Durchlauf der 1000 Reihen
+        Messung in der Simulation: In der Simulation wird jeweils ausgegeben, wenn LED umschaltet. Ein Python-Skript liest diese Ausgabe und berechnet die Zeit zwischen je zwei Ausgaben.
+        Messung im FPGA: Kamera mit 120 Frames pro Sekunde filmt Basys 3-Board und eine Stoppuhr. Es werden für die Dauer einer LED-Phase (an/aus) die Frames gezählt und mit der abgelaufenen Zeit auf der Stoppuhr verglichen.
+
     - Präsentation und Interpretation der Ergebnisse
+        3.503 Sekunden im Mittel bei der Simulation (neuer Wert ohne Prints) bei 100 Messungen. Minimum: 3.428, Maximum: 3.873
+        Auf FPGA ca. eine Sekunde, dabei war dieser Wert über 10 Messungen exakt konstant, keine Abweichungen zwischen Messungen und keine Abweichung zwischen der Zeit, die durch die Stoppuhr ermittelt wird und der Zeit die durch die Anzahl an Frames ermittelt wird
     - Bewertung
+        3,5-fache Beschleunigung auf "echtem" FPGA --> FPGA ist vermutlich immer schneller, für ein stärkeres Speedup werden jedoch ggf. teurere Boards benötigt
