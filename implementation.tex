@@ -1,7 +1,7 @@
 \chapter{Implementierung} % oder Implementation?
     - beschreibung was du persönlich während der Arbeit gemacht hast (Probleme nicht verstecken)
 \section{Setup}
-        Linux mint vm (155GB Festplattenspeicher, 17MB Grafikspeicher, 4GB Arbeitsspeicher (?)) %Was sind die relevanten Größen für eine VM?
+        Linux mint vm (155GB Festplattenspeicher, 4GB Arbeitsspeicher, 3 Kerne)
             mit serv-repo, riscv-gnu-toolchain, verilator, zephyr, west buildtool, vivado
         Windows-Rechner mit Vivado-Installation
 
@@ -13,6 +13,8 @@
 \section{SERV-Synthese mit Vivado}
     - serv synthese (auf Target, das noch nicht existierte)
         fusesoc run ... arty7 statt basys3/artix7, anschließend Anpassung in Vivado-Projekt auf korrekte Version des FPGAs
+    - Kabelprobleme (von drei Kabeln funktionierte nur eins)
+        wahrscheinlich, weil zwei der drei Kabel keine Datenübertragung unterstützt haben
     - hardware mapping auf ports
         Über Constraint-Datei, Reset-Knopf U18, LED U16,  \todo{Constraint-Datei in Anhang einbinden}
     - simulation in vivado
@@ -35,3 +37,6 @@
             --> C-Code wurde mit west buildtool gebaut, die entstehende .elf-Datei wurde disassembliert und der RISC-V Assembly-Code aus dem Main-Teil (Collatz-Schleife) als Delay in funktionierendes Blinky-Programm eingefügt.
                 Auf Zephyr wurde anschließend verzichtet und mittels baremetal assembly eine Hexdatei generiert, die sowohl in Verilator-Simulation als auch auf FPGA funktionierte.
                     C --gcc--> .elf --objcopy--> .bin --pythonSkript--> .hex
+
+
+% Noch mal überlegen, ob wirklich alles in diesen Stichpunkten enthalten ist
