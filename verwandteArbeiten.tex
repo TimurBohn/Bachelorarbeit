@@ -1,0 +1,27 @@
+\chapter{Verwandte Arbeiten}
+
+Es gibt verschiedene Paper, die in Teilen Performanceunterschiede zwischen FPGAs und
+Simulationen untersuchen, jedoch diese Vergleiche nicht als zentralen Inhalt betrachten.
+Schkufza et al. (2019) stellen in ihrem Paper einen neuen Design-Workflow/Entwicklungsprozess
+”Cascade” für FPGAs vor, in dem zunächst der Verilog-Code mittels einer Softwaresim
+ulation ausgeführt wird, sodass nicht auf die verschiedenen Schritte bei der Synthese
+eines FPGA gewartet werden muss. Diese Schritte sowie die ¨ Ubertragung des Bit
+streams laufen dann im Hintergrund ab, f¨ur den*die Anwender*in ¨andert sich nur die
+Geschwindigkeit, sobald der Synthese-Prozess abgeschlossen ist und von der Simulation
+auf den FPGA gewechselt wird. In diesem Rahmen wird auch die Performance mit ver
+schiedenen Simulatoren (auch Verilator) verglichen: Quartus und Vivado erreichen laut
+Autor*innen Geschwindigkeiten von 10–100 Hz, iVerilog ca. 1 KHz und Verilator ca.
+10 KHz. Cascade erreicht im Simulationsteil 10 bis 100 MHz. Allerdings werden hier
+lediglich m¨ogliche Taktraten verglichen und kein konkretes Benchmark-Tool genutzt.
+Somit stellt das Paper eine M¨oglichkeit dar, Ergebnisse einer Performanceanalyse, wie
+in der Bachelorarbeit geplant, in einen neuen FPGA-Entwicklungsprozess zu integrieren.
+Gleichzeitig k¨onnen die im Rahmen der Abschlussarbeit ermittelten Performanceunter
+schiede mit denen aus dem Paper verglichen werden, um zu ¨uberpr¨ufen, ob ¨ahnliche
+Differenzen mit einem Benchmark-Tool repliziert werden k¨onnen.
+Auch gibt es weitere Arbeiten, die die Geschwindigkeit von Verilator mit denen neu en
+twickelter Hardware6 oder Simulationssoftware7 vergleichen. Eine genauere Erkenntnis
+dar¨uber, wie groß erwartbare Differenzen sind, kann dabei helfen, Geschwindigkeitsun
+terschiede zu neuer Hard- und Software besser einzuordnen.
+Ein Paper, welches einen quantitativen Performancevergleich zwischen einer Verilator
+Simulation und einer FPGA-Synthese f¨ur einen identischen CPU-Kern anstellt, konnte
+im Rahmen der Literaturrecherche nicht gefunden werden
