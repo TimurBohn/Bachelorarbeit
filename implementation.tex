@@ -32,9 +32,17 @@
             Erstes Problem: Delay war zu lang: In Verilator-Simulation funktionierte es, auf FPGA nicht, Simulation in Verilog dauerte zu lange
             Zweites Problem: Es wurde mit 0er-Flanke gestartet, dadurch verzögerte sich der sichtbare Teil (LED an) um eine Delay-Periode
             Deshalb wurde blinky.S so angepasst, dass es mit einer 1er Flanke (LED an) startet und der Delay um zwei Stellen
+
         - zephyr probleme
-            C-Code, der für Zephyr-RTOS mittels west buildtool kompiliert und in eine hex-Datei umgewandelt wurde, funktionierte in Verilator-Simulation, aber nicht auf FPGA/Vivado-Simulation. Dies galt selbst für simple Programme wie blinky. Unter anderem gab es zu viel Overhead, die Dateien waren deutlich größer
-            --> C-Code wurde mit west buildtool gebaut, die entstehende .elf-Datei wurde disassembliert und der RISC-V Assembly-Code aus dem Main-Teil (Collatz-Schleife) als Delay in funktionierendes Blinky-Programm eingefügt.
+            Zephyr wurde am Ende nicht genutzt, aufgrund mehrerer Probleme bei der Umsetzung:
+            Programme endeten nicht bei return 0, stattdessen wartete Zephyr immer auf ein neues Programm, sodass nach dem Durchlauf das Programm mit Strg + C beendet werden musste, sys_poweroff funktionierte nicht.
+            Umformatierung von Zahlen zu Strings bei Prints funktionierte ebenfalls nicht, musste mit putchar('0' + i); gelöst werden
+            C-Code, der für Zephyr-RTOS mittels west buildtool kompiliert und in eine hex-Datei umgewandelt wurde, funktionierte in Verilator-Simulation, aber nicht auf FPGA/Vivado-Simulation (die meisten interne Signale waren undefiniert, insb. Program Counter).
+            Dies galt selbst für simple Programme wie blinky.
+            Unter anderem gab es zu viel Overhead, die Dateien waren deutlich größer und es gab in Zephyr Schwierigkeiten, in die Memory-Map zu schreiben.
+            Direkt nach dem Schreibzugriff wurde zwar eine 1 ausgelesen, nach dem Rest auf 0 war es jedoch eine undefinierte Zahl, oder wieder 1, weshalb LED nicht ausgeschaltet werden konnte.
+
+        --> C-Code wurde mit west buildtool gebaut, die entstehende .elf-Datei wurde disassembliert und der RISC-V Assembly-Code aus dem Main-Teil (Collatz-Schleife) als Delay in funktionierendes Blinky-Programm eingefügt.
                 Auf Zephyr wurde anschließend verzichtet und mittels baremetal assembly eine Hexdatei generiert, die sowohl in Verilator-Simulation als auch auf FPGA funktionierte.
                     C --gcc--> .elf --objcopy--> .bin --pythonSkript--> .hex
 
