@@ -2,7 +2,7 @@
     - Methodologie
         - welche benchmarks, welche messungen, etc.
         Benchmark: Collatz-Reihenberechnung von 1 bis 1000, LED wechselt Phase nach jedem erfolgreichen Durchlauf der 1000 Reihen
-        Messung in der Simulation: In der Simulation wird jeweils ausgegeben, wenn LED umschaltet. Ein Python-Skript liest diese Ausgabe und berechnet die Zeit zwischen je zwei Ausgaben.
+        Messung in der Simulation: In der Simulation wird jeweils ausgegeben, wenn LED umschaltet. Ein Python-Skript liest diese Ausgabe und berechnet die Zeit zwischen je zwei Ausgaben. Die Ergebnisse werden in eine .csv-Datei geschrieben, es werden Mittelwert, Minimum und Maximum ausgegeben
         Messung im FPGA: Kamera mit 120 Frames pro Sekunde filmt Basys 3-Board und eine Stoppuhr. Es werden für die Dauer einer LED-Phase (an/aus) die Frames gezählt und mit der abgelaufenen Zeit auf der Stoppuhr sowie den Video-Timestamps verglichen.
 
     - Präsentation und Interpretation der Ergebnisse
