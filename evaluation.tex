@@ -3,10 +3,28 @@
         - welche benchmarks, welche messungen, etc.
         Benchmark: Collatz-Reihenberechnung von 1 bis 1000, LED wechselt Phase nach jedem erfolgreichen Durchlauf der 1000 Reihen
         Messung in der Simulation: In der Simulation wird jeweils ausgegeben, wenn LED umschaltet. Ein Python-Skript liest diese Ausgabe und berechnet die Zeit zwischen je zwei Ausgaben.
-        Messung im FPGA: Kamera mit 120 Frames pro Sekunde filmt Basys 3-Board und eine Stoppuhr. Es werden für die Dauer einer LED-Phase (an/aus) die Frames gezählt und mit der abgelaufenen Zeit auf der Stoppuhr verglichen.
+        Messung im FPGA: Kamera mit 120 Frames pro Sekunde filmt Basys 3-Board und eine Stoppuhr. Es werden für die Dauer einer LED-Phase (an/aus) die Frames gezählt und mit der abgelaufenen Zeit auf der Stoppuhr sowie den Video-Timestamps verglichen.
 
     - Präsentation und Interpretation der Ergebnisse
-        3.503 Sekunden im Mittel bei der Simulation (neuer Wert ohne Prints) bei 100 Messungen. Minimum: 3.428, Maximum: 3.873
-        Auf FPGA 0.916 Sekunden im Mittel (Stand: 25 Messungen), Minimum: 0,83 Sekunden, Maximum: 0,99 Sekunden \todo{Frames zählen}
+        Es zeigten sich größere Schwankungen in den Messwerten der Simulation, weshalb hier 100 Messwerte genommen wurden, um einen Mittelwert, ein Minimum und ein Maximum zu ermitteln.
+        Beim FPGA wurden 20 Messungen als ausreichend erachtet, da die Messwerte sehr stabil waren, Abweichungen im Millisekunden-Bereich, bzw. max. 1 Frame mehr/weniger bei 120fps (ggf. Messfehler durch Framerate)
+
+    \begin{table}
+        \centering
+        \begin{tabular}{lcccc}
+            \toprule
+            Messart    & Mittelwert & Minimum & Maximum\\
+            \midrule
+            Skript     &   3.503    &  3.428  &  3.873\\
+            \midrule
+            Stoppuhr   &   0.920    &  0.880  &  0.990\\
+            Frames     &   0.918    &  0.917  &  0.925\\
+            Timestamp  &   0.918    &  0.917  &  0.926\\
+            \bottomrule
+        \end{tabular}
+        \caption[Benchmarks]{Messzeiten in Sekunden, aufgeteilt nach Messart - im oberen Abschnitt die Simulation, im unteren der FPGA mit drei Messmethoden}
+        \label{tab:module}
+    \end{table}
+
     - Bewertung
         ca. 3,8-fache Beschleunigung auf "echtem" FPGA --> FPGA ist vermutlich immer schneller, für ein stärkeres Speedup werden jedoch ggf. teurere Boards benötigt
