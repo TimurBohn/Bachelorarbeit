@@ -1,33 +1,34 @@
-\chapter{Einleitung}
+\chapter{Einleitung und Motivation}
 
-\todo{Einleitung ausführen}
+FPGAs sind konfigurierbare Hardwareschaltungen, die vermehrt in der Industrie für die Entwicklung von Prototypen, bspw. beim Prozessordesign eingesetzt werden.
+Insbesondere in performancekritischen Bereichen, in denen Geschwindigkeit und Energieeffizienz eine große Rolle spielen, kommen FPGAs zum Einsatz.
+Diese werden weiterentwickelt, bspw. durch Optimierung und höhere mögliche Taktfrequenzen, um die Entwicklungsphase zu beschleunigen\cite[]{}.
+Einer der größten Faktoren bei der nutzung von FPGAs zum Hardware-Design ist allerdings die Synthesedauer, die Stunden, oder bei besonders komplexen Schaltungen Tage in Anspruch nehmen kann.
+Wenn bspw\. Bugs gefixt werden, kann dies zur Folge haben, dass die Synthese mehrfach durchlaufen werden muss, um Fixes anzupassen und zu testen.
+Der große Anteil an der Entwicklungszeit, den die Hardwaresynthese beansprucht, wird durch die Weiterentwicklung von FPGAs nicht wesentlich verkürzt.
+Gleichzeitig steigern performante FPGAs, die Geschwindigkeit und Energieeffizienz optimieren, zusätzlich die Entwicklungskosten.
 
-Kurze Einleitung, Einführung und Motivation des Problems
+Ein Versuch, die Kosten zu minimieren und zeitgleich den Entwicklungsprozess zu beschleunigen, ist die Simulation des Hardware-Designs mit entsprechender Software.
+Diese hat den Vorteil, dass sie keine Mehrkosten durch Hardwareanschaffungen verursacht und zugleich keine langwierige Synthese voraussetzt.
+Allerdings büßen Simulationen zur Laufzeit an Performance ein, sind also in der Regel langsamer als fertig synthetisierte Hardware.
 
-FPGAs werden in der Industrie eingesetzt, wo Geschwindigkeit und Energieeffizienz große Rolle spielen --> Beschleunigung der Prozesse und Kosten sparen ist sinnvoll --> FPGAs werden weiterentwickelt
-Hardware teuer, Simulation günstig --> Wann braucht man Hardware, wann reicht auch Simulation? --> Möglichkeiten und Limitationen --> Performanceunterschiede zwischen echter Hardware und Simulation
-Bekannt, dass Simulation langsamer ist, jedoch Größenordnung??
+Daraus ergibt sich die Fragestellung, wann tatsächlich Hardware benötigt wird und wann eine Simulation ausreichend ist.
+Um diese Frage zu beantworten, ist die Quantifizierung der Performanceunterschiede zwischen Simulation und synthetisiertem FPGA entscheidend, da auf dieser Grundlage Entwicklungsprozesse im Hardware-Design weiter optimiert werden können.
+Aus diesem Grund prüft die vorliegende Arbeit, in welcher Größenordnung die Geschwindigkeitsunterschiede einer simulierten und einer synthetisierten Schaltung, in diesem Fall einer RISC-V CPU, liegen.
 
-% Einige allgemeine Tipps zum Schreiben einer schriftlichen Ausarbeitung gibt es unter \url{https://hsp.pages.cs.uni-duesseldorf.de/programmierung/website/lectures/sopro/ausarbeitung/}
+% Noch auf verwandte Arbeiten eingehen und Hinweis, dass keine Arbeit bekannt ist, die genau das tut?
+% Sollen hier auch schon Ergebnisse gespoilert werden, wie in \url{https://hsp.pages.cs.uni-duesseldorf.de/programmierung/website/lectures/sopro/ausarbeitung/} beschrieben?
 
-%Ein Kapitel sollte, wenn es Unterüberschriften enthält, immer mit einem einleitenden Text anfangen. Dieser Text sollte für die Leserschaft einordnen, warum das Kapitel in der gesamten Arbeit relevant ist. Warum sollte es gelesen werden?
-
-%Bei manch einer Einleitung (insbesondere bei kürzeren Arbeiten) kann es gut sein, dass die Motivation schnell erklärt ist. Dann sollten die Überschriften 1.1 und 1.2 entfallen und die Einleitung kann direkt mit der Motivation starten.
-
-%\section{Motivation}
-
-%Das hier ist die Einleitung.
-%Hier sollte darauf eingegangen werden, was die Motivation der Arbeit ist.
-%Was ist der Kontext? Warum ist das, was du getan hast, interessant? Warum sollte ich das lesen?
+% Braucht man folgendes noch, wenn es einen Abschnitt zum Aufbau der Arbeit gibt??
+% Ein Kapitel sollte, wenn es Unterüberschriften enthält, immer mit einem einleitenden Text anfangen. Dieser Text sollte für die Leserschaft einordnen, warum das Kapitel in der gesamten Arbeit relevant ist. Warum sollte es gelesen werden?
 
 
 \section{Aufbau der Arbeit}
 
-Hintergrundinformationen zur Arbeit: genutzte Technologien, die man zum Verständnis der Arbeit benötigt (Hardware, Software, Tools)
-Implementation: Beschreibung, was im technischen Teil der Bachelorarbeit gemacht wurde, der Prozess bis zu einem Setup, bei dem eine Performanceanalyse stattfinden konnte
-Evaluation: Welche Benchmarks und welche Messungen genutzt wurden, was dadurch herausgefunden wurde und wie das ganze zu bewerten/einzuordnen ist
-Andere Arbeiten, die sich mit einem ähnlichen Thema befasst haben
-Zusammenfassung der Ergebnisse
+Um das Verständnis der späteren inhaltlichen Abschnitte sicherzustellen, werden im Abschnitt \"Hintergründe\" genutzte Technologien (Hardware, Software, Tools) vorgestellt.
+Anschließend wird die Implementierung bzw. Operationalisierung der Problemstellung beschrieben.
+Es wird auf die einzelnen Schritte im technischen Teil der Bachelorarbeit und die dabei aufgetretenen Schwierigkeiten eingegangen.
+Dieses Endergebnis wird im nächsten Abschnitt \"Evaluation\" noch einmal ausführlich beschrieben und interpretiert.
+Zuletzt wird das Ergebnis in den wissenschaftlichen Kontext anderer Arbeiten, die sich mit einem ähnlichen Thema/einer ähnlichen Fragestellung befasst haben, eingeordnet.
 
-%Gehe kurz darauf an, was den Leser in den nächsten Abschnitten erwartet.
-%Die Gliederung kann vorab mit der betreuenden Person abgesprochen werden.
+%Zusammenfassung noch erwähnen? Und kommt diese an den Anfang oder das Ende
