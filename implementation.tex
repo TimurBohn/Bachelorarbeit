@@ -35,7 +35,7 @@
 
         - zephyr probleme
             Zephyr wurde am Ende nicht genutzt, aufgrund mehrerer Probleme bei der Umsetzung:
-            Programme endeten nicht bei return 0, stattdessen wartete Zephyr immer auf ein neues Programm, sodass nach dem Durchlauf das Programm mit Strg + C beendet werden musste, sys_poweroff funktionierte nicht.
+            Programme endeten nicht bei return 0, stattdessen wartete Zephyr immer auf ein neues Programm, sodass nach dem Durchlauf das Programm mit Strg + C beendet werden musste, sys\_poweroff funktionierte nicht.
             Umformatierung von Zahlen zu Strings bei Prints funktionierte ebenfalls nicht, musste mit putchar('0' + i); gelöst werden
             C-Code, der für Zephyr-RTOS mittels west buildtool kompiliert und in eine hex-Datei umgewandelt wurde, funktionierte in Verilator-Simulation, aber nicht auf FPGA/Vivado-Simulation (die meisten interne Signale waren undefiniert, insb. Program Counter).
             Dies galt selbst für simple Programme wie blinky.
