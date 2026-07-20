@@ -1,16 +1,81 @@
 \chapter{Implementierung} % oder Implementation?
     - beschreibung was du persönlich während der Arbeit gemacht hast (Probleme nicht verstecken)
+    %Kurze Einführung notwendig?
+
 \section{Setup}
-        Linux mint vm (155GB Festplattenspeicher, 4GB Arbeitsspeicher, 3 Kerne)
-            mit serv-repo, riscv-gnu-toolchain, verilator, zephyr, west buildtool, vivado
-        Windows-Rechner mit Vivado-Installation
+    Für die Simulation und den Hardware-Designprozess wurden zwei verschiedene Systeme verwendet.
+    Der Großteil der Arbeit erfolgte auf einer virtuellen Maschine (VM) mit einem Linux mint Betriebssystem.
+    Hierbei wurden drei Prozessorkerne, 4 GB Arbeitsspeicher und 155 GB Festplattenspeicher vom Host-System zur Verfügung gestellt.
+    Auf dieser VM wurden jegliche Tools und Software installiert, die für die Simulation Hardwareentwicklung benötigt wurden.
+    Ein Windows-Rechner wurde neben dem Hosten der VM für den letzten Schritt der Hardwareentwicklung, der Übertragung des Bitstreams auf den FPGA mittels des Vivado-Hardwaremanagers genutzt.
+    Somit lief der Simulationsteil der Arbeit ausschließlich über die VM, die Hardwareentwicklung zum Großteil.
+    \todo{Specs des PCs einbinden (Text oder Screenshot)}
 
-\section{SERV-Simulation mit Verilator}
-    Es wurde das FuseSoC build tool mit Verilator-Einbindung genutzt, setup wie bei github.com/olofk/serv
-    Memsize-Parameter war teilweise zu klein für die Programme, die im Verlauf der Bachelorarbeit getestet wurden.
+\section{SERV-Simulation und Bau ausführbarer Benchmarks}
+    Um eine Simulation des SERV-Kerns zu realisieren, wurden die im SERV-repository\cite{} beschriebenen Schritte unter dem Abschnitt "Getting started" befolgt.
+    Hierbei wurde, um Konfundierungen durch die der VM zur Verfügung gestellten Ressourcen zu vermeiden, zunächst versucht, die Simulation auch über die native Windows-Installation des zur Verfügung stehenden Computers zu bewerkstelligen.
+    Allerdings waren die genutzten Tools für Linux ausgelegt, weshalb die Installation eines funktionalen Simulations-Setups auf Windows nicht möglich war.
+    So wurde in der Linux-VM zunächst der Workspace erstellt, FuseSoC installiert und SERV zusätzlich zur Standardbibliothek eingefügt.
+    Im Anschluss erfolgten erste erfolgreiche Simulationsversuche mit der vorgefertigten Testsoftware.
+
+    Da jedoch das Ziel der Arbeit war, ein Benchmarkprogramm zu simulieren, musste eigener Code geschrieben, gebaut und in eine .hex-Datei konvertiert werden.
+    Zu Beginn erschien es realisierbarer, die im SERV-repository beschriebene Unterstützung für das RTOS Zephyr zu nutzen.
+    Somit wurden auch hier die Installationsschritte \cite{https://docs.zephyrproject.org/latest/develop/getting_started/index.html} befolgt.
+    Zunächst wurde das einfach hello world-Beispiel gebaut und ausgetestet.
+    Als jedoch versucht wurde, die Simulation zu starten, wurden verschiedene Fehlermeldungen angezeigt, die auf nicht ausreichenden Arbeitsspeicher hinwiesen.
+    Es zeigte sich, dass durch die Einbindung von Zephyr und das west-Tooling Overhead entstand, sodass die resultierende .hex-Datei größer war als die im SERV-Beispiel mitgelieferten.
+    Das Problem konnte am Ende gelöst werden, indem beim Aufruf der --memsize-Parameter deutlich im Vergleich zu den im SERV-repository beschriebenen Beispielen erhöht wurde.
+    In einem nächsten Schritt hin zu einem Benchmark wurde eine Schleife eingebaut, die bis zur Zahl 100 hochzählen und in jedem Schritt den aktuellen Wert ausgeben sollte.
+    Hier zeigte sich die nächste Schwierigkeit: Bei der Umformatierung von Zahlen in Strings gingen Informationen verloren.
+    So wurden in der Simulation statt des aktuellen Wertes eine wiederkehrende Zahlenfolge für maximal 10 Zeilen ausgegeben.
+    Der Grund für dieses Verhalten konnte nicht gefunden werden.
+    Stattdessen wurde mit einem Workaround gearbeitet.
+    Statt die Zahlen als Ganzes in Strings umzuformatieren, wurde eine Hilfsfunktion geschrieben, die die Zahlen 0-9 mit \verb|putchar('0' + i);| ausgeben konnte.
+    Zahlen >9 wurden dabei mit einem rekursiven Aufruf der Funktion Ziffer für Ziffer geprinted.
+    Dies funktionierte zuverlässig.
+    Im Anschluss wurden verschiedene Erweiterungen an dem C-Code vorgenommen, bis Collatz-Reihen\cite{} ausgegeben wurden.
+    Diese benötigten genug Zeit, vor allem beim Durchlauf mehrerer Zahlen, um einen validen Microbenchmark darzustellen.
+    Eine Schwierigkeit, die persistierte, war, dass nach Durchlauf des Programms, welches mit "return 0" beendet wurde, das Zephyr RTOS auf weitere Programme/Instruktionen wartete und immer mit der Tastenkombination "Strg + C" abgebrochen werden musste.
+    Da mehrere Durchläufe gemessen werden sollten, um einen Durchschnittswert ermitteln und mögliche Abweichungen erkennen zu können, erschwerte dieser Umstand die Benchmarkmessung.
+    Zunächst wurde probiert, mittels \verb|sys_poweroff| das System herunterzufahren und für den nächsten Durchlauf wieder neu zu starten, allerdings schien es in der Kombination von Zephyr und SERV nicht implementiert worden zu sein, sodass dies als Lösung nicht praktikabel war.
+    Zu diesem Zeitpunkt zeigte sich auch, dass mit Zephyr betriebene SERV-Designs nicht auf den FPGAs konfiguriert werden konnten.
+    Die Simulation mit Verilator war zum Großteil operabel, in der Vivado-Simulation konnte allerdings der Programmcode nicht geladen werden, die meisten internen Signale, insb. der Program Counter waren dauerhaft X bzw. undefiniert.
+    Dies zeigte sich nicht nur bei komplexeren Benchmark-Programmen wie der Collatz-Sequenz, sondern bereits bei einem simpleren Blinky-Beispiel (blinkende LED mit festem Delay für An/Aus-Phasen).
+    Beim Blinky-Programm kam noch hinzu, dass dort eine Adresse in der Memory-Map beschrieben wurde, um die LED an- bzw. auszuschalten.
+    Auch beim Beschreiben der Memory-Map gab es bei der Umsetzung mit Zephyr einen Bug, dass direkt nach dem Schreibzugriff die LED eingeschaltet und eine 1 ausgelesen werden konnte, nach dem Reset auf 0 jedoch je nach Abfragezeitpunkt eine 1 oder eine undefinierte Zahl ausgelesen wurde und die LED nicht ausgeschaltet werden konnte.
+    Durch die Probleme in den prints, der fehlenden Möglichkeit der Beendigung des Durchlaufs, den zusätzlichen Overhead und den nicht lösbaren Schwierigkeiten in der Konfiguration des FPGAs sowie mit der Memory-Map, wurde sich gegen die Nutzung von Zephyr entschieden.
+
+    Der Ansatz zum Bau von Benchmarks, der stattdessen genutzt wurde, war die Software "bare-metal", also ohne Betriebssystem direkt auf der Hardware laufen zu lassen.
+    Im SERV-repository wurde die Assemblydatei \verb|blinky.S| mitgeliefert.
+    Gemeinsam mit dem SERV-buildtooling \cite{} und dem python-Skript aus dem SERV-repository konnte daraus eine .hex-Datei erstellt werden, die in Verilator problemlos lief.
+    Doch auch hier zeigten sich Schwierigkeiten im FPGA-Designprozess.
+    Zunächst leuchtete die LED am FPGA trotz erfolgreicher Synthese, Implementation und Bitstream-Übertragung nicht.
+    Zum Debugging wurde die Vivado-Simulation genutzt, wobei zwei Schwierigkeiten auffielen:
+    Durch die langsame Geschwindigkeit der Vivado-Simulation, war der Delay zwischen den Wechseln der 0 und 1-Phasen zu lang, sodass diese nicht innerhalb einer praktikablen Zeit in Vivado simuliert werden konnten.
+    Zusätzlich war das Blinky-Programm so geschrieben, dass die LED im Zustand 0, also "aus" startete und man somit eine Phase abwarten musste, bis die LED anging.
+    Um das Debugging zu erleichtern, wurde deshalb der Delay zwischen den Phasenwechseln um den Faktor 100 gekürzt und die LED bereits am Anfang auf 1 gesetzt.
+    Dies führte dazu, dass der zugrundeliegende Reset-Fehler gefunden werden konnte, der im Abschnitt "Hardwareentwicklung" näher beschrieben wird.
+    Dadurch wurde das Ziel erreicht, dieselbe .hex-Datei sowohl auf einem mit Verilator simulierten als auch einem auf einem FPGA synthetisierten SERV-Kern laufen zu lassen.
+
+    Der letzte Schritt bestand darin, die blinky.S-Datei, die gesichert in beiden Kontexten (Simulation und Hardware) lief, so zu erweitern, dass sie als Benchmark dienen konnte.
+    Hierzu wurde auf die im ersten Teil erfolgte Arbeit zurückgegriffen.
+    Der C-Code des Collatz-Reihen-Benchmarks wurde wie für die Nutzung mit Zephyr durch das west buildtool gebaut.
+    Die dabei entstandenen .elf-Datei wurde disassembliert: \verb|llvm-objdump --disassemble zephyr.elf > disassemblyCollatz.txt|
+    In der daraus entstandenen Textdatei wurde anschließend der RISC-V Assembly-Code aus dem Abschnitt \verb|<main>| herauskopiert und in den Delay-Abschnitt des funktionierenden Blinky-Programms eingefügt.
+    Hier wurden die Zeilen bzgl. Prints entfernt, Label für Sprünge eingesetzt und Register, die bereits im Rest des Blinky-Programms genutzt wurden durch andere passende Register ersetzt, sodass die folgende Benchmark-Assemblydatei entstand, in der das Durchlaufen des Benchmarks durch einen Wechsel des LED-Zustandes signalisiert wurde:
+    \todo{collatz.S als Screenshot einbinden}
+    Um aus dieser resultierenden Benchmark-Assemblydatei eine .hex-Datei zu erhalten, die von einem Servant-SoC ausgeführt werden kann, wurde wie bei der vorherigen blinky.S-Datei vorgegangen.
+    In einem ersten Schritt wurde die .S-Datei mittels des SERV-buildtoolings zu einer .elf-Datei kompiliert: \todo{müssen hier die einzelnen Parameter noch zusätzlich erklärt werden?}
+    \verb|riscv64-unknown-elf-gcc -march=rv32i -mabi=ilp32 -nostdlib -nostartfiles -Wl, --section-start=.text=0x00000000 -o collatzBareMetal.elf collatz.S|
+    Anschließend wurde die .elf-Datei in eine .bin-Datei übertragen:
+    \verb|riscv64-unknown-elf-objcopy -O binary collatzBareMetal.elf collatzBareMetal.bin|
+    Zuletzt wurde aus dieser .bin-Datei durch das SERV-python-Skript die .hex-Datei erstellt:
+    \verb|python3 $SERV/sw/makehex.py collatzBareMetal.bin 65536 > collatzBareMetal.hex|
+
+    foo\_bar
 
 
-\section{SERV-Synthese mit Vivado}
+\section{Hardwareentwicklung}
     - serv synthese (auf Target, das noch nicht existierte)
         fusesoc run ... arty7 statt basys3/artix7, anschließend Anpassung in Vivado-Projekt auf korrekte Version des FPGAs
     - Kabelprobleme (von drei Kabeln funktionierte nur eins)
@@ -27,24 +92,4 @@
         Problem: USB-Geräte (angeschlossener FPGA) wurden in VM nicht erkannt (USB-throughput funktionierte nicht). Selbst nach einem Fix wäre dies eine weitere mögliche Fehlerquelle gewesen.
         Lösung: Vivado-Installation auf nativem Windows, dort wurde nur der Hardware-Manager genutzt, um den FPGA mit dem Bitstream, der auf Vivado-Installation in Linux-VM generiert wurde, zu programmieren
 
-\section{Programme/Benchmarks für FPGA} % anderer Titel
-        blinky.S wurde in serv-Repo mitgeliefert.
-            Erstes Problem: Delay war zu lang: In Verilator-Simulation funktionierte es, auf FPGA nicht, Simulation in Verilog dauerte zu lange
-            Zweites Problem: Es wurde mit 0er-Flanke gestartet, dadurch verzögerte sich der sichtbare Teil (LED an) um eine Delay-Periode
-            Deshalb wurde blinky.S so angepasst, dass es mit einer 1er Flanke (LED an) startet und der Delay um zwei Stellen
-
-        - zephyr probleme
-            Zephyr wurde am Ende nicht genutzt, aufgrund mehrerer Probleme bei der Umsetzung:
-            Programme endeten nicht bei return 0, stattdessen wartete Zephyr immer auf ein neues Programm, sodass nach dem Durchlauf das Programm mit Strg + C beendet werden musste, sys\_poweroff funktionierte nicht.
-            Umformatierung von Zahlen zu Strings bei Prints funktionierte ebenfalls nicht, musste mit putchar('0' + i); gelöst werden
-            C-Code, der für Zephyr-RTOS mittels west buildtool kompiliert und in eine hex-Datei umgewandelt wurde, funktionierte in Verilator-Simulation, aber nicht auf FPGA/Vivado-Simulation (die meisten interne Signale waren undefiniert, insb. Program Counter).
-            Dies galt selbst für simple Programme wie blinky.
-            Unter anderem gab es zu viel Overhead, die Dateien waren deutlich größer und es gab in Zephyr Schwierigkeiten, in die Memory-Map zu schreiben.
-            Direkt nach dem Schreibzugriff wurde zwar eine 1 ausgelesen, nach dem Rest auf 0 war es jedoch eine undefinierte Zahl, oder wieder 1, weshalb LED nicht ausgeschaltet werden konnte.
-
-        --> C-Code wurde mit west buildtool gebaut, die entstehende .elf-Datei wurde disassembliert und der RISC-V Assembly-Code aus dem Main-Teil (Collatz-Schleife) als Delay in funktionierendes Blinky-Programm eingefügt.
-                Auf Zephyr wurde anschließend verzichtet und mittels baremetal assembly eine Hexdatei generiert, die sowohl in Verilator-Simulation als auch auf FPGA funktionierte.
-                    C --gcc--> .elf --objcopy--> .bin --pythonSkript--> .hex
-
-
-% Noch mal überlegen, ob wirklich alles in diesen Stichpunkten enthalten ist
+% Noch mal überlegen, ob wirklich alles Relevante im Verlauf enthalten ist
