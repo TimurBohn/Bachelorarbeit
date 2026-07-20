@@ -1,5 +1,4 @@
 \chapter{Hintergrund}
-    - Technologien beschreiben, die nicht von dir sind, die man aber zum Verständnis der Arbeit braucht: "Was ist das eigentlich" --> so erklären, dass jmd ohne Spezialisierungskenntnis, aber mit Bachelor Informatik es verstehen kann
     %Braucht es hier wirklich einen einordnenden Satz?
 
 \section{FPGAs}
@@ -19,7 +18,7 @@
     Für zeitabhängige Schaltungen werden zusätzlich Flipflops und Speicherbausteine genutzt.
 
     Um zum Punkt einer fertig konfigurierten Hardwareschaltung zu gelangen, wird ein Designprozess durchlaufen.
-    Zunächst wird in einer Hardwarebeschreibungssprache Code auf dem Register-Transfer-Level (RTL-Code) geschrieben.
+    Zunächst wird in einer Hardwarebeschreibungssprache Code auf dem Register-Transfer-Level (RTL) geschrieben.
     Die am weitesten verbreiteten Hardwarebeschreibungssprachen sind Verilog und VHDL.
     Dieser RTL-Code kann in einem Analyse- bzw. Simulationsschritt einer ersten Prüfung unterzogen werden, wo grobe Fehler auffallen sollten.
     Im Anschluss erfolgt der Syntheseschritt, indem der RTL-Code in eine Netzliste überführt wird.
@@ -50,27 +49,39 @@
     So bietet die IDE Funktionalitäten zum Schreiben und Organisieren von RTL-Code, zur zyklus-akkuraten Simulation von Schaltungen, zur Umsetzung der Synthese- und Implementierungsschritte sowie zur Generierung des Bitstreams und der Übertragung auf den FPGA.
     % Gehört hier noch etwas zu? Muss ich hier reinschreiben, dass ich z.B. Verilog genutzt habe, oder die Entwicklung bis zur Bitstreamgenerierung und die Übertragung des Bitstreams zwischen Windows/Linux gesplittet habe?
 
-\section{RISC-V/SERV}
-    RISC-V ist eine open-source Instruction Set Architecture (ISA), die die "Sprache" des Prozessors festlegt. RISC-V CPUs sind solche, die diese Prozessorinstruktionen verarbeiten können.
-    SERV ist eine sehr kleine open-source bit-serielle (1 bit pro Takt) RISC-V CPU.
-    Servant ist ein System on Chip (SoC), welches die SERV-CPU mit minimaler Peripherie (Timer, Speicher, 1-bit GPIO-Pin) erweitert, um das Zephyr-Betriebssystem auf der CPU laufen lassen zu können.
-    Servant ist am Ende auch das SoC, welches auf dem Artix-7 FPGA synthetisiert wurde.
+\section{RISC-V, SERV und Servant}
+    RISC-V ist eine open-source Instruction Set Architecture (ISA), die den Befehlssatz eines Prozessors
+    Diese ISA bestimmt, welche Instruktionen von einer CPU verarbeitet werden können.
+    Im Gegensatz zu anderen verbreiteten ISAs wie x86 oder ARM kann RISC-V beliebig implementiert und erweitert werden.
+    Somit bietet RISC-V eine größere Flexibilität und Anpassungsfähigkeit im Rahmen der Hardwareentwicklung zur Erfüllung der gewünschten Funktionalität.
+    Teile, die nicht gebraucht werden, bspw. Ganzzahlmultiplikation und -division können je nach Anwendungsfall aufgenommen oder weggelassen werden.
+    Dies ermöglicht eine optimierte Nutzung verfügbarer Hardwareressourcen.
 
-\section{Verilator}
-    Simulator für Verilog-Code: Übersetzt den RTL-Code in ein eigenes, schnelles Verilog-Modell, das dann in C++-Code gewrappt wird und simuliert somit die
-    Erreicht durch diesen Zwischenschritt eine sehr schnelle Simulation (und ist mindestens gleich schnell, oft schneller als andere Simulatoren)
-    Unterschied zu anderen Simulationen: low-level, gleichzeitig sehr schnell
-    Verilator wird wiederum mit fusesoc genutzt, um serv-RTL-Code zu simulieren und ist das zugrundeliegende Tool für die im Rahmen der Bachelorarbeit durchgeführten Simulationen
+    SERV ist eine von Olof Kindgren entwickelte open-source RISC-V CPU-Kern \cite{}.
+    Sie setzt die RISC-V ISA im Gegensatz zu anderen Prozessoren bit-seriell um, verarbeitet also pro Takt nur ein Bit statt ganzer 32-Bit-Wörter.
+    Somit ist SERV natürlich langsamer als andere RISC-V CPUs, erweitert allerdings die Idee der RISC-V-Architektur, weniger Hardwareressourcen zu nutzen, da für die Synthese eines SERV-Kerns deutlich weniger Logikblöcke verwendet werden müssen als für RISC-V CPUs, die vollständige Wörter verarbeiten.
+    Dadurch ist SERV eine der kleinsten RISC-V CPU-Kerne und eignet sich besonders für ressourcenkritische Bereiche und Forschungsanwendungen.
+    Servant erweitert den SERV-Kern durch minimale Peripherie zu einem vollständigen System on Chip (SoC). So wird der CPU-Kern durch Arbeitsspeicher, Timer und einen GPIO-Pin ergänzt.
+    Dies resultiert in einer Hardwareplattform, auf der z.B. das Zephyr-Betriebssystem, oder andere Software ausgeführt werden kann, weshalb Servant auch als SoC gewählt wurde, welches in der vorliegenden Arbeit au fdem Artix-7 FPGA synthetisiert wurde.
 
-\section{Zephyr}
-    Open-source Real-Time Operating System (RTOS) für FPGAs, sehr basic, sodass es auch auf kleine RISC-V Prozessoren läuft
-    Quasi Softwareplattform für FPGAs/Microcontroller
-    Alternative zu Zephyr: Buildtooling von SERV --> "bare metal"
+\section{Verilator, FuseSoC und Zephyr}
+    Bei Verilator handelt es sich um einen Simulator für Verilog-Code.
+    Verilator übersetzt den RTL-Code in ein eigenes, schnelles Verilog-Modell, das dann in C++-Code gewrappt wird und die Simulation des Hardwaredesigns darstellt.
+    Hierbei wird durch den Zwischenschritt der Übersetzung eine sehr schnelle Simulationsgeschwindigkeit erreicht, die deutlich schneller ist als die zyklus-akkurate Simulation in Vivado und mindestens gleich schnell bzw. oft schneller ist als andere vergleichbare Simulatoren.
+    Während bei der Simulation in Vivado innerhalb von mehreren Minuten nur wenige Millisekunden simuliert werden können, kann bei Verilator der erwartete Programmverlauf nachvollzogen werden, welcher bei Vivado mehrere Stunden bis Tage in Anspruch nehmen würde.
+    Ein weiterer Unterschied besteht darin, dass Verilator ein two-state Simulationsmodell nutzt, also dass Leitungen und Register lediglich die Zustände "low"/0 und "high"/1 annehmen können.
+    In den meisten Fällen ist eine two-state Simulation ausreichend und bietet Vorteile einer höheren Speichereffizienz sowie Geschwindigkeit.
+    Die Vivado-Simulation kennt zusätzlich den Zustand "unknown value"/X, ist dadurch genauer und eignet sich besser zum Debugging.
+    Andere Simulatoren, wie bspw. QEMU \cite{} sind zwar noch schneller als Verilator, jedoch wird der Geschwindigkeitszugewinn hierbei dadurch eine höhere Abstraktionsebene erreicht.
+    QEMU ist im Gegensatz zu Verilator eine high-level Simulation, bei der kein RTL-Code simuliert wird, sondern das gesamte System an sich und kann somit nicht die Korrektheit eines Hardwaredesigns prüfen.
+    Aus diesem Grund wurde Verilator als schnellste verfügbare Simulation auf dem RTL genutzt, um Performanceunterschiede zwischen Simulation und FPGA zu untersuchen.
 
-\section{fusesoc}
-    Open-source Buildtool für Hardwareprojekte, organisiert bspw. Abhängigkeiten und kann bspw. Simulation eines SERV-Kerns umsetzen und Zephyr einbinden
+    Um dies umzusetzen, wurde zusätzlich das open-source Buildtool für Hardwareprojekte FuseSoC genutzt.
+    FuseSoC organisiert Abhängigkeiten und kann durch die Einbindung von Verilator bspw. einen SERV-Kern simulieren und Zephyr einbinden.
+    Zephyr ist hierbei das genutzte open-source real-time operating system (RTOS) für FPGAs. Zephyr ist sehr minimalistisch designt, sodass es auch auf kleinen RISC-V Prozessoren laufen kann.
+    Als Alternative zur Nutzung von Zephyr existiert das eigene Buildtooling von SERV \cite{}, womit die Software ohne ein entsprechendes Betriebssystem direkt auf der Hardware laufen kann ("bare metal").
 
-
+    %Vorher hatte ich einzelne Abschnitte für FuseSoC und Zephyr, aber so erschien es mir sinnvoller.
 
 
 % Überlegen ob noch andere Begrifflichkeiten/Technologien erläutert werden müssten
