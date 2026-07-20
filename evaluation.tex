@@ -5,6 +5,8 @@
         Messung in der Simulation: In der Simulation wird jeweils ausgegeben, wenn LED umschaltet. Ein Python-Skript liest diese Ausgabe und berechnet die Zeit zwischen je zwei Ausgaben. Die Ergebnisse werden in eine .csv-Datei geschrieben, es werden Mittelwert, Minimum und Maximum ausgegeben
         Messung im FPGA: Kamera mit 120 Frames pro Sekunde filmt Basys 3-Board und eine Stoppuhr. Es werden für die Dauer einer LED-Phase (an/aus) die Frames gezählt und mit der abgelaufenen Zeit auf der Stoppuhr sowie den Video-Timestamps verglichen.
 
+    \verb|fusesoc run --target=verilator_tb ::servant --firmware=collatzBareMetal.hex --memsize=1048576|
+
     - Präsentation und Interpretation der Ergebnisse
         Es zeigten sich größere Schwankungen in den Messwerten der Simulation, weshalb hier 100 Messwerte genommen wurden, um einen Mittelwert, ein Minimum und ein Maximum zu ermitteln.
         Beim FPGA wurden 20 Messungen als ausreichend erachtet, da die Messwerte sehr stabil waren, Abweichungen im Millisekunden-Bereich, bzw. max. 1 Frame mehr/weniger bei 120fps (ggf. Messfehler durch Framerate)
@@ -28,3 +30,4 @@
 
     - Bewertung
         ca. 3,8-fache Beschleunigung auf "echtem" FPGA --> FPGA ist vermutlich immer schneller, für ein stärkeres Speedup werden jedoch ggf. teurere Boards benötigt
+        Geschwindigkeit der Simulation ist auch abhängig von den der VM zur Verfügung gestellten Ressourcen
