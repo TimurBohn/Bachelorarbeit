@@ -1,17 +1,3 @@
 \chapter{Zusammenfassung}
 
-%Gehört Zusammenfassung an den Anfang wie ein Abstract, oder an das Ende?
-
-FPGAs sind im industriellen Kontext weit verbreitet, dort werden sie bei der Entwicklung von Prototypen, bspw\. beim Prozessordesign verwendet.
-Hier spielen Kosten, Geschwindigkeit und Energieeffizienz eine besondere Rolle. Bei der (Weiter-)Entwicklung von Hardware werden Schaltungen oft simuliert.
-Simulationen haben das Ziel, kostengünstig eine bestmögliche Approximation des Hardwareverhaltens darzustellen.
-Jedoch sind Simulationen während der Laufzeit langsamer als FPGAs/die Hardware selber, wobei die Synthetisierung von Hardware initial deutlich mehr Zeit in Anspruch nehmen kann (mehrere Stunden bis Tage je nach Komplexität).
-Deshalb ist die Beurteilung, ob eine Simulation genügt, bzw. ab wann mit Hardware gearbeitet werden sollte, essenziell.
-Der erste Schritt ist hierbei die Quantifizierung der Performancedifferenz zwischen Hardware und Simulation.
-Aus diesem Grund befasste sich die Bachelorarbeit mit den Laufzeitunterschieden bei einem selbst geschriebenen Benchmark zwischen der Simulation und der Synthetisierung eines
-RISC-V CPU-Kerns. Genutzt wurden Verilator als Simulationstool sowie ein Basys 3-Board mit einem Artix-7 FPGA.
-Es zeigte sich ein Speedup um den Faktor 3,8 zwischen Simulation und FPGA.
-Dies stellt eine Kenngröße dar, mit der gerechnet werden kann, ob eine Simulation sinnvoll ist, oder ob die Zeitersparnis durch den zunächst entfallenden Syntheseschritt bei der Hardware sich durch die langsamere Laufzeit ausgleicht.
-Auch unterstützt dies bei der Einschätzung, wie teuer Hardware für die Prototypenentwicklung sein muss, da wahrscheinlich mit teureren FPGAs ein stärkeres Speedup zu verzeichnen wäre (bspw. durch höhere mögliche Taktraten).
-
-%TODO: Flüssiger formulieren, Einfach ganzen Text überarbeiten, ggf. noch Eckpunkte einfügen/entfernen bspw. erste Arbeit, die genau das anschaut
+% Abschließende Sätze, nicht dasselbe wie Abstract, aber auch nicht besonders lang, vielleicht ein Absatz
