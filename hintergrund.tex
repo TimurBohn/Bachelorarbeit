@@ -77,9 +77,10 @@
     Aus diesem Grund wurde Verilator als schnellste verfügbare Simulation auf dem RTL genutzt, um Performanceunterschiede zwischen Simulation und FPGA zu untersuchen.
 
     Um dies umzusetzen, wurde zusätzlich das open-source Buildtool für Hardwareprojekte FuseSoC genutzt.
-    FuseSoC organisiert Abhängigkeiten und kann durch die Einbindung von Verilator bspw. einen SERV-Kern simulieren und Zephyr einbinden.
+    FuseSoC organisiert Abhängigkeiten und kann durch die Einbindung von Verilator bspw. einen SERV-Kern mit einem Zephyr-Betriebssystem simulieren.
     Zephyr ist hierbei das genutzte open-source real-time operating system (RTOS) für FPGAs. Zephyr ist sehr minimalistisch designt, sodass es auch auf kleinen RISC-V Prozessoren laufen kann.
-    Als Alternative zur Nutzung von Zephyr existiert das eigene Buildtooling von SERV \cite{}, womit die Software ohne ein entsprechendes Betriebssystem direkt auf der Hardware laufen kann ("bare metal").
+    Das west-Tool verwaltet im Kontext von Zephyr Projekte und deren Abhängigkeiten und fasst den Bau von Projekten unter einer einzelnen Kommandozeile zusammen.
+    Als Alternative zur Nutzung von Zephyr und west existiert das eigene Buildtooling von SERV \cite{}, womit die Software ohne ein entsprechendes Betriebssystem direkt auf der Hardware laufen kann ("bare metal").
 
     %Vorher hatte ich einzelne Abschnitte für FuseSoC und Zephyr, aber so erschien es mir sinnvoller.
 
