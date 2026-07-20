@@ -62,14 +62,14 @@
     Somit ist SERV natürlich langsamer als andere RISC-V CPUs, erweitert allerdings die Idee der RISC-V-Architektur, weniger Hardwareressourcen zu nutzen, da für die Synthese eines SERV-Kerns deutlich weniger Logikblöcke verwendet werden müssen als für RISC-V CPUs, die vollständige Wörter verarbeiten.
     Dadurch ist SERV eine der kleinsten RISC-V CPU-Kerne und eignet sich besonders für ressourcenkritische Bereiche und Forschungsanwendungen.
     Servant erweitert den SERV-Kern durch minimale Peripherie zu einem vollständigen System on Chip (SoC). So wird der CPU-Kern durch Arbeitsspeicher, Timer und einen GPIO-Pin ergänzt.
-    Dies resultiert in einer Hardwareplattform, auf der z.B. das Zephyr-Betriebssystem, oder andere Software ausgeführt werden kann, weshalb Servant auch als SoC gewählt wurde, welches in der vorliegenden Arbeit au fdem Artix-7 FPGA synthetisiert wurde.
+    Dies resultiert in einer Hardwareplattform, auf der z.B. das Zephyr-Betriebssystem, oder andere Software ausgeführt werden kann, weshalb Servant auch als SoC gewählt wurde, welches in der vorliegenden Arbeit auf dem Artix-7 FPGA synthetisiert wurde.
 
 \section{Verilator, FuseSoC und Zephyr}
     Bei Verilator handelt es sich um einen Simulator für Verilog-Code.
     Verilator übersetzt den RTL-Code in ein eigenes, schnelles Verilog-Modell, das dann in C++-Code gewrappt wird und die Simulation des Hardwaredesigns darstellt.
     Hierbei wird durch den Zwischenschritt der Übersetzung eine sehr schnelle Simulationsgeschwindigkeit erreicht, die deutlich schneller ist als die zyklus-akkurate Simulation in Vivado und mindestens gleich schnell bzw. oft schneller ist als andere vergleichbare Simulatoren.
     Während bei der Simulation in Vivado innerhalb von mehreren Minuten nur wenige Millisekunden simuliert werden können, kann bei Verilator der erwartete Programmverlauf nachvollzogen werden, welcher bei Vivado mehrere Stunden bis Tage in Anspruch nehmen würde.
-    Ein weiterer Unterschied besteht darin, dass Verilator ein two-state Simulationsmodell nutzt, also dass Leitungen und Register lediglich die Zustände "low"/0 und "high"/1 annehmen können.
+    Ein weiterer Unterschied besteht darin, dass Verilator ein two-state Simulationsmodell nutzt, also dass Leitungen und Register lediglich die Zustände "low" bzw. 0 und "high" bzw. 1 annehmen können.
     In den meisten Fällen ist eine two-state Simulation ausreichend und bietet Vorteile einer höheren Speichereffizienz sowie Geschwindigkeit.
     Die Vivado-Simulation kennt zusätzlich den Zustand "unknown value"/X, ist dadurch genauer und eignet sich besser zum Debugging.
     Andere Simulatoren, wie bspw. QEMU \cite{} sind zwar noch schneller als Verilator, jedoch wird der Geschwindigkeitszugewinn hierbei dadurch eine höhere Abstraktionsebene erreicht.
