@@ -18,8 +18,9 @@
     So wurde in der Linux-VM zunächst der Workspace erstellt, FuseSoC installiert und SERV zusätzlich zur Standardbibliothek eingefügt.
     Im Anschluss erfolgten erste erfolgreiche Simulationsversuche mit der vorgefertigten Testsoftware.
 
+    \todo{Ist es sinnvoller, diese Überleitung beizubehalten, oder den Abschnitt zum Benchmarkbau an das Ende des Kapitels zu setzen, nachdem der Hardwareentwicklungsprozess erklärt wurde?}
     Da jedoch das Ziel der Arbeit war, ein Benchmarkprogramm zu simulieren, musste eigener Code geschrieben, gebaut und in eine .hex-Datei konvertiert werden.
-    Zu Beginn erschien es realisierbarer, die im SERV-repository beschriebene Unterstützung für das RTOS Zephyr zu nutzen.
+    Zu Beginn erschien es praktikabler, die im SERV-repository beschriebene Unterstützung für das RTOS Zephyr zu nutzen.
     Somit wurden auch hier die Installationsschritte \cite{https://docs.zephyrproject.org/latest/develop/getting_started/index.html} befolgt.
     Zunächst wurde das einfach hello world-Beispiel gebaut und ausgetestet.
     Als jedoch versucht wurde, die Simulation zu starten, wurden verschiedene Fehlermeldungen angezeigt, die auf nicht ausreichenden Arbeitsspeicher hinwiesen.
@@ -35,12 +36,12 @@
     Dies funktionierte zuverlässig.
     Im Anschluss wurden verschiedene Erweiterungen an dem C-Code vorgenommen, bis Collatz-Reihen\cite{} ausgegeben wurden.
     Diese benötigten genug Zeit, vor allem beim Durchlauf mehrerer Zahlen, um einen validen Microbenchmark darzustellen.
-    Eine Schwierigkeit, die persistierte, war, dass nach Durchlauf des Programms, welches mit "return 0" beendet wurde, das Zephyr RTOS auf weitere Programme/Instruktionen wartete und immer mit der Tastenkombination "Strg + C" abgebrochen werden musste.
+    Eine Schwierigkeit, die persistierte, war, dass nach Durchlauf des Programms, welches mit \("\)return 0\("\) beendet wurde, dass Zephyr RTOS auf weitere Programme/Instruktionen wartete und immer mit der Tastenkombination \("\)Strg + C\("\) abgebrochen werden musste.
     Da mehrere Durchläufe gemessen werden sollten, um einen Durchschnittswert ermitteln und mögliche Abweichungen erkennen zu können, erschwerte dieser Umstand die Benchmarkmessung.
     Zunächst wurde probiert, mittels \verb|sys_poweroff| das System herunterzufahren und für den nächsten Durchlauf wieder neu zu starten, allerdings schien es in der Kombination von Zephyr und SERV nicht implementiert worden zu sein, sodass dies als Lösung nicht praktikabel war.
     Zu diesem Zeitpunkt zeigte sich auch, dass mit Zephyr betriebene SERV-Designs nicht auf den FPGAs konfiguriert werden konnten.
     Die Simulation mit Verilator war zum Großteil operabel, in der Vivado-Simulation konnte allerdings der Programmcode nicht geladen werden, die meisten internen Signale, insb. der Program Counter waren dauerhaft X bzw. undefiniert.
-    Dies zeigte sich nicht nur bei komplexeren Benchmark-Programmen wie der Collatz-Sequenz, sondern bereits bei einem simpleren Blinky-Beispiel (blinkende LED mit festem Delay für An/Aus-Phasen).
+    Dies trat nicht erst bei komplexeren Benchmark-Programmen wie der Collatz-Sequenz auf, sondern bereits bei einem simpleren Blinky-Beispiel (blinkende LED mit festem Delay für An/Aus-Phasen).
     Beim Blinky-Programm kam noch hinzu, dass dort eine Adresse in der Memory-Map beschrieben wurde, um die LED an- bzw. auszuschalten.
     Auch beim Beschreiben der Memory-Map gab es bei der Umsetzung mit Zephyr einen Bug, dass direkt nach dem Schreibzugriff die LED eingeschaltet und eine 1 ausgelesen werden konnte, nach dem Reset auf 0 jedoch je nach Abfragezeitpunkt eine 1 oder eine undefinierte Zahl ausgelesen wurde und die LED nicht ausgeschaltet werden konnte.
     Durch die Probleme in den prints, der fehlenden Möglichkeit der Beendigung des Durchlaufs, den zusätzlichen Overhead und den nicht lösbaren Schwierigkeiten in der Konfiguration des FPGAs sowie mit der Memory-Map, wurde sich gegen die Nutzung von Zephyr entschieden.
@@ -61,35 +62,63 @@
     Hierzu wurde auf die im ersten Teil erfolgte Arbeit zurückgegriffen.
     Der C-Code des Collatz-Reihen-Benchmarks wurde wie für die Nutzung mit Zephyr durch das west buildtool gebaut.
     Die dabei entstandenen .elf-Datei wurde disassembliert: \verb|llvm-objdump --disassemble zephyr.elf > disassemblyCollatz.txt|
-    In der daraus entstandenen Textdatei wurde anschließend der RISC-V Assembly-Code aus dem Abschnitt \verb|<main>| herauskopiert und in den Delay-Abschnitt des funktionierenden Blinky-Programms eingefügt.
+    In der resultierenden Textdatei wurde anschließend der RISC-V Assembly-Code aus dem Abschnitt \verb|<main>| herauskopiert und in den Delay-Abschnitt des funktionierenden Blinky-Programms eingefügt.
     Hier wurden die Zeilen bzgl. Prints entfernt, Label für Sprünge eingesetzt und Register, die bereits im Rest des Blinky-Programms genutzt wurden durch andere passende Register ersetzt, sodass die folgende Benchmark-Assemblydatei entstand, in der das Durchlaufen des Benchmarks durch einen Wechsel des LED-Zustandes signalisiert wurde:
     \todo{collatz.S als Screenshot einbinden}
     Um aus dieser resultierenden Benchmark-Assemblydatei eine .hex-Datei zu erhalten, die von einem Servant-SoC ausgeführt werden kann, wurde wie bei der vorherigen blinky.S-Datei vorgegangen.
     In einem ersten Schritt wurde die .S-Datei mittels des SERV-buildtoolings zu einer .elf-Datei kompiliert: \todo{müssen hier die einzelnen Parameter noch zusätzlich erklärt werden?}
-    \verb|riscv64-unknown-elf-gcc -march=rv32i -mabi=ilp32 -nostdlib -nostartfiles -Wl, --section-start=.text=0x00000000 -o collatzBareMetal.elf collatz.S|
+    \begin{minted}[breaklines]{bash}
+    riscv64-unknown-elf-gcc -march=rv32i -mabi=ilp32 -nostdlib -nostartfiles -Wl, --section-start=.text=0x00000000 -o collatzBareMetal.elf collatz.S
+    \end{minted}
     Anschließend wurde die .elf-Datei in eine .bin-Datei übertragen:
-    \verb|riscv64-unknown-elf-objcopy -O binary collatzBareMetal.elf collatzBareMetal.bin|
+    \begin{minted}[breaklines]{bash}
+    riscv64-unknown-elf-objcopy -O binary collatzBareMetal.elf collatzBareMetal.bin
+    \end{minted}
     Zuletzt wurde aus dieser .bin-Datei durch das SERV-python-Skript die .hex-Datei erstellt:
-    \verb|python3 $SERV/sw/makehex.py collatzBareMetal.bin 65536 > collatzBareMetal.hex|
-
-    foo\_bar
+    \begin{minted}[breaklines]{bash}
+    python3 $SERV/sw/makehex.py collatzBareMetal.bin 65536 > collatzBareMetal.hex
+    \end{minted}
 
 
 \section{Hardwareentwicklung}
-    - serv synthese (auf Target, das noch nicht existierte)
-        fusesoc run ... arty7 statt basys3/artix7, anschließend Anpassung in Vivado-Projekt auf korrekte Version des FPGAs
-    - Kabelprobleme (von drei Kabeln funktionierte nur eins)
-        wahrscheinlich, weil zwei der drei Kabel keine Datenübertragung unterstützt haben
-    - hardware mapping auf ports
-        Über Constraint-Datei, Reset-Knopf U18, LED U16,  \todo{Constraint-Datei in Anhang einbinden}
-    - simulation in vivado
-        Wurde genutzt, um Signale zu prüfen, insbesondere q/LED-output und program counter sowie Reset-Signale
-    - reset probleme
-        Reset war invertiert: Knopf gedrückt gehalten: Programm läuft, Knopf losgelassen: Programm friert ein, beim erneuten Drücken startet Programm von Vorne
-        Führten dazu, dass separate Dummy-Synthesen erfolgten, die Knöpfe und die LED nutzten, um Funktionalität sicherzustellen
-        Lösung: Invertierung des Reset-Signals bei Übergabe in ... entfernen, Signal ohne Invertierung übergeben
-    - vm usb probleme (wohin?)
-        Problem: USB-Geräte (angeschlossener FPGA) wurden in VM nicht erkannt (USB-throughput funktionierte nicht). Selbst nach einem Fix wäre dies eine weitere mögliche Fehlerquelle gewesen.
-        Lösung: Vivado-Installation auf nativem Windows, dort wurde nur der Hardware-Manager genutzt, um den FPGA mit dem Bitstream, der auf Vivado-Installation in Linux-VM generiert wurde, zu programmieren
+    Zur Synthese eines SERV-Kerns auf dem Artix-7 FPGA musste zunächst ein Vivado-Projekt konfiguriert werden.
+    SERV bietet Unterstützung beim Bau des Projektes für verschiedene FPGA-Boards an, allerdings nicht für das zur Verfügung stehende Basys 3-Board.
+    Da allerdings ein anderes Board mit Artix-7 FPGA unterstützt wird, wurde zunächst versucht, das Projekt für den konkreten Artix-7 FPGA zu konfigurieren.
+    Hierbei zeigte sich, dass verschiedene Ausführungen des Artix-7 FPGA existieren und SERV die vorliegende Ausführung nicht kannte.
+    Dennoch wurde das Projekt zunächst für das von SERV unterstützte Board mit Artix-7 FPGA (ARTY A7-35T) gebaut:
+    \begin{minted}[breaklines]{bash}
+    fusesoc run --target=arty_a7_35t --tool=vivado award-winning:serv:servant --pnr=vivado
+    \end{minted}
+    Da es sich hierbei jedoch um ein anderes als das vorliegende handelte, nutzte es andere Bezeichnungen für die Buttons, LEDs und Timer, sodass das Hardwaremapping fehlerhaft war.
+    In einem ersten Schritt wurde deshalb das Hardwaremapping über die Constraint-Datei so angepasst, dass die auf dem Basys 3-Board vorhandenen Buttons, LED und Timer genutzt wurden.
+    Die finale Version der Constraint-Datei ist im Anhang zu finden. \cite{} \todo{Constraint-Datei einfügen}
+    Diese Änderungen führten wiederum zu Inkompatiblitäten mit dem bereits gebauten Projekt, weshalb in den Projekteinstellungen in Vivado die vorhandene Ausführung des Artix-7 FPGA (xc7a35tcpg236-1) ausgewählt werden musste.
+    Durch diese Anpassungen war das erste Mal ein vollständiger Entwicklungsablauf von RTL-Code bis zur Generierung des Bitstreams möglich.
+    Beim Versuch, den Bitstream auf den FPGA zu übertragen bzw. den FPGA mittels Bitstream zu konfigurieren, traten zwei Probleme zeitgleich auf:
+    Zunächst erkannte der Computer den genutzten FPGA nicht.
+    Nachdem Treiberschwierigkeiten ausgeschlossen werden konnten, zeigte sich, dass das Problem darin bestand, dass von den drei vorhandenen USB-Kabeln lediglich eines auch Datenübertragung unterstützte.
+    Gleichzeitig gab es Probleme beim USB-Passthrough in die VM, sodass selbst bei Anschluss des FPGAs mit funktionalem Kabel, dieser auf dem Host-PC erkannt wurde, aber die Vivado-Installation der VM über den Hardware-Manager den FPGA nicht finden konnte.
+    Da dies als potenzielle Fehlerquelle auch nach einem Fix des USB-Passthroughs weiter bestehen könnte, wurde entschieden, Vivado auch auf dem Host-PC zu installieren.
+    Der Prozess vom RTL-Code bis zur Generierung des Bitstreams erfolgte dementsprechend in der Linux-VM, lediglich der letzte Schritt, bei dem der FPGA mit dem Bitstream konfiguriert wurde, wurde auf dem Host-PC realisiert.
+    Hierzu wurde die Bitstreamdatei \verb|servix.bit| von der VM auf den Host-PC kopiert und dort mittels Vivado-Hardwaremanager auf den Artix-7 FPGA übertragen.
+
+    Das erste Programm, das getestet werden sollte, war das im SERV-repository enthaltene blinky.hex-Programm. \todo{muss ich jedes Mal, wenn ich SERV-repository schreibe eine Quelle/Verlinkung angeben?}
+    Doch nach dem erfolgreichen Durchlauf aller Schritte ohne Fehlermeldungen leuchtete die LED auf dem FPGA trotz langer Wartezeit nicht auf.
+    Da das Problem in der Verilator-Simulation nicht auftrat, wurde die Vivado-Simulation zum Debugging genutzt.
+    Um die verlangsamte Simulationsgeschwindigkeit in Vivado zu berücksichtigen, wurde das blinky-Programm etwas umgeschrieben, wie im Abschnitt "Bau ausführbarer Benchmarks" beschrieben ist.
+    Hierbei konnte durch die verringerte Zeit zwischen den LED-Phasen gesehen werden, dass auch die verschiedenen Register in der Simulation in Vivado (output-Register/LED q, Program-Counter, Clock etc.) das erwartete Verhalten zeigten.
+    Daraufhin wurden separate Dummy-Synthesen von Hardwaredesigns durchgeführt, in denen die Knöpfe und LEDs auf verschiedenste Arten genutzt wurden, um die Funktionalität der Peripherie des Basys 3-Boards zu prüfen.
+    Als auch diese Überprüfungen unauffällig waren, wurde der SERV-Bitstream mit Blinky-Einbindung erneut auf den FPGA übertragen.
+    Dort zeigten sich Hinweise auf einen Fehler in der Reset-Logik:
+    Durch die vorgenommenen Änderungen am Programm leuchtete die LED sofort beim Drücken des Reset-Knopfes auf.
+    Allerdings trat das erwartete Blinky-Verhalten, also das periodische An- und Ausschalten der LED immer nur dann auf, wenn der Reset-Knopf gedrückt gehalten wurde.
+    Ließ man den Knopf los, so verweilte die LED in dem Zustand, in dem sie sich befand, als der Knopf losgelassen wurde.
+    Drückte man den Knopf anschließend erneut, startete das Programm von vorne: Egal, wie die vorherige Phase war, leuchtete die LED zunächst für die gesamte Delay-Dauer und wechselte danach periodisch die Phase.
+    Daraus wurde geschlossen, dass die Reset-Logik verantwortlich für das Verhalten war.
+    Bei erneuter Sichtung des Quellcodes des servix-Moduls fiel auf, dass das Reset-Signal bei Übergabe an den Clock-Generator invertiert wurde.
+    Diese Invertierung wurde entfernt, zusätzlich wurden, da Reset-Verhalten über alle Programme hinweg gewünscht war, die Macro-Blöcke mit \verb|`ifdef WITH_RESET| als weitere mögliche Fehlerquelle entfernt.
+    In der Simulationsdatei wurde anschließend das Reset-Signal ebenfalls invertiert, um dort das vorher bereits beobachtete, erwartete Verhalten der einzelnen Register wiederherzustellen.
+    Daraus resultierte der finale SERV-Quellcode, der zum gewünschten Verhalten auf dem FPGA führte und auch für die Benchmarks genutzt wurde:
+    \todo{Quellcode vom Modul einfügen}
 
 % Noch mal überlegen, ob wirklich alles Relevante im Verlauf enthalten ist
