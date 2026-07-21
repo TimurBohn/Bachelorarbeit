@@ -61,8 +61,10 @@
     Sie setzt die RISC-V ISA im Gegensatz zu anderen Prozessoren bit-seriell um, verarbeitet also pro Takt nur ein Bit statt ganzer 32-Bit-Wörter.
     Somit ist SERV natürlich langsamer als andere RISC-V CPUs, erweitert allerdings die Idee der RISC-V-Architektur, weniger Hardwareressourcen zu nutzen, da für die Synthese eines SERV-Kerns deutlich weniger Logikblöcke verwendet werden müssen als für RISC-V CPUs, die vollständige Wörter verarbeiten.
     Dadurch ist SERV eine der kleinsten RISC-V CPU-Kerne und eignet sich besonders für ressourcenkritische Bereiche und Forschungsanwendungen.
+    Ein weiterer Vorteil von SERV besteht in der ausführlichen Dokumentation des Projektes, sodass eine Replizierbarkeit erleichtert wird, was für wissenschaftliche Fragestellungen besonders relevant ist.
+
     Servant erweitert den SERV-Kern durch minimale Peripherie zu einem vollständigen System on Chip (SoC). So wird der CPU-Kern durch Arbeitsspeicher, Timer und einen GPIO-Pin ergänzt.
-    Dies resultiert in einer Hardwareplattform, auf der z.B. das Zephyr-Betriebssystem, oder andere Software ausgeführt werden kann, weshalb Servant auch als SoC gewählt wurde, welches in der vorliegenden Arbeit auf dem Artix-7 FPGA synthetisiert wurde.
+    Dies resultiert in einer Hardwareplattform, auf der z.B. das Zephyr-Betriebssystem, oder andere Software ausgeführt werden kann, weshalb Servant auch das SoC war, welches in der vorliegenden Arbeit auf dem Artix-7 FPGA synthetisiert wurde.
 
 \section{Verilator, FuseSoC und Zephyr}
     Bei Verilator handelt es sich um einen Simulator für Verilog-Code.
