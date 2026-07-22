@@ -1,3 +1,11 @@
 \chapter{Zusammenfassung}
 
 % Abschließende Sätze, nicht dasselbe wie Abstract, aber auch nicht besonders lang, vielleicht ein Absatz
+Die vorliegende Abschlussarbeit konnte nachweisen, dass die Performance von Hardwaresimulationen mit Verilator zwar häufig eine praktikable Alternative zur Hardwarekonfiguration darstellt,
+gleichzeitig aber dennoch um mehrere Größenordnungen (ca. Faktor 3.8) langsamer ist als ein mit Bitstream beschriebener FPGA.
+So sollte in Bereichen, in denen maximale Geschwindigkeit gefordert ist, immer auf leistungsstarke FPGAs zurückgegriffen werden.
+Wenn jedoch der Fokus auf der maximalen Kostenreduktion liegt, oder nur begrenzte monetäre Ressourcen verfügbar sind, wird in den meisten Fällen die Simulation mit Verilator ausreichend schnell sein.
+Dies ergänzt bereits vorhandene Forschung dabei, z.B. die langwierige Synthetisierung und Implementierung von Hardwaredesigns zu überbrücken, indem diese Schritte in den Hintergrund verlagert werden und parallel dazu eine Simulation gestartet wird.
+Die Person, die mit dem Hardwaredesign arbeiten möchte, kann dies sehr schnell in der Simulation tun.
+Wenn der Bitstream im Hintergrund auf den FPGA übertragen wurde, kann dann auf dem synthetisierten System weitergearbeitet werden \cite{}.
+Auf Grundlage der vorliegenden Ergebnisse wäre damit zu rechnen, dass der Wechsel von Simulation zu FPGA durch eine in etwa Vervierfachung der Geschwindigkeit bemerkt würde.
