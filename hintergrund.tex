@@ -1,5 +1,4 @@
 \chapter{Hintergrund}
-    %Braucht es hier wirklich einen einordnenden Satz?
 
 \section{FPGAs}
     Field Programmable Gate Arrays, oder FPGAs sind beliebig konfigurierbare Hardwareschaltungen.
@@ -13,8 +12,10 @@
     Ein solcher Logikblock enthält Input/Output-Elemente zur Kommunikation (bspw. LEDs, UART), Switching/Routing-Blöcke zur Verbindung der Bauteile sowie sog. Konfiguraitons-Logikblöcke.
     Diese Konfigurations-Logikblöcke generieren aus einem Input-, einem Clock- und einem Resetsignal einen Output durch die Verwendung von Lookup-Tables, Flipflops und Multiplexern.
     %Müssen LUTs, Flipflops und Multiplexer noch mal erklärt werden?
+    %LUTs noch mal beschreiben
     Durch diese Bestandteile wird dann das gewünschte Verhalten modelliert.
     So kann z.B. jede logische Schaltung, die deterministisch bzw. nicht zeitabhängig ist, in einer Lookup-Table abgebildet werden.
+    %Kurz erklären, wie LUTs funktionieren --> und das stimmt bis zu ner Größe, aber ab dann mehrere LUTs aneinanderhängen, das noch kurz erklären
     Für zeitabhängige Schaltungen werden zusätzlich Flipflops und Speicherbausteine genutzt.
 
     Um zum Punkt einer fertig konfigurierten Hardwareschaltung zu gelangen, wird ein Designprozess durchlaufen.
@@ -31,10 +32,12 @@
 
     Somit bieten FPGAs eine große Flexibilität, da sie jede erdenkliche Schaltung abbilden können und in ihren Funktionen nicht so stark eingeschränkt sind wie z.B. Microcontroller.
     Dadurch können sie auf den jeweiligen Usecase zugeschnitten werden und bieten deshalb meist eine höhere Geschwindigkeit und Energieeffizienz als Microcontroller, weisen gleichzeitig aber auch eine im Vergleich größere Komplexität auf.
-    %Sollte ich noch erwähnen, dass FPGAs im Gegensatz zu Microcontrollern "echt parallel" arbeiten können?
+    %Sollte ich noch erwähnen, dass FPGAs im Gegensatz zu Microcontrollern "echt parallel" arbeiten können? --> Muss nicht
     Sie unterscheiden sich untereinander hinsichtlich der Leistung/Mächtigkeit vor allem in der Anzahl der Logikblöcke, der maximalen Taktfrequenz, im Stromverbrauch, der RAM-Größe und in der Anzahl an I/O Pins.
 
     %Die Konfiguration der Schaltung wurde im Rahmen der Arbeit immer im SRAM gespeichert, war somit flüchtig und musste bei jedem Neustart des Boards erneut geladen werden. Gehört das in diesen Abschnitt bzw. muss es überhaupt erwähnt werden?
+    %Das schon klarmachen, da das Design ne CPU ist und die CPU programmiert werden muss, also ein Programm in Form einer .hex-Datei übergeben wird
+    % Noch mal nachsehen, ob es nicht doch im ROM gespeichert wird!
 
 \subsection{Basys 3-Board}
     Beim Basys 3-Board handelt es sich um ein FPGA-Board mit Artix-7 FPGA und einiger Peripherie für den universitären Kontext, welches auf das initiale Befassen mit FPGAs ausgelegt ist. \todo{Foto des FPGA einbinden?}
@@ -47,7 +50,6 @@
     Ähnlich wie bei der Entwicklung von Software, gibt es auch für den Hardwareentwicklungsprozess Entwicklungsumbgebungen (IDEs).
     Vivado ist hierbei eine weit verbreitete, kommerzielle IDE vom Hersteller AMD, mit welcher der gesamte Entwicklungsprozess durchlaufen werden kann.
     So bietet die IDE Funktionalitäten zum Schreiben und Organisieren von RTL-Code, zur zyklus-akkuraten Simulation von Schaltungen, zur Umsetzung der Synthese- und Implementierungsschritte sowie zur Generierung des Bitstreams und der Übertragung auf den FPGA.
-    % Gehört hier noch etwas zu? Muss ich hier reinschreiben, dass ich z.B. Verilog genutzt habe, oder die Entwicklung bis zur Bitstreamgenerierung und die Übertragung des Bitstreams zwischen Windows/Linux gesplittet habe?
 
 \section{RISC-V, SERV und Servant}
     RISC-V ist eine open-source Instruction Set Architecture (ISA), die den Befehlssatz eines Prozessors
