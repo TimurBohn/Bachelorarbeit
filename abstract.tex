@@ -4,22 +4,19 @@
     \huge \IfLanguageName{ngerman}{Zusammenfassung}{Abstract}
 \end{center}
 
-FPGAs sind im industriellen Kontext weit verbreitet, dort werden sie bei der Entwicklung von Prototypen, bspw\. beim Prozessordesign verwendet.
-Hier spielen Kosten, Geschwindigkeit und Energieeffizienz eine besondere Rolle. Bei der (Weiter-)Entwicklung von Hardware werden Schaltungen oft simuliert.
-Simulationen haben das Ziel, kostengünstig eine bestmögliche Approximation des Hardwareverhaltens darzustellen.
-Jedoch sind Simulationen während der Laufzeit langsamer als FPGAs/die Hardware selber, wobei die Synthetisierung von Hardware initial deutlich mehr Zeit in Anspruch nehmen kann (mehrere Stunden bis Tage je nach Komplexität).
-Deshalb ist die Beurteilung, ob eine Simulation genügt, bzw. ab wann mit Hardware gearbeitet werden sollte, essenziell.
-Der erste Schritt ist hierbei die Quantifizierung der Performancedifferenz zwischen Hardware und Simulation.
-Aus diesem Grund befasste sich die Bachelorarbeit mit den Laufzeitunterschieden bei einem selbst geschriebenen Benchmark zwischen der Simulation und der Synthetisierung eines
-RISC-V CPU-Kerns. Genutzt wurden Verilator als Simulationstool sowie ein Basys 3-Board mit einem Artix-7 FPGA.
-Es zeigte sich ein Speedup um den Faktor 3,8 zwischen Simulation und FPGA.
-Dies stellt eine Kenngröße dar, mit der gerechnet werden kann, ob eine Simulation sinnvoll ist, oder ob die Zeitersparnis durch den zunächst entfallenden Syntheseschritt bei der Hardware sich durch die langsamere Laufzeit ausgleicht.
-Auch unterstützt dies bei der Einschätzung, wie teuer Hardware für die Prototypenentwicklung sein muss, da wahrscheinlich mit teureren FPGAs ein stärkeres Speedup zu verzeichnen wäre (bspw. durch höhere mögliche Taktraten).
-
 % Rezept:
  %   1-2 Sätze was ist das Problem
   %  1-2 Sätze warum ist das interessant
    % 1-2 zu wie ist die Lösung
     %1-2 Was folgt aus der Lösung
 
-%TODO: Flüssiger formulieren, Einfach ganzen Text überarbeiten, ggf. noch Eckpunkte einfügen/entfernen bspw. erste Arbeit, die genau das anschaut
+FPGAs sind im industriellen Kontext weit verbreitet und werden dort bei der (Weiter-)Entwicklung von Hardware, bspw. beim Prozessordesign, verwendet.
+Hier spielen Kosten, Geschwindigkeit und Energieeffizienz eine besondere Rolle.
+Daher werden oft Hardwareschaltungen simuliert, um kostengünstig eine bestmögliche Approximation des Verhaltens zu erreichen.
+In diesem Kontext ist oft die Frage relevant, ob eine Simulation ausreichend ist, oder ob mit Hardware gearbeitet werden sollte.
+Simulationen sind während der Laufzeit langsamer als FPGAs, wobei zugleich die Synthetisierung des Hardwaredesigns initial deutlich mehr Zeit (je nach Komplexität mehrere Stunden bis Tage) in Anspruch nimmt.
+Um die Entscheidungsfindung in der Praxis zu erleichtern, ist zunächst die Quantifizierung der Performancedifferenz zwischen Hardware und Simulation erforderlich.
+Aus diesem Grund untersucht die vorliegende Arbeit Laufzeitunterschiede zwischen einer Simulation mit Verilator und eines auf einem Artix-7 FPGA synthetisierten RISC-V CPU-Kerns anhand eines selbst geschriebenen Benchmarks, welches mathematische Folgen berechnet.
+Hierbei zeigte sich ein Geschwindigkeitszugewinn um den Faktor 3,8 zwischen Simulation und FPGA.
+Dadurch liefert die Arbeit eine quantitative Grundlage für die Entscheidung, ob Hardwareentwicklung durch eine Simulation oder durch die Ausführung auf einem FPGA effizienter gestaltet werden kann.
+\todo{Gehören Schlüsselwörter an das Ende des Abstracts wie in Psychologie-Arbeiten? z.B. FPGA, Verilator, Artix-7, Benchmark, Performanceunterschiede}
