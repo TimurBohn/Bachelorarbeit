@@ -1,16 +1,29 @@
 \chapter{Evaluation}
-    - Methodologie
-        - welche benchmarks, welche messungen, etc.
-        Benchmark: Collatz-Reihenberechnung von 1 bis 1000, LED wechselt Phase nach jedem erfolgreichen Durchlauf der 1000 Reihen
-        Messung in der Simulation: In der Simulation wird jeweils ausgegeben, wenn LED umschaltet. Ein Python-Skript liest diese Ausgabe und berechnet die Zeit zwischen je zwei Ausgaben. Die Ergebnisse werden in eine .csv-Datei geschrieben, es werden Mittelwert, Minimum und Maximum ausgegeben
-        Messung im FPGA: Kamera mit 120 Frames pro Sekunde filmt Basys 3-Board und eine Stoppuhr. Es werden für die Dauer einer LED-Phase (an/aus) die Frames gezählt und mit der abgelaufenen Zeit auf der Stoppuhr sowie den Video-Timestamps verglichen.
 
-    \verb|fusesoc run --target=verilator_tb ::servant --firmware=collatzBareMetal.hex --memsize=1048576|
+\section{Methodologie}
+    Als Benchmark zur Feststellung der Geschwindigkeitsunterschiede wurde ein Programm geschrieben, welches Collatz-Reihen berechnet.
+    Bei einer Collatz-Reihe handelt es sich um eine mathematische Reihe, die nach folgender Formel berechnet wird:
+    \todo{collatz-Folgenberechnung einfügen}
+    Beim Benchmark wurden Collatz-Reihen für die Zahlen 1 bis 1000 berechnet.
+    Um zu signalisieren, wann die Berechnung startet und wann sie fertig ist, wurde eine LED gesteuert, die immer ihre Phase wechselte, wenn ein Durchlauf der Collatz-Folgen bis 1000 endete und die Folgenberechnung wieder bei 1 startete.
+    Dies erfolgte in einer Endlosschleife.
+    Das Benchmark für die Verilator-Simulation wurde mit folgendem Zeilenkommando gestartet:
+    \verb|fusesoc run --target=verilator_tb award-winning:serv:servant --firmware=collatzBareMetal.hex --memsize=1048576|
+    Hierbei wurde zu jedem Phasenwechsel der Zustand vom Output-Wire q geprinted.
+    Beim FPGA wiederum war das Output-Wire auf eine LED gemappt, die nach Übertragung des Bitstreams, wo das Benchmark eingebettet war, beobachtet werden konnte.
+    So konnte durch die Berechnung der Dauer einer An- bzw. Aus-Phase der LED/des Output-Wires die Geschwindigkeit der Folgenberechnung ermittelt werden.
 
-    - Präsentation und Interpretation der Ergebnisse
-        Es zeigten sich größere Schwankungen in den Messwerten der Simulation, weshalb hier 100 Messwerte genommen wurden, um einen Mittelwert, ein Minimum und ein Maximum zu ermitteln.
-        Beim FPGA wurden 20 Messungen als ausreichend erachtet, da die Messwerte sehr stabil waren, Abweichungen im Millisekunden-Bereich, bzw. max. 1 Frame mehr/weniger bei 120fps (ggf. Messfehler durch Framerate)
+    Für die Simulation wurde ein Python-Skript \cite{} \todo{Python-Skript in Anhang} geschrieben, welches insgesamt 100 Phasen abwartete.
+    Das Skript berechnete die Zeit zwischen je zwei Ausgaben/Prints als eine Phase, schrieb die Ergebnisse in eine .csv-Datei \cite{} \todo{csv-Datei anhängen} und gab zusätzlich den ermittelten Mittelwert sowie das Minimum und Maximum aus.
+    Beim FPGA wurde mit einer Kamera, die 120 Frames pro Sekunde aufnehmen konnte, das Basys 3-Board sowie eine Stoppuhr gefilmt.
+    Die Dauer einer LED-Phase wurde durch Abzählen der Frames bestimmt.
+    Diese ermittelte Dauer wurde zudem mit der abgelaufenen Zeit auf der Stoppuhr sowie den Video-Timestamps abgeglichen.
+    Da der Reset-Knopf sowie der Startknopf nicht exakt zeitgleich gedrückt werden konnten, ist die Zeitmessung erst ab dem zweiten Phasenwechsel erfolgt.
+    Insgesamt wurde das Video über zwei Minuten aufgezeichnet und enthielt somit >100 Phasenmessungen.
 
+
+\section{Ergebnisse}
+    Die Ergebnisse der Benchmarks sind in der nachfolgenden Tabelle \todo{Boxplot oder andere Abbildung mit 95\% Konfidenzintervall einfügen} aufgelistet, wobei der obere Abschnitt die ermittelte Dauer einer Berechnungsphase in der Simulation und der untere Abschnitt die Dauer beim FPGA, aufgeteilt nach Berechnungsmethoden, aufzeigt.
     \begin{table}
         \centering
         \begin{tabular}{lcccc}
@@ -28,6 +41,35 @@
         \label{tab:module}
     \end{table}
 
-    - Bewertung
-        ca. 3,8-fache Beschleunigung auf "echtem" FPGA --> FPGA ist vermutlich immer schneller, für ein stärkeres Speedup werden jedoch ggf. teurere Boards benötigt
-        Geschwindigkeit der Simulation ist auch abhängig von den der VM zur Verfügung gestellten Ressourcen
+    Hierbei ist zu beachten, dass größere Schwankungen in den Messwerten der Simulation zu beobachten waren als in den Messungen des FPGAs.
+    Daher wurden zur Mittelwertsberechnung der Simulation sowie zur Ermittlung des Minimums und Maximums die vollen 100 Messungen genutzt.
+    Bei der Berechnung der Werte des FPGAs zeigte sich, dass die Messwerte sehr stabil waren und so gut wie keine Schwankungen aufwiesen.
+    Abweichungen gab es hier maximal im Millisekundenbereich bzw. um einen Frame.
+    Diese Abweichungen sind zudem sehr wahrscheinlich auf die Aufnahme per Kamera zurückzuführen, wo ggf. nicht genau der Zeitpunkt des Wechsels der An- und Aus-Phasen getroffen wurde und nicht auf eine tatsächliche Schwankung der Berechnungsdauer.
+    Deshalb wurde es hierbei als ausreichend erachtet, die Ermittlung der Kennwerte auf Grundlage von 20 Messungen vorzunehmen.
+
+    % Ich habe noch mal mit Skript gemessen und award-winning:serv statt ::servant genutzt: M=5.37, Min.: 5.122, Max.: 5.465
+
+\subsection{Interpretation der Ergebnisse}
+    Die Ergebnisse zeigen, dass es einen Geschwindigkeitszugewinn in etwa um den Faktor 3,8 bei der Nutztung eines FPGAs im Vergleich zur Simulation gibt.
+    Dies entspricht der vorab angestellten Erwartung, dass FPGAs zur Laufzeit schneller sind als deren Simulationen.
+    Doch spielen natürich merhere Faktoren bei dieser Beurteilung eine Rolle.
+    Die Geschwindigkeit der Simulation wird begrenzt durch die Rechenleistung des Hosts und zusätzlich durch die der VM zur Verfügung gestellten Ressourcen.
+    So wäre zu erwarten, dass eine Simulation auf einem leistungsstärkeren Computer schneller laufen könnte.
+    Auch wäre vermutlich eine schnellere Simulation zu erwarten, wenn man der VM mehr Ressourcen zur Verfügung stellen, oder eine native Linux-Installation nutzen würde.
+    Gleichzeitig ist die Geschwindigkeit des FPGAs durch z.B. seine Taktfrequenz limitiert.
+    Ein FPGA mit einer höheren maximalen Taktfrequenz könnte dementsprechend auch zu einer größeren Beschleunigung beitragen.
+    Dies bedeutet für den industriellen Kontext, dass ein darüber hinausgehender Geschwindigkeitszugewinn immer auch mit höheren Kosten verbunden ist.
+
+    Anwendungsbezogen folgen aus den Ergebnissen mehrere Konsequenzen.
+    Die erste ist die Erkenntnis, dass bei vergleichsweise günstigen FPGA-Boards mit einer Beschleunigung um den Faktor 3,8 gerechnet werden kann.
+    Wird eine höhere Geschwindigkeitssteigerung benötigt, sind diese Boards nicht ausreichend.
+    Dies bedeutet aber auch, dass wenn auf diesen Geschwindigkeitszugewinn verzichten kann, ein Großteil der Entwicklung simulationsgebunden möglich ist.
+    Auch kann es sinnvoll sein, für die Dauer der Synthese- und Implementationsschritte mit der Simulation zu arbeiten, um die Zeit zu überbrücken, bis der Bitstream übertragen werden kann, da der Faktor 3,8 in vielen Anwendungsfällen klein genug sein wird, sodass die Arbeit mit der Simulation praktikabel ist.
+    Im Anschluss kann dann auf den schnelleren FPGA gewechselt werden, sodass keine ungenutzte Zeit für die langwierigen Synthese- und Implementationsschritte aufkommt.
+
+    Weitere Forschung könnte untersuchen, ob ähnliche Geschwindigkeitszugewinne bei anderen, vergleichbaren Boards erreicht werden, um die Erkenntnisse weiter zu stützen.
+    Auch könnten andere Benchmarks genutzt werden, die nicht primär die Berechnung mathematischer Folgen beinhalten, oder auch andere Operationen umsetzen, um auch andere Aufgabenarten bezüglich des Performancezugewinns zu untersuchen.
+    Ein weiterer sinnvoller Vergleich wäre das Überprüfen der Performanceunterschiede bei einer Simulation mit mehr Ressourcen bzw. einer nativen Linux-Installation.
+    Wenn mit langen Ausführungszeiten zu rechnen ist, könnte auch der Verbrauch eines FPGA mit dem Verbrauch eines Computers, auf dem eine Simulation läuft, verglichen werden, um Entscheidungsprozesse weiter zu optimieren.
+
