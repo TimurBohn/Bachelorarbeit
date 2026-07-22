@@ -77,7 +77,7 @@
     In den meisten Fällen ist eine two-state Simulation ausreichend und bietet Vorteile einer höheren Speichereffizienz sowie Geschwindigkeit.
     Die Vivado-Simulation kennt zusätzlich den Zustand "unknown value"/X, ist dadurch genauer und eignet sich besser zum Debugging.
     Andere Simulatoren, wie bspw. QEMU \cite{} sind zwar noch schneller als Verilator, jedoch wird der Geschwindigkeitszugewinn hierbei dadurch eine höhere Abstraktionsebene erreicht.
-    QEMU ist im Gegensatz zu Verilator eine high-level Simulation, bei der kein RTL-Code simuliert wird, sondern das gesamte System an sich und kann somit nicht die Korrektheit eines Hardwaredesigns prüfen.
+    QEMU ist im Gegensatz zu Verilator eine high-level Simulation, bei der kein RTL-Code simuliert wird, sondern das gesamte System an sich und kann somit nicht genutzt werden, um die Korrektheit eines Hardwaredesigns prüfen.
     Aus diesem Grund wurde Verilator als schnellste verfügbare Simulation auf dem RTL genutzt, um Performanceunterschiede zwischen Simulation und FPGA zu untersuchen.
 
     Um dies umzusetzen, wurde zusätzlich das open-source Buildtool für Hardwareprojekte FuseSoC genutzt.
