@@ -1,78 +1,81 @@
 \chapter{Hintergrund}
 
+%Gänsefüßchen!
+
 \section{FPGAs}
     Field Programmable Gate Arrays, oder FPGAs sind beliebig konfigurierbare Hardwareschaltungen.
-    Im Gegensatz zu Microcontrollern oder CPUs, bei denen mit festgelegten Instruktionen gearbeitet und Software geschrieben wird, die mit diesen vorgegebenen "Werkzeugen" eine bestimmte Funktion umsetzen, wird bei FPGAs "Hardware entwickelt".
-    Hierbei wird mit einer Hardwarebeschreibungssprache eine Schaltung konfiguriert.
-    Somit kann Hardware "entwickelt" werden, die einen bestimmten Zweck erfüllt und eine bessere Passung zur gewünschten Funktionalität bietet, als dies z.B. generische Microcontroller tun.
-    Derselbe FPGA kann sich je nach Konfiguration bspw. wie eine ALU, ein Microcontroller, eine ARM-CPU oder eine x86-CPU verhalten.
+    Im Gegensatz zu Microcontrollern oder CPUs, bei denen mit festgelegten Instruktionen gearbeitet und Software geschrieben wird, die mit diesen vorgegebenen "Werkzeugen" eine bestimmte Funktionalität umsetzt, wird bei FPGAs die Hardware selbst entwickelt.
+    Hierbei wird mit einer Hardwarebeschreibungssprache eine Schaltung konfiguriert, die einen bestimmten Zweck erfüllt und eine bessere Passung zur gewünschten Funktionalität bietet, als dies z.B. generische Microcontroller tun.
+    Derselbe FPGA kann sich somit je nach Konfiguration bspw. wie eine ALU, ein Microcontroller, eine ARM-CPU oder eine x86-CPU verhalten.
 
-    FPGAs bestehen aus mehreren Logikblöcken, wobei die Anzahl der Logikblöcke die Komplexität an umsetzbaren Schaltungen bestimmt.
+    Diese Flexibilität erreichen FPGAs, da sie aus mehreren frei konfigurierbaren Logikblöcken bestehen, wobei die Anzahl der Logikblöcke die Komplexität an umsetzbaren Schaltungen bestimmt.
     Je mehr Logikblöcke, desto komplexere Schaltungen können mit einem FPGA umgesetzt werden.
-    Ein solcher Logikblock enthält Input/Output-Elemente zur Kommunikation (bspw. LEDs, UART), Switching/Routing-Blöcke zur Verbindung der Bauteile sowie sog. Konfiguraitons-Logikblöcke.
+    Ein solcher Logikblock enthält Input/Output-Elemente zur Kommunikation (bspw. LEDs, UART, interne Signale), Switching/Routing-Blöcke zur Verbindung der Bauteile sowie sogenannte Konfiguraitons-Logikblöcke.
     Diese Konfigurations-Logikblöcke generieren aus einem Input-, einem Clock- und einem Resetsignal einen Output durch die Verwendung von Lookup-Tables, Flipflops und Multiplexern.
-    %Müssen LUTs, Flipflops und Multiplexer noch mal erklärt werden?
-    %LUTs noch mal beschreiben
     Durch diese Bestandteile wird dann das gewünschte Verhalten modelliert.
-    So kann z.B. jede logische Schaltung, die deterministisch bzw. nicht zeitabhängig ist, in einer Lookup-Table abgebildet werden.
-    %Kurz erklären, wie LUTs funktionieren --> und das stimmt bis zu ner Größe, aber ab dann mehrere LUTs aneinanderhängen, das noch kurz erklären
+    Lookup-Tables oder LUTs sind Bauteile, die aus mehreren Eingangssignalen ein Ausgangssignal generieren.
+    Hierbei funktionieren sie wie Wahrheitstabellen für boolesche Ausdrücke.
+    Es muss lediglich für jede Kombination an Eingangssignalen das Ausgangssignal in den Speicher geschrieben werden.
+    Beispielsweise würde an die Adresse 3 einer 3-Input LUT der Wert (0 oder 1) geschrieben werden, der ausgegeben werden soll, wenn am Eingangssignal A eine 0 und an B und C eine 1 anliegen.
+    Die Adressierung erfolgt hierbei im Binärsystem, da ABC = 011binär = 3dezimal.
+    Analog dazu ist jede Adresse eines LUT, bspw. 0-7 bei einer 3-Input LUT, eine mögliche Kombination an Eingangssignalen.
+    So kann jede logische Schaltung, die deterministisch bzw. nicht zeitabhängig ist, in LUTs abgebildet werden.
+    Simple Schaltungen mit wenigen Eingängen können nur eine LUT beanspruchen, bei komplexeren Schaltungen werden mehrere LUTs miteinander verschaltet.
+    Die Ausgabe einer LUT wird dann als eine der Eingaben der nächsten LUT verwendet.
     Für zeitabhängige Schaltungen werden zusätzlich Flipflops und Speicherbausteine genutzt.
 
-    Um zum Punkt einer fertig konfigurierten Hardwareschaltung zu gelangen, wird ein Designprozess durchlaufen.
-    Zunächst wird in einer Hardwarebeschreibungssprache Code auf dem Register-Transfer-Level (RTL) geschrieben.
-    Die am weitesten verbreiteten Hardwarebeschreibungssprachen sind Verilog und VHDL.
+    Um zu einer fertig konfigurierten Hardwareschaltung zu gelangen, wird ein Designprozess befolgt.
+    Zunächst wird in einer Hardwarebeschreibungssprache (meist Verilog oder VHDL) Code auf dem Register-Transfer-Level (RTL) geschrieben.
     Dieser RTL-Code kann in einem Analyse- bzw. Simulationsschritt einer ersten Prüfung unterzogen werden, wo grobe Fehler auffallen sollten.
     Im Anschluss erfolgt der Syntheseschritt, indem der RTL-Code in eine Netzliste überführt wird.
-    Diese bildet ab, welche Bauteile theoretisch benötigt würden, um die Schaltung wie beschrieben umzusetzen. %Analogie zu Zwischencode beim Kompilieren von Code?
-    Im Implementierungsschritt werden in einem sog. Place \& Route-Verfahren die theoretischen Bauteile auf die tatsächlich auf dem FPGA vorhandenen Bauteile gemappt.
-    Hier werden benötigte physische Bauteile, also Lookup-Tables, Flipflops und Multiplexer des FPGA verortet und benötigte Bauteile miteinander verbunden. % Ist verortet richtig?
+    Diese bildet ab, welche Bauteile theoretisch benötigt würden, um die Schaltung wie beschrieben umzusetzen.
+    Eine Netzliste ist vergleichbar mit einem Zwischencode beim Kompilieren von Code in der Softwareentwicklung.
+    Im Implementierungsschritt werden in einem sog. Place \& Route-Verfahren die theoretischen Bauteile der Netzliste auf die tatsächlich auf dem FPGA vorhandenen Bauteile gemappt.
+    Hier werden benötigte physische Bauteile, also Lookup-Tables, Flipflops und Multiplexer auf dem FPGA verortet und benötigte Bauteile miteinander verbunden. % Ist verortet richtig?
     Diese Informationen werden in einen Bitstream geschrieben.
     In einem letzten Schritt wird dieser Bitstream auf den FPGA übertragen.
     Dies erfolgt entweder persistent in den Flash-Speicher, sodass die Konfiguration bei Neustart des FPGA erhalten bleibt, oder flüchtig in den SRAM.
+    Im Rahmen der vorliegenden Arbeit wurde der Bitstream, der die Konfiguration der Schaltung und den Benchmark enthält, im SRAM des FPGA gespeichert, war somit flüchtig und musste bei jedem Neustart des Boards erneut geladen werden.
 
-    Somit bieten FPGAs eine große Flexibilität, da sie jede erdenkliche Schaltung abbilden können und in ihren Funktionen nicht so stark eingeschränkt sind wie z.B. Microcontroller.
+    Somit ermöglichen FPGAs eine große Flexibilität, da sie jede erdenkliche Schaltung abbilden können und in ihren Funktionen nicht so stark eingeschränkt sind wie z.B. Microcontroller.
     Dadurch können sie auf den jeweiligen Usecase zugeschnitten werden und bieten deshalb meist eine höhere Geschwindigkeit und Energieeffizienz als Microcontroller, weisen gleichzeitig aber auch eine im Vergleich größere Komplexität auf.
-    %Sollte ich noch erwähnen, dass FPGAs im Gegensatz zu Microcontrollern "echt parallel" arbeiten können? --> Muss nicht
     Sie unterscheiden sich untereinander hinsichtlich der Leistung/Mächtigkeit vor allem in der Anzahl der Logikblöcke, der maximalen Taktfrequenz, im Stromverbrauch, der RAM-Größe und in der Anzahl an I/O Pins.
-
-    %Die Konfiguration der Schaltung wurde im Rahmen der Arbeit immer im SRAM gespeichert, war somit flüchtig und musste bei jedem Neustart des Boards erneut geladen werden. Gehört das in diesen Abschnitt bzw. muss es überhaupt erwähnt werden?
-    %Das schon klarmachen, da das Design ne CPU ist und die CPU programmiert werden muss, also ein Programm in Form einer .hex-Datei übergeben wird
-    % Noch mal nachsehen, ob es nicht doch im ROM gespeichert wird!
 
 \subsection{Basys 3-Board}
     Beim Basys 3-Board handelt es sich um ein FPGA-Board mit Artix-7 FPGA und einiger Peripherie für den universitären Kontext, welches auf das initiale Befassen mit FPGAs ausgelegt ist. \todo{Foto des FPGA einbinden?}
     Das Board besteht aus dem FPGA selber, Kommunikationschips für USB/serielle-Kommunikation, verschiedenen Buttons und Schaltern, einer 7-Segment-Anzeige, LEDs, einem VGA-Ausgang und USB-Port sowie aus Anschlüssen für Erweiterungen.
     Normalerweise setzen FPGA-Boards auf general purpose Input/Output (GPIO) Pins, um nach Wunsch verschiedenste Peripherie nutzen zu können und haben eher selten diesen Umfang an Knöpfen, Schaltern, Anzeigen und eingeschränkten Anschlüssen.
-    Für die vorliegende Arbeit wurden lediglich der FPGA selber sowie eine fest installierte LED und ein Button verwendet.
+    Für die vorliegende Arbeit wurden lediglich der FPGA selber, eine Clock sowie eine fest installierte LED und ein Button verwendet.
     Das Basys 3-Board verfügt über eine 100MHz Clock, welche voll ausgenutzt wurde, ca. 33.000 Logikblöcke mit etwa 310.000 Lookup-Tables, von denen nur ein kleiner Anteil genutzt wurde sowie 1800Kbit RAM.
 
 \subsection{Vivado}
     Ähnlich wie bei der Entwicklung von Software, gibt es auch für den Hardwareentwicklungsprozess Entwicklungsumbgebungen (IDEs).
-    Vivado ist hierbei eine weit verbreitete, kommerzielle IDE vom Hersteller AMD, mit welcher der gesamte Entwicklungsprozess durchlaufen werden kann.
+    Vivado ist hierbei eine weit verbreitete, kommerzielle IDE vom Hersteller AMD \cite{}, mit welcher der gesamte Entwicklungsprozess durchlaufen werden kann.
     So bietet die IDE Funktionalitäten zum Schreiben und Organisieren von RTL-Code, zur zyklus-akkuraten Simulation von Schaltungen, zur Umsetzung der Synthese- und Implementierungsschritte sowie zur Generierung des Bitstreams und der Übertragung auf den FPGA.
 
 \section{RISC-V, SERV und Servant}
-    RISC-V ist eine open-source Instruction Set Architecture (ISA), die den Befehlssatz eines Prozessors
-    Diese ISA bestimmt, welche Instruktionen von einer CPU verarbeitet werden können.
+    RISC-V \cite{} ist eine open-source Instruction Set Architecture (ISA), die den Befehlssatz eines Prozessors festlegt.
+    Somit bestimmt die ISA, welche Instruktionen von einer CPU verarbeitet werden können.
     Im Gegensatz zu anderen verbreiteten ISAs wie x86 oder ARM kann RISC-V beliebig implementiert und erweitert werden.
-    Somit bietet RISC-V eine größere Flexibilität und Anpassungsfähigkeit im Rahmen der Hardwareentwicklung zur Erfüllung der gewünschten Funktionalität.
+    Dadurch bietet RISC-V eine größere Flexibilität und Anpassungsfähigkeit im Rahmen der Hardwareentwicklung zur Erfüllung der gewünschten Funktionalität.
     Teile, die nicht gebraucht werden, bspw. Ganzzahlmultiplikation und -division können je nach Anwendungsfall aufgenommen oder weggelassen werden.
     Dies ermöglicht eine optimierte Nutzung verfügbarer Hardwareressourcen.
 
-    SERV ist eine von Olof Kindgren entwickelte open-source RISC-V CPU-Kern \cite{}.
+    SERV ist ein von Olof Kindgren entwickelter open-source RISC-V CPU-Kern \cite{}.
     Sie setzt die RISC-V ISA im Gegensatz zu anderen Prozessoren bit-seriell um, verarbeitet also pro Takt nur ein Bit statt ganzer 32-Bit-Wörter.
     Somit ist SERV natürlich langsamer als andere RISC-V CPUs, erweitert allerdings die Idee der RISC-V-Architektur, weniger Hardwareressourcen zu nutzen, da für die Synthese eines SERV-Kerns deutlich weniger Logikblöcke verwendet werden müssen als für RISC-V CPUs, die vollständige Wörter verarbeiten.
-    Dadurch ist SERV eine der kleinsten RISC-V CPU-Kerne und eignet sich besonders für ressourcenkritische Bereiche und Forschungsanwendungen.
-    Ein weiterer Vorteil von SERV besteht in der ausführlichen Dokumentation des Projektes, sodass eine Replizierbarkeit erleichtert wird, was für wissenschaftliche Fragestellungen besonders relevant ist.
+    Dadurch ist SERV einer der kleinsten RISC-V CPU-Kerne und eignet sich besonders für ressourcenkritische Bereiche und Forschungsanwendungen.
+    Ein weiterer Vorteil von SERV besteht in der ausführlichen Dokumentation des Projektes, sodass die Replizierbarkeit erleichtert wird, was für wissenschaftliche Fragestellungen besonders relevant ist.
 
-    Servant erweitert den SERV-Kern durch minimale Peripherie zu einem vollständigen System on Chip (SoC). So wird der CPU-Kern durch Arbeitsspeicher, Timer und einen GPIO-Pin ergänzt.
-    Dies resultiert in einer Hardwareplattform, auf der z.B. das Zephyr-Betriebssystem, oder andere Software ausgeführt werden kann, weshalb Servant auch das SoC war, welches in der vorliegenden Arbeit auf dem Artix-7 FPGA synthetisiert wurde.
+    Servant erweitert den SERV-Kern durch möglichst wenig Peripherie zu einem vollständigen System on Chip (SoC). So wird der CPU-Kern durch Arbeitsspeicher, Timer und einen GPIO-Pin ergänzt.
+    Auch hier wird auf Sparsamkeit bei der Nutzung von Hardwareressourcen gesetzt.
+    Dies resultiert in einer minimalistischen Hardwareplattform, auf der z.B. das Zephyr-Betriebssystem, oder andere Software ausgeführt werden kann, weshalb Servant auch das SoC war, welches in der vorliegenden Arbeit auf dem Artix-7 FPGA synthetisiert wurde.
 
 \section{Verilator, FuseSoC und Zephyr}
-    Bei Verilator handelt es sich um einen Simulator für Verilog-Code.
+    Bei Verilator handelt es sich um einen zyklus-akkuraten Simulator für Verilog-Code.
     Verilator übersetzt den RTL-Code in ein eigenes, schnelles Verilog-Modell, das dann in C++-Code gewrappt wird und die Simulation des Hardwaredesigns darstellt.
-    Hierbei wird durch den Zwischenschritt der Übersetzung eine sehr schnelle Simulationsgeschwindigkeit erreicht, die deutlich schneller ist als die zyklus-akkurate Simulation in Vivado und mindestens gleich schnell bzw. oft schneller ist als andere vergleichbare Simulatoren.
-    Während bei der Simulation in Vivado innerhalb von mehreren Minuten nur wenige Millisekunden simuliert werden können, kann bei Verilator der erwartete Programmverlauf nachvollzogen werden, welcher bei Vivado mehrere Stunden bis Tage in Anspruch nehmen würde.
+    Hierbei wird durch den Zwischenschritt der Übersetzung eine sehr schnelle Simulationsgeschwindigkeit erreicht, die deutlich schneller als die zyklus-akkurate Simulation in Vivado - und oft auch schneller als andere vergleichbare Simulatoren ist.
+    Während bei der Simulation in Vivado innerhalb mehrerer Minuten nur wenige Millisekunden simuliert werden können, kann bei Verilator der erwartete Programmverlauf nachvollzogen werden, welcher bei Vivado mehrere Stunden bis Tage in Anspruch nehmen würde.
     Ein weiterer Unterschied besteht darin, dass Verilator ein two-state Simulationsmodell nutzt, also dass Leitungen und Register lediglich die Zustände "low" bzw. 0 und "high" bzw. 1 annehmen können.
     In den meisten Fällen ist eine two-state Simulation ausreichend und bietet Vorteile einer höheren Speichereffizienz sowie Geschwindigkeit.
     Die Vivado-Simulation kennt zusätzlich den Zustand "unknown value"/X, ist dadurch genauer und eignet sich besser zum Debugging.
@@ -80,13 +83,9 @@
     QEMU ist im Gegensatz zu Verilator eine high-level Simulation, bei der kein RTL-Code simuliert wird, sondern das gesamte System an sich und kann somit nicht genutzt werden, um die Korrektheit eines Hardwaredesigns prüfen.
     Aus diesem Grund wurde Verilator als schnellste verfügbare Simulation auf dem RTL genutzt, um Performanceunterschiede zwischen Simulation und FPGA zu untersuchen.
 
-    Um dies umzusetzen, wurde zusätzlich das open-source Buildtool für Hardwareprojekte FuseSoC genutzt.
+    Um dies umzusetzen, wurde zusätzlich das open-source Buildtool für Hardwareprojekte FuseSoC verwendet.
     FuseSoC organisiert Abhängigkeiten und kann durch die Einbindung von Verilator bspw. einen SERV-Kern mit einem Zephyr-Betriebssystem simulieren.
-    Zephyr ist hierbei das genutzte open-source real-time operating system (RTOS) für FPGAs. Zephyr ist sehr minimalistisch designt, sodass es auch auf kleinen RISC-V Prozessoren laufen kann.
+    Zephyr ist hierbei das genutzte open-source real-time operating system (RTOS) für FPGAs. 
+    Zephyr ist sehr minimalistisch designt, sodass es auch auf kleinen RISC-V Prozessoren laufen kann.
     Das west-Tool verwaltet im Kontext von Zephyr Projekte und deren Abhängigkeiten und fasst den Bau von Projekten unter einer einzelnen Kommandozeile zusammen.
     Als Alternative zur Nutzung von Zephyr und west existiert das eigene Buildtooling von SERV \cite{}, womit die Software ohne ein entsprechendes Betriebssystem direkt auf der Hardware laufen kann ("bare metal").
-
-    %Vorher hatte ich einzelne Abschnitte für FuseSoC und Zephyr, aber so erschien es mir sinnvoller.
-
-
-% Überlegen ob noch andere Begrifflichkeiten/Technologien erläutert werden müssten
