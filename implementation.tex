@@ -41,27 +41,27 @@
     Auch beim Beschreiben der Memory-Map gab es bei der Umsetzung mit Zephyr einen Bug, dass direkt nach dem Schreibzugriff die LED eingeschaltet und eine 1 ausgelesen werden konnte, nach dem Reset auf 0 jedoch je nach Abfragezeitpunkt eine 1 oder eine undefinierte Zahl ausgelesen wurde und die LED nicht ausgeschaltet werden konnte.
     Durch die Probleme in den prints, der fehlenden Möglichkeit der Beendigung des Durchlaufs, den zusätzlichen Overhead und den nicht lösbaren Schwierigkeiten mit der Memory-Map sowie in der Konfiguration des FPGAs, wurde sich gegen die Nutzung von Zephyr entschieden.
 
-    Der Ansatz zum Bau von Benchmarks, der stattdessen genutzt wurde, war die Software "bare-metal", also ohne Betriebssystem direkt auf der Hardware laufen zu lassen.
+    Der Ansatz zum Bau von Benchmarks, der stattdessen genutzt wurde, war die Software \("\)bare-metal\("\), also ohne Betriebssystem direkt auf der Hardware laufen zu lassen.
     Im SERV-repository wurde die Assemblydatei \verb|blinky.S| mitgeliefert.
-    Gemeinsam mit dem SERV-buildtooling \cite{} und dem python-Skript aus dem SERV-repository konnte daraus eine .hex-Datei erstellt werden, die in Verilator problemlos lief.
+    Gemeinsam mit dem SERV-Buildtooling \cite{} und dem Python-Skript aus dem SERV-repository konnte daraus eine .hex-Datei erstellt werden, die in Verilator problemlos lief.
     Doch auch hier zeigten sich Hürden im FPGA-Designprozess.
     Zunächst leuchtete die LED am FPGA trotz erfolgreicher Synthese, Implementation und Bitstream-Übertragung nicht.
     Zum Debugging wurde die Vivado-Simulation genutzt, wobei zwei Schwierigkeiten auffielen:
-    Durch die langsame Geschwindigkeit der Vivado-Simulation, war der Delay zwischen den Wechseln der 0 und 1-Phasen zu lang, sodass diese nicht innerhalb einer praktikablen Zeit in Vivado simuliert werden konnten.
-    Zusätzlich war das Blinky-Programm so geschrieben, dass die LED im Zustand 0, also "aus" startete und man somit eine Phase abwarten musste, bis die LED anging.
+    Durch die langsame Geschwindigkeit der Vivado-Simulation war der Delay zwischen den Wechseln der 0 und 1-Phasen zu lang, sodass diese nicht innerhalb einer praktikablen Zeit in Vivado simuliert werden konnten.
+    Zusätzlich war das Blinky-Programm so geschrieben, dass die LED im Zustand 0, also \("\)aus\("\) startete und man somit eine Phase abwarten musste, bis die LED anging.
     Um das Debugging zu erleichtern, wurde deshalb der Delay zwischen den Phasenwechseln um den Faktor 100 gekürzt und die LED bereits am Anfang auf 1 gesetzt.
-    Dies führte dazu, dass der zugrundeliegende Reset-Fehler gefunden werden konnte, der im Abschnitt "Hardwareentwicklung" näher beschrieben wird.
+    Dies führte dazu, dass der zugrundeliegende Reset-Fehler gefunden werden konnte, der im Abschnitt \("\)Hardwareentwicklung\("\) näher beschrieben wird.
     Dadurch wurde das Ziel erreicht, dieselbe .hex-Datei sowohl auf einem mit Verilator simulierten als auch einem auf einem FPGA synthetisierten SERV-Kern laufen zu lassen.
 
-    Der letzte Schritt bestand darin, die blinky.S-Datei, die gesichert in beiden Kontexten (Simulation und Hardware) lief, so zu erweitern, dass sie als Benchmark dienen konnte.
+    Der letzte Schritt bestand darin, die blinky.S-Datei, die gesichert in beiden Kontexten (Simulation und Hardware) nutzbar war, so zu erweitern, dass sie als Benchmark dienen konnte.
     Hierzu wurde auf die im ersten Teil erfolgte Arbeit zurückgegriffen.
-    Der C-Code des Collatz-Reihen-Benchmarks wurde wie für die Nutzung mit Zephyr durch das west buildtool gebaut.
-    Die dabei entstandenen .elf-Datei wurde disassembliert: \verb|llvm-objdump --disassemble zephyr.elf > disassemblyCollatz.txt|
+    Der C-Code des Collatz-Reihen-Benchmarks wurde wie für die Nutzung mit Zephyr durch das west Buildtool gebaut.
+    Die dabei entstandene .elf-Datei wurde disassembliert: \verb|llvm-objdump --disassemble zephyr.elf > disassemblyCollatz.txt|
     In der resultierenden Textdatei wurde anschließend der RISC-V Assembly-Code aus dem Abschnitt \verb|<main>| herauskopiert und in den Delay-Abschnitt des funktionierenden Blinky-Programms eingefügt.
-    Hier wurden die Zeilen bzgl. Prints entfernt, Label für Sprünge eingesetzt und Register, die bereits im Rest des Blinky-Programms genutzt wurden durch andere passende Register ersetzt, sodass die folgende Benchmark-Assemblydatei entstand, in der das Durchlaufen des Benchmarks durch einen Wechsel des LED-Zustandes signalisiert wurde:
-    \todo{collatz.S als Screenshot einbinden}
+    Hier wurden die Zeilen, die Prints realisierten entfernt, Label für Sprünge eingesetzt und Register, die bereits im Rest des Blinky-Programms genutzt wurden, durch andere passende Register ersetzt, sodass die folgende Benchmark-Assemblydatei entstand, in der das Durchlaufen des Benchmarks durch einen Wechsel des LED-Zustandes signalisiert wurde:
+    \todo{collatz.S als Screenshot einbinden, oder gehört das eher in den Evaluationsteil (Methodologie)?}
     Um aus dieser resultierenden Benchmark-Assemblydatei eine .hex-Datei zu erhalten, die von einem Servant-SoC ausgeführt werden kann, wurde wie bei der vorherigen blinky.S-Datei vorgegangen.
-    In einem ersten Schritt wurde die .S-Datei mittels des SERV-buildtoolings zu einer .elf-Datei kompiliert: \todo{müssen hier die einzelnen Parameter noch zusätzlich erklärt werden?}
+    In einem ersten Schritt wurde die .S-Datei mittels des SERV-Buildtoolings zu einer .elf-Datei kompiliert: \todo{müssen hier die einzelnen Parameter noch zusätzlich erklärt werden?}
     \begin{minted}[breaklines]{bash}
     riscv64-unknown-elf-gcc -march=rv32i -mabi=ilp32 -nostdlib -nostartfiles -Wl, --section-start=.text=0x00000000 -o collatzBareMetal.elf collatz.S
     \end{minted}
@@ -84,7 +84,7 @@
     \begin{minted}[breaklines]{bash}
     fusesoc run --target=arty_a7_35t --tool=vivado award-winning:serv:servant --pnr=vivado
     \end{minted}
-    Da es sich hierbei jedoch um ein anderes als das vorliegende handelte, nutzte es andere Bezeichnungen für die Buttons, LEDs und Timer, sodass das Hardwaremapping fehlerhaft war.
+    Da es sich hierbei jedoch um ein anderes Board als das vorliegende handelte, nutzte es andere Bezeichnungen für die Buttons, LEDs und Timer, sodass das Hardwaremapping fehlerhaft war.
     In einem ersten Schritt wurde deshalb das Hardwaremapping über die Constraint-Datei so angepasst, dass die auf dem Basys 3-Board vorhandenen Buttons, LED und Timer genutzt wurden.
     Die finale Version der Constraint-Datei ist im Anhang zu finden. \cite{} \todo{Constraint-Datei einfügen}
     Diese Änderungen führten wiederum zu Inkompatiblitäten mit dem bereits gebauten Projekt, weshalb in den Projekteinstellungen in Vivado die vorhandene Ausführung des Artix-7 FPGA (xc7a35tcpg236-1) ausgewählt werden musste.
@@ -97,12 +97,12 @@
     Der Prozess vom RTL-Code bis zur Generierung des Bitstreams erfolgte dementsprechend in der Linux-VM, lediglich der letzte Schritt, bei dem der FPGA mit dem Bitstream konfiguriert wurde, wurde auf dem Host-PC realisiert.
     Hierzu wurde die Bitstreamdatei \verb|servix.bit| von der VM auf den Host-PC kopiert und dort mittels Vivado-Hardwaremanager auf den Artix-7 FPGA übertragen.
 
-    Das erste Programm, das getestet werden sollte, war das im SERV-repository enthaltene blinky.hex-Programm. \todo{muss ich jedes Mal, wenn ich SERV-repository schreibe eine Quelle/Verlinkung angeben?}
+    Das erste Programm, das getestet werden sollte, war das im SERV-repository enthaltene blinky.hex-Programm.
     Doch nach dem erfolgreichen Durchlauf aller Schritte ohne Fehlermeldungen leuchtete die LED auf dem FPGA trotz langer Wartezeit nicht auf.
     Da das Problem in der Verilator-Simulation nicht auftrat, wurde die Vivado-Simulation zum Debugging genutzt.
-    Um die verlangsamte Simulationsgeschwindigkeit in Vivado zu berücksichtigen, wurde das blinky-Programm etwas umgeschrieben, wie im Abschnitt "Bau ausführbarer Benchmarks" beschrieben ist.
+    Um die verlangsamte Simulationsgeschwindigkeit in Vivado zu berücksichtigen, wurde das blinky-Programm etwas umgeschrieben, wie im Abschnitt \("\)Bau ausführbarer Benchmarks\("\) beschrieben ist.
     Hierbei konnte durch die verringerte Zeit zwischen den LED-Phasen gesehen werden, dass auch die verschiedenen Register in der Simulation in Vivado (output-Register/LED q, Program-Counter, Clock etc.) das erwartete Verhalten zeigten.
-    Daraufhin wurden separate Dummy-Synthesen von Hardwaredesigns durchgeführt, in denen die Knöpfe und LEDs auf verschiedenste Arten genutzt wurden, um die Funktionalität der Peripherie des Basys 3-Boards zu prüfen.
+    Daraufhin wurden separate Dummy-Synthesen von Hardwaredesigns durchgeführt, in denen Knöpfe und LEDs auf verschiedene Arten genutzt wurden, um die Funktionalität der Peripherie des Basys 3-Boards zu prüfen.
     Als auch diese Überprüfungen unauffällig waren, wurde der SERV-Bitstream mit Blinky-Einbindung erneut auf den FPGA übertragen.
     Dort zeigten sich Hinweise auf einen Fehler in der Reset-Logik:
     Durch die vorgenommenen Änderungen am Programm leuchtete die LED sofort beim Drücken des Reset-Knopfes auf.
@@ -112,7 +112,7 @@
     Daraus wurde geschlossen, dass die Reset-Logik verantwortlich für das Verhalten war.
     Bei erneuter Sichtung des Quellcodes des servix-Moduls fiel auf, dass das Reset-Signal bei Übergabe an den Clock-Generator invertiert wurde.
     Diese Invertierung wurde entfernt, zusätzlich wurden, da Reset-Verhalten über alle Programme hinweg gewünscht war, die Macro-Blöcke mit \verb|`ifdef WITH_RESET| als weitere mögliche Fehlerquelle entfernt.
-    In der Simulationsdatei wurde anschließend das Reset-Signal ebenfalls invertiert, um dort das vorher bereits beobachtete, erwartete Verhalten der einzelnen Register wiederherzustellen.
+    In der Simulationsdatei \cite{} \todo{Simulationsdatei im Anhang einfügen} wurde anschließend das Reset-Signal ebenfalls invertiert, um dort das vorher bereits beobachtete, korrekte Verhalten der einzelnen Register wiederherzustellen.
     Daraus resultierte der finale SERV-Quellcode, der zum gewünschten Verhalten auf dem FPGA führte und auch für die Benchmarks genutzt wurde:
     \todo{Quellcode vom Modul einfügen}
 
