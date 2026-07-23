@@ -1,16 +1,25 @@
 \chapter{Evaluation}
 
 \section{Methodologie}
-    Als Benchmark zur Feststellung der Geschwindigkeitsunterschiede wurde ein Programm geschrieben, welches Collatz-Reihen berechnet.
-    Bei einer Collatz-Reihe handelt es sich um eine mathematische Reihe, die nach folgender Formel berechnet wird:
-    \todo{collatz-Folgenberechnung einfügen}
-    Beim Benchmark wurden Collatz-Reihen für die Zahlen 1 bis 1000 berechnet.
+    Als Benchmark zur Feststellung der Geschwindigkeitsunterschiede wurde ein Programm geschrieben, welches Collatz-Folgen berechnet.
+    Bei einer Collatz-Folge handelt es sich um eine mathematische Folge, die am Ende der Berechnung in einer 4-2-1-Schleife münden soll, die sich endlos wiederholt.
+    Sie wird nach folgender Formel berechnet:
+    \[
+    a_n \in \mathbb{N},\qquad
+    a_{n+1} =
+    \begin{cases}
+    \dfrac{a_n}{2}, & \text{falls } a_n \text{ gerade},\\[0.8em]
+    3a_n + 1, & \text{falls } a_n \text{ ungerade}.
+    \end{cases}
+    \]
+    Beim Benchmark wurden Collatz-Folgen für die Zahlen 1 bis 1000 bis zum Erreichen der 4-2-1-Schleife berechnet.
     Um zu signalisieren, wann die Berechnung startet und wann sie fertig ist, wurde eine LED gesteuert, die immer ihre Phase wechselte, wenn ein Durchlauf der Collatz-Folgen bis 1000 endete und die Folgenberechnung wieder bei 1 startete.
     Dies erfolgte in einer Endlosschleife.
-    Das Benchmark für die Verilator-Simulation wurde mit folgendem Zeilenkommando gestartet:
+    Der Benchmark für die Verilator-Simulation wurde mit folgendem Zeilenkommando gestartet:
     \verb|fusesoc run --target=verilator_tb award-winning:serv:servant --firmware=collatzBareMetal.hex --memsize=1048576|
+    \todo{Zeilenumbruch einfügen}
     Hierbei wurde zu jedem Phasenwechsel der Zustand vom Output-Wire q geprinted.
-    Beim FPGA wiederum war das Output-Wire auf eine LED gemappt, die nach Übertragung des Bitstreams, wo das Benchmark eingebettet war, beobachtet werden konnte.
+    Beim FPGA wiederum war das Output-Wire auf eine LED gemappt, die, nach Übertragung des Bitstreams, wo der Benchmark eingebettet war, beobachtet werden konnte.
     So konnte durch die Berechnung der Dauer einer An- bzw. Aus-Phase der LED/des Output-Wires die Geschwindigkeit der Folgenberechnung ermittelt werden.
 
     Für die Simulation wurde ein Python-Skript \cite{} \todo{Python-Skript in Anhang} geschrieben, welches insgesamt 100 Phasen abwartete.
@@ -23,24 +32,25 @@
 
 
 \section{Ergebnisse}
-    Die Ergebnisse der Benchmarks sind in der nachfolgenden Tabelle \todo{Boxplot oder andere Abbildung mit 95\% Konfidenzintervall einfügen} aufgelistet, wobei der obere Abschnitt die ermittelte Dauer einer Berechnungsphase in der Simulation und der untere Abschnitt die Dauer beim FPGA, aufgeteilt nach Berechnungsmethoden, aufzeigt.
+    Die Ergebnisse der Benchmarks sind in der nachfolgenden Tabelle \todo{Boxplot oder andere Abbildung mit 95\% Konfidenzintervall einfügen} aufgelistet, wobei der obere Abschnitt die ermittelte Dauer einer Berechnungsphase in der Simulation - und der untere Abschnitt die Dauer beim FPGA, aufgeteilt nach Methoden der Laufzeitbestimmung, aufzeigt.
     \begin{table}
         \centering
         \begin{tabular}{lcccc}
             \toprule
             Messart    & Mittelwert & Minimum & Maximum\\
             \midrule
-            Skript     &   3.503    &  3.428  &  3.873\\
+            Skript     &   3.503s    &  3.428s  &  3.873s\\
             \midrule
-            Stoppuhr   &   0.920    &  0.880  &  0.990\\
-            Frames     &   0.918    &  0.917  &  0.925\\
-            Timestamp  &   0.918    &  0.917  &  0.926\\
+            Stoppuhr   &   0.920s    &  0.880s  &  0.990s\\
+            Frames     &   0.918s    &  0.917s  &  0.925s\\
+            Timestamp  &   0.918s    &  0.917s  &  0.926s\\
             \bottomrule
         \end{tabular}
         \caption[Benchmarks]{Messzeiten in Sekunden, aufgeteilt nach Messart - im oberen Abschnitt die Simulation, im unteren der FPGA mit drei Messmethoden}
         \label{tab:module}
     \end{table}
 
+    \todo{Muss die Einheit ("s") in die Tabelle rein, oder reicht die Tabellenbeschreibung aus?}
     Hierbei ist zu beachten, dass größere Schwankungen in den Messwerten der Simulation zu beobachten waren als in den Messungen des FPGAs.
     Daher wurden zur Mittelwertsberechnung der Simulation sowie zur Ermittlung des Minimums und Maximums die vollen 100 Messungen genutzt.
     Bei der Berechnung der Werte des FPGAs zeigte sich, dass die Messwerte sehr stabil waren und so gut wie keine Schwankungen aufwiesen.
@@ -53,26 +63,24 @@
 \subsection{Interpretation der Ergebnisse}
     Die Ergebnisse zeigen, dass es einen Geschwindigkeitszugewinn in etwa um den Faktor 3,8 bei der Nutztung eines FPGAs im Vergleich zur Simulation gibt.
     Dies entspricht der vorab angestellten Erwartung, dass FPGAs zur Laufzeit schneller sind als deren Simulationen.
-    Doch spielen natürich merhere Faktoren bei dieser Beurteilung eine Rolle.
+    Doch spielen natürlich mehrere Faktoren bei dieser Beurteilung eine Rolle.
     Die Geschwindigkeit der Simulation wird begrenzt durch die Rechenleistung des Hosts und zusätzlich durch die der VM zur Verfügung gestellten Ressourcen.
     So wäre zu erwarten, dass eine Simulation auf einem leistungsstärkeren Computer schneller laufen könnte.
     Auch wäre vermutlich eine schnellere Simulation zu erwarten, wenn man der VM mehr Ressourcen zur Verfügung stellen, oder eine native Linux-Installation nutzen würde.
     Gleichzeitig ist die Geschwindigkeit des FPGAs durch z.B. seine Taktfrequenz limitiert.
     Ein FPGA mit einer höheren maximalen Taktfrequenz könnte dementsprechend auch zu einer größeren Beschleunigung beitragen.
-    Dies bedeutet für den industriellen Kontext, dass ein darüber hinausgehender Geschwindigkeitszugewinn immer auch mit höheren Kosten verbunden ist.
 
-    Anwendungsbezogen folgen aus den Ergebnissen mehrere Konsequenzen.
-    Die erste ist die Erkenntnis, dass bei vergleichsweise günstigen FPGA-Boards mit einer Beschleunigung um den Faktor 3,8 gerechnet werden kann.
-    Wird eine höhere Geschwindigkeitssteigerung benötigt, sind diese Boards nicht ausreichend.
-    Dies bedeutet aber auch, dass wenn auf diesen Geschwindigkeitszugewinn verzichten kann, ein Großteil der Entwicklung simulationsgebunden möglich ist.
-    Auch kann es sinnvoll sein, für die Dauer der Synthese- und Implementationsschritte mit der Simulation zu arbeiten, um die Zeit zu überbrücken, bis der Bitstream übertragen werden kann, da der Faktor 3,8 in vielen Anwendungsfällen klein genug sein wird, sodass die Arbeit mit der Simulation praktikabel ist.
+    Für den industriellen und wissenschaftlichen Kontext folgen aus den Ergebnissen mehrere Konsequenzen.
+    Der Beschleunigungsfaktor stellt zunächst eine quantitative Grundlage dar, mit der errechnet werden kann, ob eine Simulation sinnvoll ist, oder ob sich die Zeitersparnis durch die entfallende Hardwaresynthese durch die langsamere Laufzeit ausgleicht.
+    Auch unterstützt dies bei der Einschätzung, wie teuer Hardware für die Prototypenentwicklung sein muss.
+    Es ist zu erwarten, dass bei vergleichsweise günstigen FPGA-Boards ca. eine Beschleunigung um den Faktor 3,8 zu verzeichnen ist.
+    Wird eine höhere Geschwindigkeitssteigerung benötigt, sind diese Boards nicht ausreichend und darüber hinausgehende Geschwindigkeitszugewinne immer auch mit höheren Kosten verbunden.
+    Dies bedeutet aber auch, dass wenn auf diesen Geschwindigkeitszugewinn verzichtet werden kann, ein Großteil der Entwicklung simulationsgebunden und kostengünstig möglich ist.
+    Da der Faktor 3,8 in vielen Anwendungsfällen klein genug sein wird, um eine praktikable Arbeitsgeschwindigkeit in der Simulation zu erreichen, wird es in solchen Fällen sinnvoll sein, die Dauer der Synthese- und Implementationsschritte mittels Simulation zu überbrücken.
     Im Anschluss kann dann auf den schnelleren FPGA gewechselt werden, sodass keine ungenutzte Zeit für die langwierigen Synthese- und Implementationsschritte aufkommt.
 
-    Weitere Forschung könnte untersuchen, ob ähnliche Geschwindigkeitszugewinne bei anderen, vergleichbaren Boards erreicht werden, um die Erkenntnisse weiter zu stützen.
-    Auch könnten andere Benchmarks genutzt werden, die nicht primär die Berechnung mathematischer Folgen beinhalten, oder auch andere Operationen umsetzen, um auch andere Aufgabenarten bezüglich des Performancezugewinns zu untersuchen.
-    Ein weiterer sinnvoller Vergleich wäre das Überprüfen der Performanceunterschiede bei einer Simulation mit mehr Ressourcen bzw. einer nativen Linux-Installation.
-    Wenn mit langen Ausführungszeiten zu rechnen ist, könnte auch der Verbrauch eines FPGA mit dem Verbrauch eines Computers, auf dem eine Simulation läuft, verglichen werden, um Entscheidungsprozesse weiter zu optimieren.
-
-% Dies stellt eine Kenngröße dar, mit der errechnet werden kann, ob eine Simulation sinnvoll ist, oder ob sich die Zeitersparnis durch den zunächst entfallenden Syntheseprozess der Hardware durch die langsamere Laufzeit ausgleicht.
-% Auch unterstützt dies bei der Einschätzung, wie teuer Hardware für die Prototypenentwicklung sein muss, da wahrscheinlich mit teureren FPGAs ein stärkerer Geschwindigkeitszugewinn zu verzeichnen wäre (bspw. durch höhere mögliche Taktraten).
-
+    Weitere Forschung könnte untersuchen, ob ähnliche Geschwindigkeitszugewinne bei anderen, vergleichbaren Boards erreicht werden, um die Erkenntnisse weiter zu validieren.
+    Auch könnten andere Benchmarks genutzt werden, die nicht primär die Berechnung mathematischer Folgen beinhalten, sondern auch andere Operationen umsetzen, um auch andere Aufgabenarten bezüglich des Performancezugewinns zu untersuchen.
+    Eine weitere sinnvolle Ergänzung wäre das Überprüfen der Performanceunterschiede bei einer Simulation mit mehr Ressourcen bzw. einer nativen Linux-Installation.
+    Wenn mit langen Ausführungszeiten zu rechnen ist, könnte auch der Energieverbrauch eines FPGA mit dem eines Computers, auf dem eine Simulation läuft, verglichen werden, um Entscheidungsprozesse weiter zu optimieren.
+    \todo {Abschnitt Interpretation der Ergebnisse überarbieten, bin mit den Schlussfolgerungen und der Formulierung noch nicht zufrieden}
