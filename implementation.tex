@@ -6,8 +6,8 @@
     Hierbei wurden drei Prozessorkerne, 4 GB Arbeitsspeicher und 155 GB Festplattenspeicher vom Host-System zur Verfügung gestellt.
     Auf dieser VM wurden jegliche Tools und Software installiert, die für die Simulation Hardwareentwicklung benötigt wurden.
     Ein Windows-Rechner wurde neben dem Hosten der VM für den letzten Schritt der Hardwareentwicklung, der Übertragung des Bitstreams auf den FPGA mittels des Vivado-Hardwaremanagers genutzt.
-    Somit lief der Simulationsteil der Arbeit ausschließlich über die VM, die Hardwareentwicklung zum Großteil.
-    \todo{Specs des PCs einbinden (Text oder Screenshot)}
+    Somit lief der Simulationsteil der Arbeit ausschließlich über die VM, die Hardwareentwicklung hingegen zum Großteil.
+    \todo{Specs meines PCs einbinden (Text oder Screenshot)}
 
 \section{SERV-Simulation und Bau ausführbarer Benchmarks}
     Um eine Simulation des SERV-Kerns zu realisieren, wurden die im SERV-repository\cite{} beschriebenen Schritte unter dem Abschnitt "Getting started" befolgt.
@@ -16,23 +16,21 @@
     So wurde in der Linux-VM zunächst der Workspace erstellt, FuseSoC installiert und SERV zusätzlich zur Standardbibliothek eingefügt.
     Im Anschluss erfolgten erste erfolgreiche Simulationsversuche mit der vorgefertigten Testsoftware.
 
-    \todo{Ist es sinnvoller, diese Überleitung beizubehalten, oder den Abschnitt zum Benchmarkbau an das Ende des Kapitels zu setzen, nachdem der Hardwareentwicklungsprozess erklärt wurde?}
-    Da jedoch das Ziel der Arbeit war, ein Benchmarkprogramm zu simulieren, musste eigener Code geschrieben, gebaut und in eine .hex-Datei konvertiert werden.
+    Da jedoch das Ziel der Arbeit war, ein Benchmarkprogramm zu simulieren, musste eigener Code geschrieben, gebaut und in eine ausführbare .hex-Datei konvertiert werden.
     Zu Beginn erschien es praktikabler, die im SERV-repository beschriebene Unterstützung für das RTOS Zephyr zu nutzen.
     Somit wurden auch hier die Installationsschritte \cite{https://docs.zephyrproject.org/latest/develop/getting_started/index.html} befolgt.
-    Zunächst wurde das einfach hello world-Beispiel gebaut und ausgetestet.
+    Zunächst wurde das einfache hello world-Beispiel gebaut und ausgetestet.
     Als jedoch versucht wurde, die Simulation zu starten, wurden verschiedene Fehlermeldungen angezeigt, die auf nicht ausreichenden Arbeitsspeicher hinwiesen.
     Es zeigte sich, dass durch die Einbindung von Zephyr und das west-Tooling Overhead entstand, sodass die resultierende .hex-Datei größer war als die im SERV-Beispiel mitgelieferten.
     Das Problem konnte am Ende gelöst werden, indem beim Aufruf der --memsize-Parameter deutlich im Vergleich zu den im SERV-repository beschriebenen Beispielen erhöht wurde.
-    In einem nächsten Schritt hin zu einem Benchmark wurde eine Schleife eingebaut, die bis zur Zahl 100 hochzählen und in jedem Schritt den aktuellen Wert ausgeben sollte.
+    Um einem funktionalen Benchmark näherzukommen, wurde eine Schleife eingebaut, die bis zur Zahl 100 hochzählen und in jedem Schritt den aktuellen Wert ausgeben sollte.
     Hier zeigte sich die nächste Schwierigkeit: Bei der Umformatierung von Zahlen in Strings gingen Informationen verloren.
     So wurden in der Simulation statt des aktuellen Wertes eine wiederkehrende Zahlenfolge für maximal 10 Zeilen ausgegeben.
-    Der Grund für dieses Verhalten konnte nicht gefunden werden.
-    Stattdessen wurde mit einem Workaround gearbeitet.
+    Der Grund für dieses Verhalten konnte nicht gefunden werden, weshalb mit einem Workaround gearbeitet wurde.
     Statt die Zahlen als Ganzes in Strings umzuformatieren, wurde eine Hilfsfunktion geschrieben, die die Zahlen 0-9 mit \verb|putchar('0' + i);| ausgeben konnte.
     Zahlen >9 wurden dabei mit einem rekursiven Aufruf der Funktion Ziffer für Ziffer geprinted.
     Dies funktionierte zuverlässig.
-    Im Anschluss wurden verschiedene Erweiterungen an dem C-Code vorgenommen, bis Collatz-Reihen\cite{} ausgegeben wurden.
+    Im Anschluss wurde der C-Code so verändert, dass Collatz-Reihen\cite{} ausgegeben wurden.
     Diese benötigten genug Zeit, vor allem beim Durchlauf mehrerer Zahlen, um einen validen Microbenchmark darzustellen.
     Eine Schwierigkeit, die persistierte, war, dass nach Durchlauf des Programms, welches mit \("\)return 0\("\) beendet wurde, dass Zephyr RTOS auf weitere Programme/Instruktionen wartete und immer mit der Tastenkombination \("\)Strg + C\("\) abgebrochen werden musste.
     Da mehrere Durchläufe gemessen werden sollten, um einen Durchschnittswert ermitteln und mögliche Abweichungen erkennen zu können, erschwerte dieser Umstand die Benchmarkmessung.
