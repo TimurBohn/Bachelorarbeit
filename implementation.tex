@@ -61,10 +61,11 @@
     Hier wurden die Zeilen, die Prints realisierten entfernt, Label für Sprünge eingesetzt und Register, die bereits im Rest des Blinky-Programms genutzt wurden, durch andere passende Register ersetzt, sodass die folgende Benchmark-Assemblydatei entstand, in der das Durchlaufen des Benchmarks durch einen Wechsel des LED-Zustandes signalisiert wurde:
     \todo{collatz.S als Screenshot einbinden, oder gehört das eher in den Evaluationsteil (Methodologie)?}
     Um aus dieser resultierenden Benchmark-Assemblydatei eine .hex-Datei zu erhalten, die von einem Servant-SoC ausgeführt werden kann, wurde wie bei der vorherigen blinky.S-Datei vorgegangen.
-    In einem ersten Schritt wurde die .S-Datei mittels des SERV-Buildtoolings zu einer .elf-Datei kompiliert: \todo{müssen hier die einzelnen Parameter noch zusätzlich erklärt werden?}
+    In einem ersten Schritt wurde die .S-Datei mittels des SERV-Buildtoolings zu einer .elf-Datei kompiliert:
     \begin{minted}[breaklines]{bash}
     riscv64-unknown-elf-gcc -march=rv32i -mabi=ilp32 -nostdlib -nostartfiles -Wl, --section-start=.text=0x00000000 -o collatzBareMetal.elf collatz.S
     \end{minted}
+    \todo{müssen hier die einzelnen Parameter noch zusätzlich erklärt werden?}
     Anschließend wurde die .elf-Datei in eine .bin-Datei übertragen:
     \begin{minted}[breaklines]{bash}
     riscv64-unknown-elf-objcopy -O binary collatzBareMetal.elf collatzBareMetal.bin
