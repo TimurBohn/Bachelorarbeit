@@ -16,10 +16,10 @@
     So wurde in der Linux-VM zunächst der Workspace erstellt, FuseSoC installiert und SERV zusätzlich zur Standardbibliothek eingefügt.
     Im Anschluss erfolgten erste erfolgreiche Simulationsversuche mit der vorgefertigten Testsoftware.
 
-    Da jedoch das Ziel der Arbeit war, ein Benchmarkprogramm zu simulieren, musste eigener Code geschrieben, gebaut und in eine ausführbare .hex-Datei konvertiert werden.
+    Da jedoch das Ziel der Arbeit war, ein Benchmarkprogramm laufen zu lassen, musste eigener Code geschrieben, gebaut und in eine ausführbare .hex-Datei konvertiert werden.
     Zu Beginn erschien es praktikabler, die im SERV-repository beschriebene Unterstützung für das RTOS Zephyr zu nutzen.
     Somit wurden auch hier die Installationsschritte \cite{https://docs.zephyrproject.org/latest/develop/getting_started/index.html} befolgt.
-    Zunächst wurde das einfache hello world-Beispiel gebaut und ausgetestet.
+    Zunächst wurde das einfache hello-world-Beispiel gebaut und ausgetestet.
     Als jedoch versucht wurde, die Simulation zu starten, wurden verschiedene Fehlermeldungen angezeigt, die auf nicht ausreichenden Arbeitsspeicher hinwiesen.
     Es zeigte sich, dass durch die Einbindung von Zephyr und das west-Tooling Overhead entstand, sodass die resultierende .hex-Datei größer war als die im SERV-Beispiel mitgelieferten.
     Das Problem konnte am Ende gelöst werden, indem beim Aufruf der --memsize-Parameter deutlich im Vergleich zu den im SERV-repository beschriebenen Beispielen erhöht wurde.
@@ -28,24 +28,23 @@
     So wurden in der Simulation statt des aktuellen Wertes eine wiederkehrende Zahlenfolge für maximal 10 Zeilen ausgegeben.
     Der Grund für dieses Verhalten konnte nicht gefunden werden, weshalb mit einem Workaround gearbeitet wurde.
     Statt die Zahlen als Ganzes in Strings umzuformatieren, wurde eine Hilfsfunktion geschrieben, die die Zahlen 0-9 mit \verb|putchar('0' + i);| ausgeben konnte.
-    Zahlen >9 wurden dabei mit einem rekursiven Aufruf der Funktion Ziffer für Ziffer geprinted.
-    Dies funktionierte zuverlässig.
+    Zahlen >9 wurden dabei mit einem rekursiven Aufruf der Funktion Ziffer für Ziffer geprinted, was zuverlässig funktionierte.
     Im Anschluss wurde der C-Code so verändert, dass Collatz-Reihen\cite{} ausgegeben wurden.
-    Diese benötigten genug Zeit, vor allem beim Durchlauf mehrerer Zahlen, um einen validen Microbenchmark darzustellen.
-    Eine Schwierigkeit, die persistierte, war, dass nach Durchlauf des Programms, welches mit \("\)return 0\("\) beendet wurde, dass Zephyr RTOS auf weitere Programme/Instruktionen wartete und immer mit der Tastenkombination \("\)Strg + C\("\) abgebrochen werden musste.
+    Diese benötigten genügend Rechenzeit, vor allem beim Durchlauf mehrerer Zahlen, um einen validen Microbenchmark darzustellen.
+    Eine Schwierigkeit, die persistierte, war, dass nach Durchlauf des Programms, welches mit \("\)return 0\("\) beendet wurde, das Zephyr RTOS auf weitere Programme/Instruktionen wartete und immer mit der Tastenkombination \("\)Strg + C\("\) abgebrochen werden musste.
     Da mehrere Durchläufe gemessen werden sollten, um einen Durchschnittswert ermitteln und mögliche Abweichungen erkennen zu können, erschwerte dieser Umstand die Benchmarkmessung.
     Zunächst wurde probiert, mittels \verb|sys_poweroff| das System herunterzufahren und für den nächsten Durchlauf wieder neu zu starten, allerdings schien es in der Kombination von Zephyr und SERV nicht implementiert worden zu sein, sodass dies als Lösung nicht praktikabel war.
-    Zu diesem Zeitpunkt zeigte sich auch, dass mit Zephyr betriebene SERV-Designs nicht auf den FPGAs konfiguriert werden konnten.
-    Die Simulation mit Verilator war zum Großteil operabel, in der Vivado-Simulation konnte allerdings der Programmcode nicht geladen werden, die meisten internen Signale, insb. der Program Counter waren dauerhaft X bzw. undefiniert.
+    Zu diesem Zeitpunkt zeigte sich auch, dass SERV-Designs, dei Zephyr betrieben nicht auf den FPGAs konfiguriert werden konnten.
+    Die Simulation mit Verilator war zum Großteil operabel, in der Vivado-Simulation konnte allerdings der Programmcode nicht geladen werden, die meisten internen Signale, insbesondere der Program-Counter waren dauerhaft mit dem Wert X belegt bzw. undefiniert.
     Dies trat nicht erst bei komplexeren Benchmark-Programmen wie der Collatz-Sequenz auf, sondern bereits bei einem simpleren Blinky-Beispiel (blinkende LED mit festem Delay für An/Aus-Phasen).
     Beim Blinky-Programm kam noch hinzu, dass dort eine Adresse in der Memory-Map beschrieben wurde, um die LED an- bzw. auszuschalten.
     Auch beim Beschreiben der Memory-Map gab es bei der Umsetzung mit Zephyr einen Bug, dass direkt nach dem Schreibzugriff die LED eingeschaltet und eine 1 ausgelesen werden konnte, nach dem Reset auf 0 jedoch je nach Abfragezeitpunkt eine 1 oder eine undefinierte Zahl ausgelesen wurde und die LED nicht ausgeschaltet werden konnte.
-    Durch die Probleme in den prints, der fehlenden Möglichkeit der Beendigung des Durchlaufs, den zusätzlichen Overhead und den nicht lösbaren Schwierigkeiten in der Konfiguration des FPGAs sowie mit der Memory-Map, wurde sich gegen die Nutzung von Zephyr entschieden.
+    Durch die Probleme in den prints, der fehlenden Möglichkeit der Beendigung des Durchlaufs, den zusätzlichen Overhead und den nicht lösbaren Schwierigkeiten mit der Memory-Map sowie in der Konfiguration des FPGAs, wurde sich gegen die Nutzung von Zephyr entschieden.
 
     Der Ansatz zum Bau von Benchmarks, der stattdessen genutzt wurde, war die Software "bare-metal", also ohne Betriebssystem direkt auf der Hardware laufen zu lassen.
     Im SERV-repository wurde die Assemblydatei \verb|blinky.S| mitgeliefert.
     Gemeinsam mit dem SERV-buildtooling \cite{} und dem python-Skript aus dem SERV-repository konnte daraus eine .hex-Datei erstellt werden, die in Verilator problemlos lief.
-    Doch auch hier zeigten sich Schwierigkeiten im FPGA-Designprozess.
+    Doch auch hier zeigten sich Hürden im FPGA-Designprozess.
     Zunächst leuchtete die LED am FPGA trotz erfolgreicher Synthese, Implementation und Bitstream-Übertragung nicht.
     Zum Debugging wurde die Vivado-Simulation genutzt, wobei zwei Schwierigkeiten auffielen:
     Durch die langsame Geschwindigkeit der Vivado-Simulation, war der Delay zwischen den Wechseln der 0 und 1-Phasen zu lang, sodass diese nicht innerhalb einer praktikablen Zeit in Vivado simuliert werden konnten.
