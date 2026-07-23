@@ -4,7 +4,7 @@
 
 \section{FPGAs}
     Field Programmable Gate Arrays, oder FPGAs sind beliebig konfigurierbare Hardwareschaltungen.
-    Im Gegensatz zu Microcontrollern oder CPUs, bei denen mit festgelegten Instruktionen gearbeitet und Software geschrieben wird, die mit diesen vorgegebenen "Werkzeugen" eine bestimmte Funktionalität umsetzt, wird bei FPGAs die Hardware selbst entwickelt.
+    Im Gegensatz zu Microcontrollern oder CPUs, bei denen mit festgelegten Instruktionen gearbeitet und Software geschrieben wird, die mit diesen vorgegebenen \("\)Werkzeugen\("\) eine bestimmte Funktionalität umsetzt, wird bei FPGAs die Hardware selbst entwickelt.
     Hierbei wird mit einer Hardwarebeschreibungssprache eine Schaltung konfiguriert, die einen bestimmten Zweck erfüllt und eine bessere Passung zur gewünschten Funktionalität bietet, als dies z.B. generische Microcontroller tun.
     Derselbe FPGA kann sich somit je nach Konfiguration bspw. wie eine ALU, ein Microcontroller, eine ARM-CPU oder eine x86-CPU verhalten.
 
@@ -76,9 +76,9 @@
     Verilator übersetzt den RTL-Code in ein eigenes, schnelles Verilog-Modell, das dann in C++-Code gewrappt wird und die Simulation des Hardwaredesigns darstellt.
     Hierbei wird durch den Zwischenschritt der Übersetzung eine sehr schnelle Simulationsgeschwindigkeit erreicht, die deutlich schneller als die zyklus-akkurate Simulation in Vivado - und oft auch schneller als andere vergleichbare Simulatoren ist.
     Während bei der Simulation in Vivado innerhalb mehrerer Minuten nur wenige Millisekunden simuliert werden können, kann bei Verilator der erwartete Programmverlauf nachvollzogen werden, welcher bei Vivado mehrere Stunden bis Tage in Anspruch nehmen würde.
-    Ein weiterer Unterschied besteht darin, dass Verilator ein two-state Simulationsmodell nutzt, also dass Leitungen und Register lediglich die Zustände "low" bzw. 0 und "high" bzw. 1 annehmen können.
+    Ein weiterer Unterschied besteht darin, dass Verilator ein two-state Simulationsmodell nutzt, also dass Leitungen und Register lediglich die Zustände \("\)low\("\) bzw. 0 und \("\)high\("\) bzw. 1 annehmen können.
     In den meisten Fällen ist eine two-state Simulation ausreichend und bietet Vorteile einer höheren Speichereffizienz sowie Geschwindigkeit.
-    Die Vivado-Simulation kennt zusätzlich den Zustand "unknown value"/X, ist dadurch genauer und eignet sich besser zum Debugging.
+    Die Vivado-Simulation kennt zusätzlich den Zustand \("\)unknown value\("\)/X, ist dadurch genauer und eignet sich besser zum Debugging.
     Andere Simulatoren, wie bspw. QEMU \cite{} sind zwar noch schneller als Verilator, jedoch wird der Geschwindigkeitszugewinn hierbei dadurch eine höhere Abstraktionsebene erreicht.
     QEMU ist im Gegensatz zu Verilator eine high-level Simulation, bei der kein RTL-Code simuliert wird, sondern das gesamte System an sich und kann somit nicht genutzt werden, um die Korrektheit eines Hardwaredesigns prüfen.
     Aus diesem Grund wurde Verilator als schnellste verfügbare Simulation auf dem RTL genutzt, um Performanceunterschiede zwischen Simulation und FPGA zu untersuchen.
@@ -88,4 +88,4 @@
     Zephyr ist hierbei das genutzte open-source real-time operating system (RTOS) für FPGAs. 
     Zephyr ist sehr minimalistisch designt, sodass es auch auf kleinen RISC-V Prozessoren laufen kann.
     Das west-Tool verwaltet im Kontext von Zephyr Projekte und deren Abhängigkeiten und fasst den Bau von Projekten unter einer einzelnen Kommandozeile zusammen.
-    Als Alternative zur Nutzung von Zephyr und west existiert das eigene Buildtooling von SERV \cite{}, womit die Software ohne ein entsprechendes Betriebssystem direkt auf der Hardware laufen kann ("bare metal").
+    Als Alternative zur Nutzung von Zephyr und west existiert das eigene Buildtooling von SERV \cite{}, womit die Software ohne ein entsprechendes Betriebssystem direkt auf der Hardware laufen kann (\("\)bare metal\("\)).
