@@ -43,7 +43,7 @@
 
     Der Ansatz zum Bau von Benchmarks, der stattdessen genutzt wurde, war die Software \("\)bare-metal\("\), also ohne Betriebssystem direkt auf der Hardware laufen zu lassen.
     Im SERV-repository wurde die Assemblydatei \verb|blinky.S| mitgeliefert.
-    Gemeinsam mit dem SERV-Buildtooling \cite{} und dem Python-Skript aus dem SERV-repository konnte daraus eine .hex-Datei erstellt werden, die in Verilator problemlos lief.
+    Gemeinsam mit dem RISC-V-Buildtooling \cite{} und dem Python-Skript aus dem SERV-repository konnte daraus eine .hex-Datei erstellt werden, die in Verilator problemlos lief.
     Doch auch hier zeigten sich Hürden im FPGA-Designprozess.
     Zunächst leuchtete die LED am FPGA trotz erfolgreicher Synthese, Implementation und Bitstream-Übertragung nicht.
     Zum Debugging wurde die Vivado-Simulation genutzt, wobei zwei Schwierigkeiten auffielen:
@@ -61,7 +61,7 @@
     Hier wurden die Zeilen, die Prints realisierten entfernt, Label für Sprünge eingesetzt und Register, die bereits im Rest des Blinky-Programms genutzt wurden, durch andere passende Register ersetzt, sodass die folgende Benchmark-Assemblydatei entstand, in der das Durchlaufen des Benchmarks durch einen Wechsel des LED-Zustandes signalisiert wurde:
     \todo{collatz.S als Screenshot einbinden, oder gehört das eher in den Evaluationsteil (Methodologie)?}
     Um aus dieser resultierenden Benchmark-Assemblydatei eine .hex-Datei zu erhalten, die von einem Servant-SoC ausgeführt werden kann, wurde wie bei der vorherigen blinky.S-Datei vorgegangen.
-    In einem ersten Schritt wurde die .S-Datei mittels des SERV-Buildtoolings zu einer .elf-Datei kompiliert:
+    In einem ersten Schritt wurde die .S-Datei mittels des RISC-V-Buildtoolings zu einer .elf-Datei kompiliert:
     \begin{minted}[breaklines]{bash}
     riscv64-unknown-elf-gcc -march=rv32i -mabi=ilp32 -nostdlib -nostartfiles -Wl, --section-start=.text=0x00000000 -o collatzBareMetal.elf collatz.S
     \end{minted}

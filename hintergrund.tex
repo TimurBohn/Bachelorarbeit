@@ -50,7 +50,7 @@
 
 \subsection{Vivado}
     Ähnlich wie bei der Entwicklung von Software, gibt es auch für den Hardwareentwicklungsprozess Entwicklungsumbgebungen (IDEs).
-    Vivado ist hierbei eine weit verbreitete, kommerzielle IDE vom Hersteller AMD \cite{}, mit welcher der gesamte Entwicklungsprozess durchlaufen werden kann.
+    Vivado ist hierbei eine weit verbreitete, kommerzielle IDE vom Hersteller AMD \cite{vivado}, mit welcher der gesamte Entwicklungsprozess durchlaufen werden kann.
     So bietet die IDE Funktionalitäten zum Schreiben und Organisieren von RTL-Code, zur zyklus-akkuraten Simulation von Schaltungen, zur Umsetzung der Synthese- und Implementierungsschritte sowie zur Generierung des Bitstreams und der Übertragung auf den FPGA.
 
 \section{RISC-V, SERV und Servant}
@@ -61,7 +61,7 @@
     Teile, die nicht gebraucht werden, bspw. Ganzzahlmultiplikation und -division können je nach Anwendungsfall aufgenommen oder weggelassen werden.
     Dies ermöglicht eine optimierte Nutzung verfügbarer Hardwareressourcen.
 
-    SERV ist ein von Olof Kindgren entwickelter open-source RISC-V CPU-Kern \cite{}.
+    SERV ist ein von Olof Kindgren entwickelter open-source RISC-V CPU-Kern \cite{kindgren_serv}.
     Sie setzt die RISC-V ISA im Gegensatz zu anderen Prozessoren bit-seriell um, verarbeitet also pro Takt nur ein Bit statt ganzer 32-Bit-Wörter.
     Somit ist SERV natürlich langsamer als andere RISC-V CPUs, erweitert allerdings die Idee der RISC-V-Architektur, weniger Hardwareressourcen zu nutzen, da für die Synthese eines SERV-Kerns deutlich weniger Logikblöcke verwendet werden müssen als für RISC-V CPUs, die vollständige Wörter verarbeiten.
     Dadurch ist SERV einer der kleinsten RISC-V CPU-Kerne und eignet sich besonders für ressourcenkritische Bereiche und Forschungsanwendungen.
@@ -79,13 +79,13 @@
     Ein weiterer Unterschied besteht darin, dass Verilator ein two-state Simulationsmodell nutzt, also dass Leitungen und Register lediglich die Zustände \("\)low\("\) bzw. 0 und \("\)high\("\) bzw. 1 annehmen können.
     In den meisten Fällen ist eine two-state Simulation ausreichend und bietet Vorteile einer höheren Speichereffizienz sowie Geschwindigkeit.
     Die Vivado-Simulation kennt zusätzlich den Zustand \("\)unknown value\("\)/X, ist dadurch genauer und eignet sich besser zum Debugging.
-    Andere Simulatoren, wie bspw. QEMU \cite{} sind zwar noch schneller als Verilator, jedoch wird der Geschwindigkeitszugewinn hierbei dadurch eine höhere Abstraktionsebene erreicht.
+    Andere Simulatoren, wie bspw. QEMU \cite{bellard2005qemu} oder FLASH \cite{choi2020flash} sind zwar noch schneller als Verilator, jedoch wird der Geschwindigkeitszugewinn hierbei dadurch eine höhere Abstraktionsebene erreicht.
     QEMU ist im Gegensatz zu Verilator eine high-level Simulation, bei der kein RTL-Code simuliert wird, sondern das gesamte System an sich und kann somit nicht genutzt werden, um die Korrektheit eines Hardwaredesigns prüfen.
     Aus diesem Grund wurde Verilator als schnellste verfügbare Simulation auf dem RTL genutzt, um Performanceunterschiede zwischen Simulation und FPGA zu untersuchen.
 
-    Um dies umzusetzen, wurde zusätzlich das open-source Buildtool für Hardwareprojekte FuseSoC verwendet.
+    Um dies umzusetzen, wurde zusätzlich das open-source Buildtool für Hardwareprojekte FuseSoC \cite{kindgren_fusesoc} verwendet.
     FuseSoC organisiert Abhängigkeiten und kann durch die Einbindung von Verilator bspw. einen SERV-Kern mit einem Zephyr-Betriebssystem simulieren.
-    Zephyr ist hierbei das genutzte open-source real-time operating system (RTOS) für FPGAs. 
+    Zephyr ist hierbei das genutzte open-source real-time operating system (RTOS) für FPGAs \cite{}.
     Zephyr ist sehr minimalistisch designt, sodass es auch auf kleinen RISC-V Prozessoren laufen kann.
     Das west-Tool verwaltet im Kontext von Zephyr Projekte und deren Abhängigkeiten und fasst den Bau von Projekten unter einer einzelnen Kommandozeile zusammen.
-    Als Alternative zur Nutzung von Zephyr und west existiert das eigene Buildtooling von SERV \cite{}, womit die Software ohne ein entsprechendes Betriebssystem direkt auf der Hardware laufen kann (\("\)bare metal\("\)).
+    Als Alternative zur Nutzung von Zephyr und west existiert das eigene Buildtooling von RISC-V \cite{risc-buildtool}, womit die Software ohne ein entsprechendes Betriebssystem direkt auf der Hardware laufen kann (\("\)bare metal\("\)).

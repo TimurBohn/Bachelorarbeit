@@ -1,34 +1,34 @@
 \chapter{Verwandte Arbeiten}
 
-Es gibt verschiedene Paper, die in Teilen Performanceunterschiede zwischen FPGAs und
-Simulationen untersuchen, jedoch diese Vergleiche nicht als zentralen Inhalt betrachten.
-\cite{schkufza2019just} stellen in ihrem Paper einen neuen Design-Workflow/Entwicklungsprozess
-”Cascade” für FPGAs vor, in dem zunächst der Verilog-Code mittels einer Softwaresimulation ausgeführt wird,
-sodass nicht auf die verschiedenen Schritte bei der Synthese eines FPGA gewartet werden muss.
-Diese Schritte sowie die Übertragung des Bitstreams laufen dann im Hintergrund ab, für den*die Anwender*in ändert sich nur die
-Geschwindigkeit, sobald der Synthese-Prozess abgeschlossen ist und von der Simulation auf den FPGA gewechselt wird.
-In diesem Rahmen wird auch die Performance mit verschiedenen Simulatoren (auch Verilator) verglichen:
+Ein Paper, welches als zentraler Inhalt einen quantitativen Performancevergleich zwischen einer Verilator-Simulation und einer FPGA-Synthese für einen identischen CPU-Kern anstellt, konnte im Rahmen der Literaturrecherche nicht gefunden werden.
+Es gibt allerdings verschiedene Arbeiten, die Performanceunterschiede am Rande betrachten.
+Schkufza et. al (2019)\cite{schkufza2019just} stellen in ihrem Paper einen neuen Design-Workflow/Entwicklungsprozess \("\)Cascade\("\) für FPGAs vor, in dem zunächst der Verilog-Code mittels einer Softwaresimulation ausgeführt wird, sodass nicht auf die verschiedenen Schritte bei der Synthese eines FPGA gewartet werden muss.
+Diese Schritte sowie die Übertragung des Bitstreams laufen dann im Hintergrund ab, für den*die Anwender*in ändert sich nur die Geschwindigkeit, sobald der Synthese-Prozess abgeschlossen ist und von der Simulation auf den FPGA gewechselt wird.
+Dass dies ein sinnvoller Ansatz sein kann, zeigen die im vorherigen Kapitel vorgestellten Ergebnisse.
+So können Endnutzer*innen sowohl den Vorteil der schnellen Verfügbarkeit der Simulation als auch der erhöhten Laufzeitgeschwindigkeit nach der erfolgten Übertragung des Bitstreams nutzen.
+Insofern ergänzt die vorliegende Arbeit die Erkenntnisse von Schkufza et al., indem der Laufzeitunterschied zwischen Simulation und FPGA-Ausführung quantifiziert wird.
+Dieser gemessene Geschwindigkeitszugewinn lässt darauf schließen, dass der Wechsel von Simulation zum FPGA für rechenintensive Programme wahrnehmbar sein dürfte.
+In ihrem Paper vergleichen Schkufza et. al darüber hinaus auch die Performance verschiedener Simulatoren:
 Quartus und Vivado erreichen laut Autor*innen Geschwindigkeiten von 10–100 Hz, iVerilog ca. 1 KHz und Verilator ca. 10 KHz.
-Dies ist auch ein Hinweis darauf, dass Verilator tatsächlich zu den schnellsten bekannten Simulationstools gehört und Verbreitung findet.
+Dies zeigt, dass Verilator tatsächlich zu den schnellsten bekannten Simulationstools gehört und Verbreitung findet.
 Allerdings werden hier lediglich mögliche Taktraten verglichen und kein konkretes Benchmark-Tool genutzt.
-Interessant wären auch hier Performancevergleiche mittels Benchmarks zwischen den einzelnen Simulatoren.
-In Zusammenhang mit den Ergebnissen der vorliegenden Arbeit würde dies bedeuten, dass Nutzer*innen vermutlich einen Speedup um den Faktor 3.8 bemerken würden, wenn sie einen vergleichbaren Designprozess wie in Cascade beschrieben durchliefen.
+Eine systematische Untersuchung von Performanceunterschieden verschiedener Simulatoren mittels Benchmarks wäre für weiterführende Arbeiten eine mögliche wissenschaftliche Fragestellung.
 
-Die angestellten Vergleiche zwischen Simulationssoftware und Hardware ergänzen Arbeiten, die die Geschwindigkeiten von Simulationssoftware untereinander \cite{chen2025gsim, choi2020flash, hannemann2025verilator, lopez2023fast, zhou2023khronos}
-und Arbeiten, die die Geschwindigkeit von Verilator mit derer neu entwickelter Hardware vergleicht \cite{emami2024highly, qin2025feriver}.
+Kim et al. (2016)\cite{kim2016strober} haben in ihrer Arbeit einen alternativen Ansatz gewählt.
+Sie nutzten den FPGA unterstützend während der Simulation, um die Simulation zu beschleunigen.
+So erreichten sie eine Beschleunigung im Vergleich zur reinen RTL-Simulation ohne FPGA-Unterstützung, mit dem Ziel, den Energieverbrauch eines Hardwaredesigns zu bestimmen.
+Einerseits deutet dies auf eine weitere Möglichkeit hin, den Hardwareentwicklungsprozess zu optimieren, andererseits stellt dies ein gutes Framework dar, wenn weiterführende Arbeiten beim Vergleich von FPGA und Simulation den Performancefaktor Energieverbrauch untersuchen.
+
+Die im Rahmen der vorliegenden Arbeit angestellten Vergleiche zwischen Simulationssoftware und Hardware ergänzen Arbeiten, die die Geschwindigkeiten von Simulationssoftware untereinander \cite{chen2025gsim, choi2020flash, emami2025parendi, hannemann2025verilator, lopez2023fast, zhou2023khronos}
+und Arbeiten, die die Geschwindigkeit von Verilator mit derer neu entwickelter Hardwaredesigns \cite{emami2024highly, qin2025feriver} vergleichen.
+Bei den Arbeiten, die sich mit Simulationssoftware befassen, zeigt sich, dass sich auch diese fortlaufend weiterentwickelt und schneller wird.
+Emami (2024)\cite{emami2024highly} sowie Emami et al. (2025)\cite{emami2025parendi} konnten zeigen, dass durch Multithread-Simulationen sowohl ein selbst geschriebener Simulator \("\)PARENDI\("\) als auch Verilator insbesondere bei komplexen Hardwaredesigns die Performance erheblich steigern konnten.
+Chen et al. (2025)\cite{chen2025gsim} ermittelten vier Faktoren zur Optimierung von Simulationen und konnten mit einem eigenen Simulator \("\)GSIM\("\) je nach Benchmark einen Speedup im Vergleich zu Verilator um den Faktor 7,34 bzw. 19,94 erreichen.
+Zhou et al. (2023)\cite{zhou2023khronos} konnten in ihrem Simulator \("\)Khronos\("\) durch die Optimierung von Speicherzugriffen Simulationsgeschwindigkeiten im Schnitt verdoppeln.
+Andere Arbeiten nutzten High Performance Computer-Cluster und -Techniken \cite{hannemann2025verilator, lopez2023fast}, um Simulationen, unter anderem auch solche, die Verilator nutzen, zu beschleunigen.
+Dies wird zwar aufgrund der damit verbundenen Ressourcen in der Praxis nicht immer umsetzbar sein, bietet jedoch einen weiteren Ansatz für den Fall, dass die maximale Simulationsgeschwindigkeit erreicht werden soll.
+Diese Arbeiten zeigen, dass weiteres Potenzial zur Verbesserung von Simulationsgeschwindigkeiten besteht.
+Ein Simulator, der die in diesem Abschnitt vorgestellten Fortschritte berücksichtigt und einbindet, könnte den in der vorliegenden Arbeit untersuchten Abstand zwischen Simulation und FPGA-Ausführung weiter senken und Simulationen im Hardwaredesignprozess noch praktikabler machen.
 
 
-
-
-
-Eine genauere Erkenntnis darüber, wie groß erwartbare Differenzen sind, kann dabei helfen, Geschwindigkeitsunterschiede zu neuer Hard- und Software besser einzuordnen.
-Ein Paper, welches einen quantitativen Performancevergleich zwischen einer Verilator Simulation und einer FPGA-Synthese
-für einen identischen CPU-Kern anstellt, konnte im Rahmen der Literaturrecherche nicht gefunden werden.
-
-% https://dl.acm.org/doi/10.1145/3676641.3716010
-% RTL-Simulation parallelisieren statt single-threaded, dadurch Speedup erreichen --> zeigt weiteres Potenzial für Speedup von Simulationen
-% Ist Verilator single-threaded??
-% https://ieeexplore.ieee.org/document/4068926
-%ASICs Application Specific Integrated Circuit sind noch effizienter, performanter und energiesparender als FPGAs, allerdings nicht so flexibel --> ASICs sind das, was mit FPGAs entwickelt werden kann als Endprodukt, aber lohnt sich nur bei hoher Stückzahl
-% https://ieeexplore.ieee.org/document/7551388
-%Strober: Andere Simulationsart, genau genug für meiste Anwendungen, dafür schneller, aber hat Abweichungen zu "echtem" FPGA und zyklus-akkurater Simulation, auf Energieverbrauchsestimation ausgelegt (?)
+\todo{Hier muss noch die Zitationsart von Bibtex verändert werden, damit das Format XYZ et al. (2026) eingehalten wird.}

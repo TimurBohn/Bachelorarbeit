@@ -2,7 +2,7 @@
 
 FPGAs sind konfigurierbare Hardwareschaltungen, die vermehrt in der Industrie für die Entwicklung von Prototypen, bspw. beim Prozessordesign eingesetzt werden.
 Insbesondere in performancekritischen Bereichen, in denen Geschwindigkeit und Energieeffizienz eine große Rolle spielen, kommen FPGAs zum Einsatz.
-Diese werden weiterentwickelt, bspw. durch Optimierung und höhere mögliche Taktfrequenzen, um die Entwicklungsphase zu beschleunigen \cite[]{}.
+Diese werden weiterentwickelt, bspw. durch Optimierung und höhere mögliche Taktfrequenzen, um die Entwicklungsphase zu beschleunigen \cite{boutros2021fpga, kuon2006measuring}.
 Einer der größten Faktoren bei der Nutzung von FPGAs zum Hardware-Design ist allerdings die Synthesedauer, die Stunden, oder bei besonders komplexen Schaltungen Tage in Anspruch nehmen kann.
 Wenn bspw. Bugs gefixt werden, kann dies zur Folge haben, dass die Synthese mehrfach durchlaufen werden muss, um Fixes anzupassen und zu testen.
 Der große Anteil an der Entwicklungszeit, den die Hardwaresynthese beansprucht, wird durch die Weiterentwicklung von FPGAs nicht wesentlich verkürzt.
@@ -10,13 +10,13 @@ Gleichzeitig steigern performante FPGAs, die Geschwindigkeit und Energieeffizien
 
 Ein Versuch, die Kosten zu minimieren und zeitgleich den Entwicklungsprozess zu beschleunigen, ist die Simulation des Hardware-Designs mit entsprechender Software.
 Diese hat den Vorteil, dass sie keine Mehrkosten durch Hardwareanschaffungen verursacht und zugleich keine langwierige Synthese voraussetzt.
-Allerdings büßen Simulationen zur Laufzeit an Performance ein, sind also in der Regel langsamer als fertig synthetisierte Hardware \cite{}.
+Allerdings büßen Simulationen zur Laufzeit an Performance ein, sind also in der Regel langsamer als fertig synthetisierte Hardware \todo{Quelle benötigt? Oder als general knowledge vorausgesetzt?}.
 
 Daraus ergibt sich die Fragestellung, wann tatsächlich Hardware benötigt wird und wann auch eine Simulation ausreichend ist.
 Um diese Frage zu beantworten, ist die Quantifizierung der Performanceunterschiede zwischen Simulation und FPGA entscheidend, da auf dieser Grundlage Entwicklungsprozesse im Hardware-Design weiter optimiert werden können.
 Aus diesem Grund prüft die vorliegende Arbeit, in welcher Größenordnung die Geschwindigkeitsunterschiede einer simulierten und einer synthetisierten Schaltung liegen.
 Hierfür wird ein selbstgeschriebener Benchmark genutzt, der Collatz-Folgen berechnet.
-Dieser Benchmark wird sowohl auf einem mit einem SERV-CPU-Kern\cite{} synthetisierten Artix-7 FPGA\cite{} als auch in einer Verilator-Simulation\cite{} ausgeführt.
+Dieser Benchmark wird sowohl auf einem mit einem SERV-CPU-Kern\cite{kindgren_serv} synthetisierten Artix-7 FPGA\cite{artix-7} als auch in einer Verilator-Simulation\cite{verilator} ausgeführt.
 Es werden Geschwindigkeitsunterschiede zwischen den beiden Ausführungen über mehrere Durchläufe hinweg gemessen und der Faktor des Geschwindigkeitszugewinns berechnet.
 Die Ergebnisse liefern eine quantitative Grundlage für Entscheidungen in Hardwareentwicklungsprozessen, ob Simulationen ausreichen bzw. ab wann auf Hardware zurückgegriffen werden sollte.
 

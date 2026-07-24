@@ -61,26 +61,30 @@
     % Ich habe noch mal mit Skript gemessen und award-winning:serv statt ::servant genutzt: M=5.37, Min.: 5.122, Max.: 5.465
 
 \subsection{Interpretation der Ergebnisse}
-    Die Ergebnisse zeigen, dass es einen Geschwindigkeitszugewinn in etwa um den Faktor 3,8 bei der Nutztung eines FPGAs im Vergleich zur Simulation gibt.
+    Die Ergebnisse zeigen, dass es einen Geschwindigkeitszugewinn in etwa um den Faktor 3,8 bei der Nutzung eines FPGAs im Vergleich zur Simulation gibt.
     Dies entspricht der vorab angestellten Erwartung, dass FPGAs zur Laufzeit schneller sind als deren Simulationen.
     Doch spielen natürlich mehrere Faktoren bei dieser Beurteilung eine Rolle.
-    Die Geschwindigkeit der Simulation wird begrenzt durch die Rechenleistung des Hosts und zusätzlich durch die der VM zur Verfügung gestellten Ressourcen.
+    Zunächst ist die Aussagekraft der Ergebnisse vor dem Hintergrund des Versuchsdesigns zu betrachten.
+    Der Geschwindigkeitszugewinn um den Faktor 3,8 bezieht sich auf das in der vorliegenden Arbeit gewählte Setup mit Verilator als Simulator innerhalb einer VM, Basys 3-Board mit Artix-7 FPGA als Hardware und der Berechnung von Collatz-Folgen als Benchmark.
+    Bei anderen Simulatoren, FPGAs oder Benchmarks wäre mit anderen Geschwindigkeitsfaktoren zu rechnen.
+    Die Geschwindigkeit der Simulation wird zudem begrenzt durch die Rechenleistung des Hosts und zusätzlich durch die der VM zur Verfügung gestellten Ressourcen.
     So wäre zu erwarten, dass eine Simulation auf einem leistungsstärkeren Computer schneller laufen könnte.
     Auch wäre vermutlich eine schnellere Simulation zu erwarten, wenn man der VM mehr Ressourcen zur Verfügung stellen, oder eine native Linux-Installation nutzen würde.
-    Gleichzeitig ist die Geschwindigkeit des FPGAs durch z.B. seine Taktfrequenz limitiert.
+    Zugleich ist die Geschwindigkeit des FPGAs zwar durch weniger Faktoren als die Simulation, aber dennoch bspw. durch seine Taktfrequenz limitiert.
     Ein FPGA mit einer höheren maximalen Taktfrequenz könnte dementsprechend auch zu einer größeren Beschleunigung beitragen.
 
     Für den industriellen und wissenschaftlichen Kontext folgen aus den Ergebnissen mehrere Konsequenzen.
     Der Beschleunigungsfaktor stellt zunächst eine quantitative Grundlage dar, mit der errechnet werden kann, ob eine Simulation sinnvoll ist, oder ob sich die Zeitersparnis durch die entfallende Hardwaresynthese durch die langsamere Laufzeit ausgleicht.
     Auch unterstützt dies bei der Einschätzung, wie teuer Hardware für die Prototypenentwicklung sein muss.
-    Es ist zu erwarten, dass bei vergleichsweise günstigen FPGA-Boards ca. eine Beschleunigung um den Faktor 3,8 zu verzeichnen ist.
+    Der in der vorliegenden Arbeit genutzte, vergleichsweise günstige Artix-7 FPGA erreichte bereits diesen messbaren Geschwindigkeitszugewinn gegenüber der Simulation.
     Wird eine höhere Geschwindigkeitssteigerung benötigt, sind diese Boards nicht ausreichend und darüber hinausgehende Geschwindigkeitszugewinne immer auch mit höheren Kosten verbunden.
     Dies bedeutet aber auch, dass wenn auf diesen Geschwindigkeitszugewinn verzichtet werden kann, ein Großteil der Entwicklung simulationsgebunden und kostengünstig möglich ist.
-    Da der Faktor 3,8 in vielen Anwendungsfällen klein genug sein wird, um eine praktikable Arbeitsgeschwindigkeit in der Simulation zu erreichen, wird es in solchen Fällen sinnvoll sein, die Dauer der Synthese- und Implementationsschritte mittels Simulation zu überbrücken.
+    In Anwendungsfällen, wo der Faktor 3,8 klein genug sein wird, um eine praktikable Arbeitsgeschwindigkeit in der Simulation zu erreichen, wird es sinnvoll sein, ähnlich wie im Paper von \cite{schkufza2019just} beschrieben, die Dauer der Synthese- und Implementationsschritte mittels Simulation zu überbrücken.
     Im Anschluss kann dann auf den schnelleren FPGA gewechselt werden, sodass keine ungenutzte Zeit für die langwierigen Synthese- und Implementationsschritte aufkommt.
 
     Weitere Forschung könnte untersuchen, ob ähnliche Geschwindigkeitszugewinne bei anderen, vergleichbaren Boards erreicht werden, um die Erkenntnisse weiter zu validieren.
     Auch könnten andere Benchmarks genutzt werden, die nicht primär die Berechnung mathematischer Folgen beinhalten, sondern auch andere Operationen umsetzen, um auch andere Aufgabenarten bezüglich des Performancezugewinns zu untersuchen.
-    Eine weitere sinnvolle Ergänzung wäre das Überprüfen der Performanceunterschiede bei einer Simulation mit mehr Ressourcen bzw. einer nativen Linux-Installation.
-    Wenn mit langen Ausführungszeiten zu rechnen ist, könnte auch der Energieverbrauch eines FPGA mit dem eines Computers, auf dem eine Simulation läuft, verglichen werden, um Entscheidungsprozesse weiter zu optimieren.
-    \todo {Abschnitt Interpretation der Ergebnisse überarbieten, bin mit den Schlussfolgerungen und der Formulierung noch nicht zufrieden}
+    Des Weiteren wäre es sinnvoll, die Ergebnisse der vorliegenden Arbeit bei einer Simulation mit mehr Ressourcen bzw. einer nativen Linux-Installation zu überprüfen.
+    Eine Performancekomponente, die in der Arbeit nicht untersucht wurde, war die des Energieverbrauchs.
+    Insbesondere, wenn mit langen Ausführungszeiten zu rechnen ist, könnte auch der Energieverbrauch eines FPGA mit dem eines Computers, auf dem eine Simulation läuft, verglichen werden, um Entscheidungsprozesse weiter zu optimieren.
+    % \todo {Abschnitt Interpretation der Ergebnisse überarbieten, bin mit den Schlussfolgerungen und der Formulierung noch nicht zufrieden}
