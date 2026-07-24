@@ -30,7 +30,7 @@
     Im Anschluss erfolgt der Syntheseschritt, indem der RTL-Code in eine Netzliste überführt wird.
     Diese bildet ab, welche Bauteile theoretisch benötigt würden, um die Schaltung wie beschrieben umzusetzen.
     Eine Netzliste ist vergleichbar mit einem Zwischencode beim Kompilieren von Code in der Softwareentwicklung.
-    Im Implementierungsschritt werden in einem sog. Place \& Route-Verfahren die theoretischen Bauteile der Netzliste auf die tatsächlich auf dem FPGA vorhandenen Bauteile gemappt.
+    Im Implementierungsschritt werden in einem sog. Place \(&\) Route-Verfahren die theoretischen Bauteile der Netzliste auf die tatsächlich auf dem FPGA vorhandenen Bauteile gemappt.
     Hier werden benötigte physische Bauteile, also Lookup-Tables, Flipflops und Multiplexer auf dem FPGA verortet und benötigte Bauteile miteinander verbunden. % Ist verortet richtig?
     Diese Informationen werden in einen Bitstream geschrieben.
     In einem letzten Schritt wird dieser Bitstream auf den FPGA übertragen.
@@ -85,7 +85,8 @@
 
     Um dies umzusetzen, wurde zusätzlich das open-source Buildtool für Hardwareprojekte FuseSoC \cite{kindgren_fusesoc} verwendet.
     FuseSoC organisiert Abhängigkeiten und kann durch die Einbindung von Verilator bspw. einen SERV-Kern mit einem Zephyr-Betriebssystem simulieren.
-    Zephyr ist hierbei das genutzte open-source real-time operating system (RTOS) für FPGAs \cite{}.
+    Zephyr ist hierbei das genutzte open-source real-time operating system (RTOS) für FPGAs \cite{zephyr}.
+    \todo{Ist das die korrekte Zitation für Zephyr?}
     Zephyr ist sehr minimalistisch designt, sodass es auch auf kleinen RISC-V Prozessoren laufen kann.
     Das west-Tool verwaltet im Kontext von Zephyr Projekte und deren Abhängigkeiten und fasst den Bau von Projekten unter einer einzelnen Kommandozeile zusammen.
     Als Alternative zur Nutzung von Zephyr und west existiert das eigene Buildtooling von RISC-V \cite{risc-buildtool}, womit die Software ohne ein entsprechendes Betriebssystem direkt auf der Hardware laufen kann (\("\)bare metal\("\)).

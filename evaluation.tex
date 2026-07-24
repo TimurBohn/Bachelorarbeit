@@ -22,8 +22,8 @@
     Beim FPGA wiederum war das Output-Wire auf eine LED gemappt, die, nach Übertragung des Bitstreams, wo der Benchmark eingebettet war, beobachtet werden konnte.
     So konnte durch die Berechnung der Dauer einer An- bzw. Aus-Phase der LED/des Output-Wires die Geschwindigkeit der Folgenberechnung ermittelt werden.
 
-    Für die Simulation wurde ein Python-Skript \cite{} \todo{Python-Skript in Anhang} geschrieben, welches insgesamt 100 Phasen abwartete.
-    Das Skript berechnete die Zeit zwischen je zwei Ausgaben/Prints als eine Phase, schrieb die Ergebnisse in eine .csv-Datei \cite{} \todo{csv-Datei anhängen} und gab zusätzlich den ermittelten Mittelwert sowie das Minimum und Maximum aus.
+    Für die Simulation wurde ein Python-Skript \todo{Python-Skript in Anhang} geschrieben, welches insgesamt 100 Phasen abwartete.
+    Das Skript berechnete die Zeit zwischen je zwei Ausgaben/Prints als eine Phase, schrieb die Ergebnisse in eine .csv-Datei \todo{csv-Datei anhängen} und gab zusätzlich den ermittelten Mittelwert sowie das Minimum und Maximum aus.
     Beim FPGA wurde mit einer Kamera, die 120 Frames pro Sekunde aufnehmen konnte, das Basys 3-Board sowie eine Stoppuhr gefilmt.
     Die Dauer einer LED-Phase wurde durch Abzählen der Frames bestimmt.
     Diese ermittelte Dauer wurde zudem mit der abgelaufenen Zeit auf der Stoppuhr sowie den Video-Timestamps abgeglichen.
@@ -79,7 +79,7 @@
     Der in der vorliegenden Arbeit genutzte, vergleichsweise günstige Artix-7 FPGA erreichte bereits diesen messbaren Geschwindigkeitszugewinn gegenüber der Simulation.
     Wird eine höhere Geschwindigkeitssteigerung benötigt, sind diese Boards nicht ausreichend und darüber hinausgehende Geschwindigkeitszugewinne immer auch mit höheren Kosten verbunden.
     Dies bedeutet aber auch, dass wenn auf diesen Geschwindigkeitszugewinn verzichtet werden kann, ein Großteil der Entwicklung simulationsgebunden und kostengünstig möglich ist.
-    In Anwendungsfällen, wo der Faktor 3,8 klein genug sein wird, um eine praktikable Arbeitsgeschwindigkeit in der Simulation zu erreichen, wird es sinnvoll sein, ähnlich wie im Paper von \cite{schkufza2019just} beschrieben, die Dauer der Synthese- und Implementationsschritte mittels Simulation zu überbrücken.
+    In Anwendungsfällen, wo der Faktor 3,8 klein genug sein wird, um eine praktikable Arbeitsgeschwindigkeit in der Simulation zu erreichen, wird es sinnvoll sein, ähnlich wie im Paper von Schkufza et al. (2019)\cite{schkufza2019just} beschrieben, die Dauer der Synthese- und Implementationsschritte mittels Simulation zu überbrücken.
     Im Anschluss kann dann auf den schnelleren FPGA gewechselt werden, sodass keine ungenutzte Zeit für die langwierigen Synthese- und Implementationsschritte aufkommt.
 
     Weitere Forschung könnte untersuchen, ob ähnliche Geschwindigkeitszugewinne bei anderen, vergleichbaren Boards erreicht werden, um die Erkenntnisse weiter zu validieren.

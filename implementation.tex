@@ -10,7 +10,7 @@
     \todo{Specs meines PCs einbinden (Text oder Screenshot)}
 
 \section{SERV-Simulation und Bau ausführbarer Benchmarks}
-    Um eine Simulation des SERV-Kerns zu realisieren, wurden die im SERV-repository\cite{} beschriebenen Schritte unter dem Abschnitt "Getting started" befolgt.
+    Um eine Simulation des SERV-Kerns zu realisieren, wurden die im SERV-repository\cite{kindgren_serv} beschriebenen Schritte unter dem Abschnitt "Getting started" befolgt.
     Hierbei wurde, um Konfundierungen durch die der VM zur Verfügung gestellten Ressourcen zu vermeiden, zunächst versucht, die Simulation auch über die native Windows-Installation des zur Verfügung stehenden Computers zu bewerkstelligen.
     Allerdings waren die genutzten Tools für Linux ausgelegt, weshalb die Installation eines funktionalen Simulations-Setups auf Windows nicht möglich war.
     So wurde in der Linux-VM zunächst der Workspace erstellt, FuseSoC installiert und SERV zusätzlich zur Standardbibliothek eingefügt.
@@ -18,7 +18,7 @@
 
     Da jedoch das Ziel der Arbeit war, ein Benchmarkprogramm laufen zu lassen, musste eigener Code geschrieben, gebaut und in eine ausführbare .hex-Datei konvertiert werden.
     Zu Beginn erschien es praktikabler, die im SERV-repository beschriebene Unterstützung für das RTOS Zephyr zu nutzen.
-    Somit wurden auch hier die Installationsschritte \cite{https://docs.zephyrproject.org/latest/develop/getting_started/index.html} befolgt.
+    Somit wurden auch hier die Installationsschritte \cite{zephyr-getting-started} befolgt.
     Zunächst wurde das einfache hello-world-Beispiel gebaut und ausgetestet.
     Als jedoch versucht wurde, die Simulation zu starten, wurden verschiedene Fehlermeldungen angezeigt, die auf nicht ausreichenden Arbeitsspeicher hinwiesen.
     Es zeigte sich, dass durch die Einbindung von Zephyr und das west-Tooling Overhead entstand, sodass die resultierende .hex-Datei größer war als die im SERV-Beispiel mitgelieferten.
@@ -29,7 +29,7 @@
     Der Grund für dieses Verhalten konnte nicht gefunden werden, weshalb mit einem Workaround gearbeitet wurde.
     Statt die Zahlen als Ganzes in Strings umzuformatieren, wurde eine Hilfsfunktion geschrieben, die die Zahlen 0-9 mit \verb|putchar('0' + i);| ausgeben konnte.
     Zahlen >9 wurden dabei mit einem rekursiven Aufruf der Funktion Ziffer für Ziffer geprinted, was zuverlässig funktionierte.
-    Im Anschluss wurde der C-Code so verändert, dass Collatz-Reihen\cite{} ausgegeben wurden.
+    Im Anschluss wurde der C-Code so verändert, dass Collatz-Folgen\todo{braucht es ein Zitat für Collatz-Folgen?} ausgegeben wurden.
     Diese benötigten genügend Rechenzeit, vor allem beim Durchlauf mehrerer Zahlen, um einen validen Microbenchmark darzustellen.
     Eine Schwierigkeit, die persistierte, war, dass nach Durchlauf des Programms, welches mit \("\)return 0\("\) beendet wurde, das Zephyr RTOS auf weitere Programme/Instruktionen wartete und immer mit der Tastenkombination \("\)Strg + C\("\) abgebrochen werden musste.
     Da mehrere Durchläufe gemessen werden sollten, um einen Durchschnittswert ermitteln und mögliche Abweichungen erkennen zu können, erschwerte dieser Umstand die Benchmarkmessung.
@@ -43,7 +43,7 @@
 
     Der Ansatz zum Bau von Benchmarks, der stattdessen genutzt wurde, war die Software \("\)bare-metal\("\), also ohne Betriebssystem direkt auf der Hardware laufen zu lassen.
     Im SERV-repository wurde die Assemblydatei \verb|blinky.S| mitgeliefert.
-    Gemeinsam mit dem RISC-V-Buildtooling \cite{} und dem Python-Skript aus dem SERV-repository konnte daraus eine .hex-Datei erstellt werden, die in Verilator problemlos lief.
+    Gemeinsam mit dem RISC-V-Buildtooling \cite{risc-buildtool} und dem Python-Skript aus dem SERV-repository konnte daraus eine .hex-Datei erstellt werden, die in Verilator problemlos lief.
     Doch auch hier zeigten sich Hürden im FPGA-Designprozess.
     Zunächst leuchtete die LED am FPGA trotz erfolgreicher Synthese, Implementation und Bitstream-Übertragung nicht.
     Zum Debugging wurde die Vivado-Simulation genutzt, wobei zwei Schwierigkeiten auffielen:
@@ -55,7 +55,7 @@
 
     Der letzte Schritt bestand darin, die blinky.S-Datei, die gesichert in beiden Kontexten (Simulation und Hardware) nutzbar war, so zu erweitern, dass sie als Benchmark dienen konnte.
     Hierzu wurde auf die im ersten Teil erfolgte Arbeit zurückgegriffen.
-    Der C-Code des Collatz-Reihen-Benchmarks wurde wie für die Nutzung mit Zephyr durch das west Buildtool gebaut.
+    Der C-Code des Collatz-Folgen-Benchmarks wurde wie für die Nutzung mit Zephyr durch das west Buildtool gebaut.
     Die dabei entstandene .elf-Datei wurde disassembliert: \verb|llvm-objdump --disassemble zephyr.elf > disassemblyCollatz.txt|
     In der resultierenden Textdatei wurde anschließend der RISC-V Assembly-Code aus dem Abschnitt \verb|<main>| herauskopiert und in den Delay-Abschnitt des funktionierenden Blinky-Programms eingefügt.
     Hier wurden die Zeilen, die Prints realisierten entfernt, Label für Sprünge eingesetzt und Register, die bereits im Rest des Blinky-Programms genutzt wurden, durch andere passende Register ersetzt, sodass die folgende Benchmark-Assemblydatei entstand, in der das Durchlaufen des Benchmarks durch einen Wechsel des LED-Zustandes signalisiert wurde:
@@ -87,7 +87,7 @@
     \end{minted}
     Da es sich hierbei jedoch um ein anderes Board als das vorliegende handelte, nutzte es andere Bezeichnungen für die Buttons, LEDs und Timer, sodass das Hardwaremapping fehlerhaft war.
     In einem ersten Schritt wurde deshalb das Hardwaremapping über die Constraint-Datei so angepasst, dass die auf dem Basys 3-Board vorhandenen Buttons, LED und Timer genutzt wurden.
-    Die finale Version der Constraint-Datei ist im Anhang zu finden. \cite{} \todo{Constraint-Datei einfügen}
+    Die finale Version der Constraint-Datei ist im Anhang zu finden. \todo{Constraint-Datei einfügen}
     Diese Änderungen führten wiederum zu Inkompatiblitäten mit dem bereits gebauten Projekt, weshalb in den Projekteinstellungen in Vivado die vorhandene Ausführung des Artix-7 FPGA (xc7a35tcpg236-1) ausgewählt werden musste.
     Durch diese Anpassungen war das erste Mal ein vollständiger Entwicklungsablauf von RTL-Code bis zur Generierung des Bitstreams möglich.
     Beim Versuch, den Bitstream auf den FPGA zu übertragen bzw. den FPGA mittels Bitstream zu konfigurieren, traten zwei Probleme zeitgleich auf:
@@ -113,7 +113,7 @@
     Daraus wurde geschlossen, dass die Reset-Logik verantwortlich für das Verhalten war.
     Bei erneuter Sichtung des Quellcodes des servix-Moduls fiel auf, dass das Reset-Signal bei Übergabe an den Clock-Generator invertiert wurde.
     Diese Invertierung wurde entfernt, zusätzlich wurden, da Reset-Verhalten über alle Programme hinweg gewünscht war, die Macro-Blöcke mit \verb|`ifdef WITH_RESET| als weitere mögliche Fehlerquelle entfernt.
-    In der Simulationsdatei \cite{} \todo{Simulationsdatei im Anhang einfügen} wurde anschließend das Reset-Signal ebenfalls invertiert, um dort das vorher bereits beobachtete, korrekte Verhalten der einzelnen Register wiederherzustellen.
+    In der Simulationsdatei \todo{Simulationsdatei im Anhang einfügen} wurde anschließend das Reset-Signal ebenfalls invertiert, um dort das vorher bereits beobachtete, korrekte Verhalten der einzelnen Register wiederherzustellen.
     Daraus resultierte der finale SERV-Quellcode, der zum gewünschten Verhalten auf dem FPGA führte und auch für die Benchmarks genutzt wurde:
     \todo{Quellcode vom Modul einfügen}
 

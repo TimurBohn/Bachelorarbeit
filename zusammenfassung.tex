@@ -1,10 +1,14 @@
 \chapter{Zusammenfassung}
 
     % Abschließende Sätze, nicht dasselbe wie Abstract, aber auch nicht besonders lang, vielleicht ein Absatz
-    Die vorliegende Abschlussarbeit konnte nachweisen, dass die Performance von Hardwaresimulationen mit Verilator zwar häufig eine praktikable Alternative zur Hardwarekonfiguration darstellt, gleichzeitig aber dennoch um mehrere Größenordnungen (ca. Faktor 3.8) langsamer ist als ein mit Bitstream beschriebener FPGA.
+    Die vorliegende Abschlussarbeit konnte zeigen, dass die Performance von Hardwaresimulationen mit Verilator zwar häufig eine praktikable Alternative zur Hardwarekonfiguration darstellt, gleichzeitig aber dennoch um den Faktor 3,8 langsamer ist als ein mit Bitstream beschriebener FPGA.
     Dieser Faktor liefert eine quantitative Grundlage zur Entscheidungsfindung im Hardwaredesignprozess zum Einsatz von Simulationen und FPGAs.
-    So sollte in Bereichen, in denen maximale Geschwindigkeit gefordert ist, auf leistungsstarke FPGAs zurückgegriffen werden.
-    Wenn jedoch der Fokus auf der maximalen Kostenreduktion liegt, oder nur begrenzte monetäre Ressourcen verfügbar sind, wird in den meisten Fällen die Simulation mit Verilator schnell genug sein.
+    So sollte in Bereichen, in denen Laufzeitperformance priorisiert wird, auf leistungsstarke FPGAs zurückgegriffen werden.
+    Wenn jedoch der Fokus auf der bestmöglichen Kostenreduktion liegt, oder nur begrenzte monetäre Ressourcen verfügbar sind, sollte auf Verilator, oder vergleichbare Simulatoren zurückgegriffen werden.
     Dies ergänzt bereits vorhandene Forschung dabei, z.B. die langwierige Synthetisierung und Implementierung von Hardwaredesigns zu überbrücken, indem diese Schritte in den Hintergrund verlagert werden und parallel mit einer Simulation gearbeitet wird.
-    Wenn der Bitstream im Hintergrund auf den FPGA übertragen wurde, kann anschließend auf dem synthetisierten System mit Geschwindigkeitszugewinn weitergearbeitet werden \cite{}.
-    Auf Grundlage der vorliegenden Ergebnisse wäre damit zu rechnen, dass der Wechsel von Simulation zu FPGA durch eine in etwa Vervierfachung der Geschwindigkeit bemerkt würde. \todo{Ich war mir sehr unsicher, was in die Zusammenfassung soll}
+    Wenn der Bitstream im Hintergrund auf den FPGA übertragen wurde, kann anschließend auf dem synthetisierten System mit Geschwindigkeitszugewinn weitergearbeitet werden \cite{schkufza2019just}.
+    Auch wurden weitere Potenziale für die Weiterentwicklung von FPGAs aus anderen Arbeiten \cite{chen2025gsim, emami2024highly, emami2025parendi, hannemann2025verilator, lopez2023fast, zhou2023khronos} vorgestellt, die den Abstand zwischen Simulation und FPGA-Ausführung weiter verringern könnten.
+    Weiterführende Arbeiten könnten verschiedene Simulatoren mit der Hilfe von standardisierten Benchmarks vergleichen und die genannten Weiterentwicklungspotenziale einfließen lassen.
+    Zusätzlich könnte der Energieverbrauch als zusätzlicher Performancefaktor untersucht werden.
+    Eine Replikation der Ergebnisse der vorliegenden Arbeit sollten mit einem leistungsstärkeren PC, einer nativen Linux-Installation sowie einer größeren Bandbreite an FPGAs, Simulatoren und Benchmarks erfolgen.
+    \todo{Ich war mir sehr unsicher, was in die Zusammenfassung soll}
