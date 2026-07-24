@@ -15,9 +15,10 @@
     Beim Benchmark wurden Collatz-Folgen für die Zahlen 1 bis 1000 bis zum Erreichen der 4-2-1-Schleife berechnet.
     Um zu signalisieren, wann die Berechnung startet und wann sie fertig ist, wurde eine LED gesteuert, die immer ihre Phase wechselte, wenn ein Durchlauf der Collatz-Folgen bis 1000 endete und die Folgenberechnung wieder bei 1 startete.
     Dies erfolgte in einer Endlosschleife.
-    Der Benchmark für die Verilator-Simulation wurde mit folgendem Zeilenkommando gestartet:
-    \verb|fusesoc run --target=verilator_tb award-winning:serv:servant --firmware=collatzBareMetal.hex --memsize=1048576|
-    \todo{Zeilenumbruch einfügen}
+    Der Benchmark für die Verilator-Simulation wurde mit folgendem Zeilenkommando
+    \begin{minted}[breaklines]{bash}
+    fusesoc run --target=verilator_tb award-winning:serv:servant --firmware=collatzBareMetal.hex --memsize=1048576
+    \end{minted}
     Hierbei wurde zu jedem Phasenwechsel der Zustand vom Output-Wire q geprinted.
     Beim FPGA wiederum war das Output-Wire auf eine LED gemappt, die, nach Übertragung des Bitstreams, wo der Benchmark eingebettet war, beobachtet werden konnte.
     So konnte durch die Berechnung der Dauer einer An- bzw. Aus-Phase der LED/des Output-Wires die Geschwindigkeit der Folgenberechnung ermittelt werden.
@@ -32,7 +33,15 @@
 
 
 \section{Ergebnisse}
-    Die Ergebnisse der Benchmarks sind in der nachfolgenden Tabelle \todo{Boxplot oder andere Abbildung mit 95\% Konfidenzintervall einfügen} aufgelistet, wobei der obere Abschnitt die ermittelte Dauer einer Berechnungsphase in der Simulation - und der untere Abschnitt die Dauer beim FPGA, aufgeteilt nach Methoden der Laufzeitbestimmung, aufzeigt.
+    \todo{Boxplot oder andere Abbildung mit 95\% Konfidenzintervall einfügen}
+    \todo{Muss die Einheit (s) in die Tabelle rein, oder reicht die Tabellenbeschreibung aus?}
+    Die Ergebnisse der Benchmarks sind in der nachfolgenden Tabelle aufgelistet, wobei der obere Abschnitt die ermittelte Dauer einer Berechnungsphase in der Simulation - und der untere Abschnitt die Dauer beim FPGA, aufgeteilt nach Methoden der Laufzeitbestimmung, aufzeigt.
+    Hierbei ist zu beachten, dass größere Schwankungen in den Messwerten der Simulation zu beobachten waren als in den Messungen des FPGAs.
+    Daher wurden zur Mittelwertsberechnung der Simulation sowie zur Ermittlung des Minimums und Maximums die vollen 100 Messungen genutzt.
+    Bei der Berechnung der Werte des FPGAs zeigte sich, dass die Messwerte sehr stabil waren und so gut wie keine Schwankungen aufwiesen.
+    Abweichungen gab es hier maximal im Millisekundenbereich bzw. um einen Frame.
+    Diese Abweichungen sind zudem sehr wahrscheinlich auf die Aufnahme per Kamera zurückzuführen, wo ggf. nicht genau der Zeitpunkt des Wechsels der An- und Aus-Phasen getroffen wurde und nicht auf eine tatsächliche Schwankung der Berechnungsdauer.
+    Deshalb wurde es hierbei als ausreichend erachtet, die Ermittlung der Kennwerte auf Grundlage von 20 Messungen vorzunehmen.
     \begin{table}
         \centering
         \begin{tabular}{lcccc}
@@ -49,14 +58,6 @@
         \caption[Benchmarks]{Messzeiten in Sekunden, aufgeteilt nach Messart - im oberen Abschnitt die Simulation, im unteren der FPGA mit drei Messmethoden}
         \label{tab:module}
     \end{table}
-
-    \todo{Muss die Einheit ("s") in die Tabelle rein, oder reicht die Tabellenbeschreibung aus?}
-    Hierbei ist zu beachten, dass größere Schwankungen in den Messwerten der Simulation zu beobachten waren als in den Messungen des FPGAs.
-    Daher wurden zur Mittelwertsberechnung der Simulation sowie zur Ermittlung des Minimums und Maximums die vollen 100 Messungen genutzt.
-    Bei der Berechnung der Werte des FPGAs zeigte sich, dass die Messwerte sehr stabil waren und so gut wie keine Schwankungen aufwiesen.
-    Abweichungen gab es hier maximal im Millisekundenbereich bzw. um einen Frame.
-    Diese Abweichungen sind zudem sehr wahrscheinlich auf die Aufnahme per Kamera zurückzuführen, wo ggf. nicht genau der Zeitpunkt des Wechsels der An- und Aus-Phasen getroffen wurde und nicht auf eine tatsächliche Schwankung der Berechnungsdauer.
-    Deshalb wurde es hierbei als ausreichend erachtet, die Ermittlung der Kennwerte auf Grundlage von 20 Messungen vorzunehmen.
 
     % Ich habe noch mal mit Skript gemessen und award-winning:serv statt ::servant genutzt: M=5.37, Min.: 5.122, Max.: 5.465
 
