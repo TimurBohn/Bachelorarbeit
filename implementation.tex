@@ -10,7 +10,7 @@
     \todo{Specs meines PCs einbinden (Text oder Screenshot)}
 
 \section{SERV-Simulation und Bau ausführbarer Benchmarks}
-    Um eine Simulation des SERV-Kerns zu realisieren, wurden die im SERV-repository\cite{kindgren_serv} beschriebenen Schritte unter dem Abschnitt "Getting started" befolgt.
+    Um eine Simulation des SERV-Kerns zu realisieren, wurden die im SERV-repository\cite{kindgren_serv} beschriebenen Schritte unter dem Abschnitt \("\)Getting started\("\) befolgt.
     Hierbei wurde, um Konfundierungen durch die der VM zur Verfügung gestellten Ressourcen zu vermeiden, zunächst versucht, die Simulation auch über die native Windows-Installation des zur Verfügung stehenden Computers zu bewerkstelligen.
     Allerdings waren die genutzten Tools für Linux ausgelegt, weshalb die Installation eines funktionalen Simulations-Setups auf Windows nicht möglich war.
     So wurde in der Linux-VM zunächst der Workspace erstellt, FuseSoC installiert und SERV zusätzlich zur Standardbibliothek eingefügt.
@@ -34,6 +34,7 @@
     Eine Schwierigkeit, die persistierte, war, dass nach Durchlauf des Programms, welches mit \("\)return 0\("\) beendet wurde, das Zephyr RTOS auf weitere Programme/Instruktionen wartete und immer mit der Tastenkombination \("\)Strg + C\("\) abgebrochen werden musste.
     Da mehrere Durchläufe gemessen werden sollten, um einen Durchschnittswert ermitteln und mögliche Abweichungen erkennen zu können, erschwerte dieser Umstand die Benchmarkmessung.
     Zunächst wurde probiert, mittels \verb|sys_poweroff| das System herunterzufahren und für den nächsten Durchlauf wieder neu zu starten, allerdings schien es in der Kombination von Zephyr und SERV nicht implementiert worden zu sein, sodass dies als Lösung nicht praktikabel war.
+    \todo{braucht es ein Zitat für sys-poweroff?}
     Zu diesem Zeitpunkt zeigte sich auch, dass SERV-Designs, dei Zephyr betrieben nicht auf den FPGAs konfiguriert werden konnten.
     Die Simulation mit Verilator war zum Großteil operabel, in der Vivado-Simulation konnte allerdings der Programmcode nicht geladen werden, die meisten internen Signale, insbesondere der Program-Counter waren dauerhaft mit dem Wert X belegt bzw. undefiniert.
     Dies trat nicht erst bei komplexeren Benchmark-Programmen wie der Collatz-Sequenz auf, sondern bereits bei einem simpleren Blinky-Beispiel (blinkende LED mit festem Delay für An/Aus-Phasen).
@@ -56,7 +57,10 @@
     Der letzte Schritt bestand darin, die blinky.S-Datei, die gesichert in beiden Kontexten (Simulation und Hardware) nutzbar war, so zu erweitern, dass sie als Benchmark dienen konnte.
     Hierzu wurde auf die im ersten Teil erfolgte Arbeit zurückgegriffen.
     Der C-Code des Collatz-Folgen-Benchmarks wurde wie für die Nutzung mit Zephyr durch das west Buildtool gebaut.
-    Die dabei entstandene .elf-Datei wurde disassembliert: \verb|llvm-objdump --disassemble zephyr.elf > disassemblyCollatz.txt|
+    Die dabei entstandene .elf-Datei wurde disassembliert:
+    \begin{minted}[breaklines]{bash}
+    llvm-objdump --disassemble zephyr.elf > disassemblyCollatz.txt
+    \end{minted}
     In der resultierenden Textdatei wurde anschließend der RISC-V Assembly-Code aus dem Abschnitt \verb|<main>| herauskopiert und in den Delay-Abschnitt des funktionierenden Blinky-Programms eingefügt.
     Hier wurden die Zeilen, die Prints realisierten entfernt, Label für Sprünge eingesetzt und Register, die bereits im Rest des Blinky-Programms genutzt wurden, durch andere passende Register ersetzt, sodass die folgende Benchmark-Assemblydatei entstand, in der das Durchlaufen des Benchmarks durch einen Wechsel des LED-Zustandes signalisiert wurde:
     \todo{collatz.S als Screenshot einbinden, oder gehört das eher in den Evaluationsteil (Methodologie)?}
