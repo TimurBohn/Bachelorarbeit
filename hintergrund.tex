@@ -17,7 +17,7 @@
     Hierbei funktionieren sie wie Wahrheitstabellen für boolesche Ausdrücke.
     Es muss lediglich für jede Kombination an Eingangssignalen das Ausgangssignal in den Speicher geschrieben werden.
     Beispielsweise würde an die Adresse 3 einer 3-Input LUT der Wert (0 oder 1) geschrieben werden, der ausgegeben werden soll, wenn am Eingangssignal A eine 0 und an B und C eine 1 anliegen.
-    Die Adressierung erfolgt hierbei im Binärsystem, da ABC = 011binär = 3dezimal.
+    Die Adressierung erfolgt hierbei im Binärsystem, da ABC = 011 (binär) = 3 (dezimal). \todo{Zahlenformatierung binär und dezimal anpassen}
     Analog dazu ist jede Adresse eines LUT, bspw. 0-7 bei einer 3-Input LUT, eine mögliche Kombination an Eingangssignalen.
     So kann jede logische Schaltung, die deterministisch bzw. nicht zeitabhängig ist, in LUTs abgebildet werden.
     Simple Schaltungen mit wenigen Eingängen können nur eine LUT beanspruchen, bei komplexeren Schaltungen werden mehrere LUTs miteinander verschaltet.
@@ -30,7 +30,7 @@
     Im Anschluss erfolgt der Syntheseschritt, indem der RTL-Code in eine Netzliste überführt wird.
     Diese bildet ab, welche Bauteile theoretisch benötigt würden, um die Schaltung wie beschrieben umzusetzen.
     Eine Netzliste ist vergleichbar mit einem Zwischencode beim Kompilieren von Code in der Softwareentwicklung.
-    Im Implementierungsschritt werden in einem sog. Place \(&\) Route-Verfahren die theoretischen Bauteile der Netzliste auf die tatsächlich auf dem FPGA vorhandenen Bauteile gemappt.
+    Im Implementierungsschritt werden in einem sogenannten Place-and-Route-Verfahren die theoretischen Bauteile der Netzliste auf die tatsächlich auf dem FPGA vorhandenen Bauteile gemappt.
     Hier werden benötigte physische Bauteile, also Lookup-Tables, Flipflops und Multiplexer auf dem FPGA verortet und benötigte Bauteile miteinander verbunden. % Ist verortet richtig?
     Diese Informationen werden in einen Bitstream geschrieben.
     In einem letzten Schritt wird dieser Bitstream auf den FPGA übertragen.
@@ -54,7 +54,7 @@
     So bietet die IDE Funktionalitäten zum Schreiben und Organisieren von RTL-Code, zur zyklus-akkuraten Simulation von Schaltungen, zur Umsetzung der Synthese- und Implementierungsschritte sowie zur Generierung des Bitstreams und der Übertragung auf den FPGA.
 
 \section{RISC-V, SERV und Servant}
-    RISC-V \cite{} ist eine open-source Instruction Set Architecture (ISA), die den Befehlssatz eines Prozessors festlegt.
+    RISC-V \cite{risc-v-website} ist eine open-source Instruction Set Architecture (ISA), die den Befehlssatz eines Prozessors festlegt.
     Somit bestimmt die ISA, welche Instruktionen von einer CPU verarbeitet werden können.
     Im Gegensatz zu anderen verbreiteten ISAs wie x86 oder ARM kann RISC-V beliebig implementiert und erweitert werden.
     Dadurch bietet RISC-V eine größere Flexibilität und Anpassungsfähigkeit im Rahmen der Hardwareentwicklung zur Erfüllung der gewünschten Funktionalität.
@@ -78,7 +78,7 @@
     Während bei der Simulation in Vivado innerhalb mehrerer Minuten nur wenige Millisekunden simuliert werden können, kann bei Verilator der erwartete Programmverlauf nachvollzogen werden, welcher bei Vivado mehrere Stunden bis Tage in Anspruch nehmen würde.
     Ein weiterer Unterschied besteht darin, dass Verilator ein two-state Simulationsmodell nutzt, also dass Leitungen und Register lediglich die Zustände \("\)low\("\) bzw. 0 und \("\)high\("\) bzw. 1 annehmen können.
     In den meisten Fällen ist eine two-state Simulation ausreichend und bietet Vorteile einer höheren Speichereffizienz sowie Geschwindigkeit.
-    Die Vivado-Simulation kennt zusätzlich den Zustand \("\)unknown value\("\)/X, ist dadurch genauer und eignet sich besser zum Debugging.
+    Die Vivado-Simulation kennt zusätzlich den Zustand \("\)unknown value\("\) bzw. X, ist dadurch genauer und eignet sich besser zum Debugging.
     Andere Simulatoren, wie bspw. QEMU \cite{bellard2005qemu} oder FLASH \cite{choi2020flash} sind zwar noch schneller als Verilator, jedoch wird der Geschwindigkeitszugewinn hierbei dadurch eine höhere Abstraktionsebene erreicht.
     QEMU ist im Gegensatz zu Verilator eine high-level Simulation, bei der kein RTL-Code simuliert wird, sondern das gesamte System an sich und kann somit nicht genutzt werden, um die Korrektheit eines Hardwaredesigns prüfen.
     Aus diesem Grund wurde Verilator als schnellste verfügbare Simulation auf dem RTL genutzt, um Performanceunterschiede zwischen Simulation und FPGA zu untersuchen.
