@@ -17,7 +17,7 @@
     Hierbei funktionieren sie wie Wahrheitstabellen für boolesche Ausdrücke.
     Es muss lediglich für jede Kombination an Eingangssignalen das Ausgangssignal in den Speicher geschrieben werden.
     Beispielsweise würde an die Adresse 3 einer 3-Input LUT der Wert (0 oder 1) geschrieben werden, der ausgegeben werden soll, wenn am Eingangssignal A eine 0 und an B und C eine 1 anliegen.
-    Die Adressierung erfolgt hierbei im Binärsystem, da ABC = 011 (binär) = 3 (dezimal). \todo{Zahlenformatierung binär und dezimal anpassen}
+    Die Adressierung erfolgt hierbei im Binärsystem, da ABC = 011\textsubscript{2} = 3\textsubscript{10}.
     Analog dazu ist jede Adresse eines LUT, bspw. 0-7 bei einer 3-Input LUT, eine mögliche Kombination an Eingangssignalen.
     So kann jede logische Schaltung, die deterministisch bzw. nicht zeitabhängig ist, in LUTs abgebildet werden.
     Simple Schaltungen mit wenigen Eingängen können nur eine LUT beanspruchen, bei komplexeren Schaltungen werden mehrere LUTs miteinander verschaltet.
@@ -42,11 +42,17 @@
     Sie unterscheiden sich untereinander hinsichtlich der Leistung/Mächtigkeit vor allem in der Anzahl der Logikblöcke, der maximalen Taktfrequenz, im Stromverbrauch, der RAM-Größe und in der Anzahl an I/O Pins.
 
 \subsection{Basys 3-Board}
-    Beim Basys 3-Board handelt es sich um ein FPGA-Board mit Artix-7 FPGA und einiger Peripherie für den universitären Kontext, welches auf das initiale Befassen mit FPGAs ausgelegt ist. \todo{Foto des FPGA einbinden?}
+    Beim Basys 3-Board handelt es sich um ein FPGA-Board mit Artix-7 FPGA und einiger Peripherie für den universitären Kontext, welches auf das initiale Befassen mit FPGAs ausgelegt ist.
     Das Board besteht aus dem FPGA selber, Kommunikationschips für USB/serielle-Kommunikation, verschiedenen Buttons und Schaltern, einer 7-Segment-Anzeige, LEDs, einem VGA-Ausgang und USB-Port sowie aus Anschlüssen für Erweiterungen.
     Normalerweise setzen FPGA-Boards auf general purpose Input/Output (GPIO) Pins, um nach Wunsch verschiedenste Peripherie nutzen zu können und haben eher selten diesen Umfang an Knöpfen, Schaltern, Anzeigen und eingeschränkten Anschlüssen.
     Für die vorliegende Arbeit wurden lediglich der FPGA selber, eine Clock sowie eine fest installierte LED und ein Button verwendet.
     Das Basys 3-Board verfügt über eine 100MHz Clock, welche voll ausgenutzt wurde, ca. 33.000 Logikblöcke mit etwa 310.000 Lookup-Tables, von denen nur ein kleiner Anteil genutzt wurde sowie 1800Kbit RAM.
+    \begin{figure}[h!]
+        \centering
+        \includegraphics[width=\textwidth]{fig/basys3-foto}
+        \caption{Digilent Basys 3-Board mit Artix-7 FPGA}
+        \label{fig:basys3}
+    \end{figure}
 
 \subsection{Vivado}
     Ähnlich wie bei der Entwicklung von Software, gibt es auch für den Hardwareentwicklungsprozess Entwicklungsumbgebungen (IDEs).
