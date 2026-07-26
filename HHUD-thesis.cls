@@ -33,7 +33,7 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\RequirePackage[style=alphabetic, backend=bibtex]{biblatex}
+\RequirePackage[style=apa, backend=biber]{biblatex}
 
 
 %%%% Workarounds

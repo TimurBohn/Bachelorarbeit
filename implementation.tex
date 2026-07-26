@@ -10,7 +10,7 @@
     \todo{Specs meines PCs einbinden (Text oder Screenshot)}
 
 \section{SERV-Simulation und Bau ausführbarer Benchmarks}
-    Um eine Simulation des SERV-Kerns zu realisieren, wurden die im SERV-repository\cite{kindgren_serv} beschriebenen Schritte unter dem Abschnitt \("\)Getting started\("\) befolgt.
+    Um eine Simulation des SERV-Kerns zu realisieren, wurden die im SERV-repository \parencite{kindgren_serv} beschriebenen Schritte unter dem Abschnitt \("\)Getting started\("\) befolgt.
     Hierbei wurde, um Konfundierungen durch die der VM zur Verfügung gestellten Ressourcen zu vermeiden, zunächst versucht, die Simulation auch über die native Windows-Installation des zur Verfügung stehenden Computers zu bewerkstelligen.
     Allerdings waren die genutzten Tools für Linux ausgelegt, weshalb die Installation eines funktionalen Simulations-Setups auf Windows nicht möglich war.
     So wurde in der Linux-VM zunächst der Workspace erstellt, FuseSoC installiert und SERV zusätzlich zur Standardbibliothek eingefügt.
@@ -18,7 +18,7 @@
 
     Da jedoch das Ziel der Arbeit war, ein Benchmarkprogramm laufen zu lassen, musste eigener Code geschrieben, gebaut und in eine ausführbare .hex-Datei konvertiert werden.
     Zu Beginn erschien es praktikabler, die im SERV-repository beschriebene Unterstützung für das RTOS Zephyr zu nutzen.
-    Somit wurden auch hier die Installationsschritte \cite{zephyr-getting-started} befolgt.
+    Somit wurden auch hier die Installationsschritte \parencite{zephyr-getting-started} befolgt.
     Zunächst wurde das einfache hello-world-Beispiel gebaut und ausgetestet.
     Als jedoch versucht wurde, die Simulation zu starten, wurden verschiedene Fehlermeldungen angezeigt, die auf nicht ausreichenden Arbeitsspeicher hinwiesen.
     Es zeigte sich, dass durch die Einbindung von Zephyr und das west-Tooling Overhead entstand, sodass die resultierende .hex-Datei größer war als die im SERV-Beispiel mitgelieferten.
@@ -44,7 +44,7 @@
 
     Der Ansatz zum Bau von Benchmarks, der stattdessen genutzt wurde, war die Software \("\)bare-metal\("\), also ohne Betriebssystem direkt auf der Hardware laufen zu lassen.
     Im SERV-repository wurde die Assemblydatei \verb|blinky.S| mitgeliefert.
-    Gemeinsam mit dem RISC-V-Buildtooling \cite{risc-buildtool} und dem Python-Skript aus dem SERV-repository konnte daraus eine .hex-Datei erstellt werden, die in Verilator problemlos lief.
+    Gemeinsam mit dem RISC-V-Buildtooling \parencite{risc-buildtool} und dem Python-Skript aus dem SERV-repository konnte daraus eine .hex-Datei erstellt werden, die in Verilator problemlos lief.
     Doch auch hier zeigten sich Hürden im FPGA-Designprozess.
     Zunächst leuchtete die LED am FPGA trotz erfolgreicher Synthese, Implementation und Bitstream-Übertragung nicht.
     Zum Debugging wurde die Vivado-Simulation genutzt, wobei zwei Schwierigkeiten auffielen:
