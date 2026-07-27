@@ -116,8 +116,45 @@
     Daraus wurde geschlossen, dass die Reset-Logik verantwortlich für das Verhalten war.
     Bei erneuter Sichtung des Quellcodes des servix-Moduls fiel auf, dass das Reset-Signal bei Übergabe an den Clock-Generator invertiert wurde.
     Diese Invertierung wurde entfernt, zusätzlich wurden, da Reset-Verhalten über alle Programme hinweg gewünscht war, die Macro-Blöcke mit \verb|`ifdef WITH_RESET| als weitere mögliche Fehlerquelle entfernt.
-    In der Simulationsdatei \todo{Simulationsdatei im Anhang einfügen} wurde anschließend das Reset-Signal ebenfalls invertiert, um dort das vorher bereits beobachtete, korrekte Verhalten der einzelnen Register wiederherzustellen.
+    In der Simulationsdatei
+    \todo{Simulationsdatei mE uninteressant, reicht Verweis auf GH-Repo?}
+    wurde anschließend das Reset-Signal ebenfalls invertiert, um dort das vorher bereits beobachtete, korrekte Verhalten der einzelnen Register wiederherzustellen.
     Daraus resultierte der finale SERV-Quellcode, der zum gewünschten Verhalten auf dem FPGA führte und auch für die Benchmarks genutzt wurde:
-    \todo{Quellcode vom Modul einfügen}
+    \begin{minted}[breaklines]{verilog}
+    `default_nettype none
+    module servix
+    (
+        input wire  i_clk,
+        input wire  i_rst_n,
+        output wire q);
+
+        parameter frequency = 32;
+        parameter memfile = "collatzBareMetal.hex";
+        parameter memsize = 1048576;
+        parameter PLL = "NONE";
+
+        wire      wb_clk;
+        wire      wb_rst;
+
+        servix_clock_gen
+         #(.frequency (frequency))
+        clock_gen
+         (.i_clk (i_clk),
+          .i_rst (i_rst_n),
+          .o_clk (wb_clk),
+          .o_rst (wb_rst));
+
+        servant
+         #(.memfile (memfile),
+           .memsize (memsize))
+        servant
+        (.wb_clk (wb_clk),
+         .wb_rst (wb_rst),
+         .q      (q));
+
+    endmodule
+    \end{minted}
+    \captionof{listing}[Top-Level Verilog-Datei]{servix.v, die Top-Level Verilog-Datei aus dem SERV-Repository \parencite{kindgren_serv}, abgeändert für das vorliegende Projekt. Das gesamte Verilog-Projekt der vorliegenden Arbeit ist im Github-Repository \parencite{GitHub-Bachelorarbeit} zu finden.}
+    \label{lst:servix.v}
 
 % Noch mal überlegen, ob wirklich alles Relevante im Verlauf enthalten ist
