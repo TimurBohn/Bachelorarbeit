@@ -15,8 +15,9 @@
     \label{fig:Benchmark_FPGA}
 \end{figure}
 
+\newpage
 
-\section{Codesamples}
+\section{Code-Listings}
 
 \todo{Wie Formatierung des Codes verbessern?}
 
@@ -67,6 +68,8 @@
 
 \todo{sollen die Kommentare in den Code-Listings erhalten bleiben?}
 
+\newpage
+
 \begin{minted}[breaklines]{tcl}
     set_property -dict {PACKAGE_PIN W5  IOSTANDARD LVCMOS33 } [get_ports i_clk];
     set_property -dict {PACKAGE_PIN U18  IOSTANDARD LVCMOS33 } [get_ports i_rst_n];
@@ -80,6 +83,8 @@
 \end{minted}
 \captionof{listing}[Constraint-Datei für Artix-7 FPGA]{Constraint-Datei mit Mapping für LED, Reset-Knopf und Clock.}
 \label{lst:constraint-datei}
+
+\newpage
 
 \begin{minted}{python}
     #!/usr/bin/env python3
