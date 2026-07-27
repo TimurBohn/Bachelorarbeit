@@ -34,8 +34,6 @@
     Die entsprechenden Tabellen mit Messdaten für die Simulation und die Ausführung auf dem FPGA sind im GitHub-Repository der Arbeit \parencite{GitHub-Bachelorarbeit} zu finden.
 
 \section{Ergebnisse}
-    \todo{Boxplot oder andere Abbildung mit 95\% Konfidenzintervall einfügen}
-    \todo{Muss die Einheit (s) in die Tabelle rein, oder reicht die Tabellenbeschreibung aus?}
     Die Ergebnisse der Benchmarks sind in der nachfolgenden Tabelle aufgelistet, wobei der obere Abschnitt die ermittelte Dauer einer Berechnungsphase in der Simulation - und der untere Abschnitt die Dauer beim FPGA, aufgeteilt nach Methoden der Laufzeitbestimmung, aufzeigt.
     Hierbei ist zu beachten, dass größere Streuungen in den Messwerten der Simulation zu verzeichnen waren als in den Messungen des FPGAs, was durch die Größe der berechneten Standardabweichungen verdeutlicht wird.
     Daher wurden zur Mittelwertsberechnung der Simulation sowie zur Ermittlung des Minimums und Maximums die vollen 100 Messungen genutzt.
@@ -43,20 +41,20 @@
     Abweichungen gab es hier maximal im Millisekundenbereich bzw. um einen Frame.
     Diese Abweichungen sind zudem sehr wahrscheinlich auf die Aufnahme per Kamera zurückzuführen, wo ggf. nicht genau der Zeitpunkt des Wechsels der An- und Aus-Phasen getroffen wurde und nicht auf eine tatsächliche Schwankung der Berechnungsdauer.
     Deshalb wurde es hierbei als ausreichend erachtet, die Ermittlung der Kennwerte auf Grundlage von 20 Messungen vorzunehmen.
-    Zusätzlich zur Bestimmung der Standardabweichungen und Mittelwerte wurden 95\%-Konfidenzintervalle mithilfe der Studentschen t-Verteilung
+    Zusätzlich zur Bestimmung der Mittelwerte und Standardabweichungen wurden 95\%-Konfidenzintervalle mithilfe der Studentschen t-Verteilung sowie Minima und Maxima
 \todo{Quelle nötig? Für KI oder für t-Verteilung?}
     berechnet.
     \begin{table}
         \centering
-        \begin{tabular}{lcccc}
+        \begin{tabular}{lccccc}
             \toprule
-            Messart                & Mittelwert  & Standardabweichung  & Konfidenzintervall 95\% & Minimum & Maximum\\
+            Messart     & Mittelwert  & Standardabweichung  & 95\%-Konfidenzintervall & Minimum & Maximum\\
             \midrule
-            Simulation: Skript     &   4,195s    &       0,053s        &     4,184s - 4,205s     &  4,135s  &  4,371s\\
+            Skript      &   4,195s    &       0,053s        &     4,184s - 4,205s     &  4,135s  &  4,371s\\
             \midrule
-            FPGA: Stoppuhr         &   0,920s    &       0,030s        &     0,906s - 0,933s     &  0,880s  &  0,990s\\
-            FPGA: Frames           &   0,918s    &       0,003s        &     0,916s - 0,919s     &  0,917s  &  0,925s\\
-            FPGA: Timestamp        &   0,918s    &       0,002s        &     0,917s - 0,919s     &  0,917s  &  0,926s\\
+            Stoppuhr    &   0,920s    &       0,030s        &     0,906s - 0,933s     &  0,880s  &  0,990s\\
+            Frames      &   0,918s    &       0,003s        &     0,916s - 0,919s     &  0,917s  &  0,925s\\
+            Timestamp   &   0,918s    &       0,002s        &     0,917s - 0,919s     &  0,917s  &  0,926s\\
             \bottomrule
         \end{tabular}
         \caption[Benchmarks]{Messzeiten in Sekunden, aufgeteilt nach Messart - im oberen Abschnitt die Simulation, im unteren der FPGA mit drei Messmethoden}
