@@ -23,14 +23,13 @@
     Beim FPGA wiederum war das Output-Wire auf eine LED gemappt, die, nach Übertragung des Bitstreams, wo der Benchmark eingebettet war, beobachtet werden konnte.
     So konnte durch die Berechnung der Dauer einer An- bzw. Aus-Phase der LED/des Output-Wires die Geschwindigkeit der Folgenberechnung ermittelt werden.
 
-    Für die Simulation wurde ein Python-Skript \todo{Python-Skript in Anhang} geschrieben, welches insgesamt 100 Phasen abwartete.
-    Das Skript berechnete die Zeit zwischen je zwei Ausgaben/Prints als eine Phase, schrieb die Ergebnisse in eine .csv-Datei \todo{csv-Datei anhängen} und gab zusätzlich den ermittelten Mittelwert sowie das Minimum und Maximum aus.
-    Beim FPGA wurde mit einer Kamera, die 120 Frames pro Sekunde aufnehmen konnte, das Basys 3-Board sowie eine Stoppuhr gefilmt.
+    Für die Simulation wurde ein Python-Skript geschrieben, welches insgesamt 100 Phasen abwartete.
+    Das Skript berechnete die Zeit zwischen je zwei Ausgaben/Prints als eine Phase, schrieb die Ergebnisse in eine .csv-Datei und gab zusätzlich den ermittelten Mittelwert sowie das Minimum und Maximum aus (\cref{lst:python-skript}).
+    Beim FPGA wurde mit einer Kamera, die 120 Frames pro Sekunde aufnehmen konnte, das Basys 3-Board sowie eine Stoppuhr gefilmt (\cref{fig:Benchmark_FPGA}).
     Die Dauer einer LED-Phase wurde durch Abzählen der Frames bestimmt.
     Diese ermittelte Dauer wurde zudem mit der abgelaufenen Zeit auf der Stoppuhr sowie den Video-Timestamps abgeglichen.
     Da der Reset-Knopf sowie der Startknopf nicht exakt zeitgleich gedrückt werden konnten, ist die Zeitmessung erst ab dem zweiten Phasenwechsel erfolgt.
     Insgesamt wurde das Video über zwei Minuten aufgezeichnet und enthielt somit >100 Phasenmessungen.
-
 
 \section{Ergebnisse}
     \todo{Boxplot oder andere Abbildung mit 95\% Konfidenzintervall einfügen}
