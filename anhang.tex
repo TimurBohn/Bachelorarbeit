@@ -15,6 +15,7 @@
     \label{fig:Benchmark_FPGA}
 \end{figure}
 
+
 \section{Codesamples}
 
 \begin{minted}[breaklines]{asm}
@@ -63,6 +64,20 @@
 \label{lst:collatz.S}
 
 \todo{sollen die Kommentare in den Code-Listings erhalten bleiben?}
+
+\begin{minted}[breaklines]{tcl}
+    set_property -dict {PACKAGE_PIN W5  IOSTANDARD LVCMOS33 } [get_ports i_clk];
+    set_property -dict {PACKAGE_PIN U18  IOSTANDARD LVCMOS33 } [get_ports i_rst_n];
+    set_property -dict {PACKAGE_PIN U16  IOSTANDARD LVCMOS33 } [get_ports q];
+    #set_property -dict {PACKAGE_PIN H5  IOSTANDARD LVCMOS33 } [get_ports q]
+
+    set_property CFGBVS VCCO [current_design];
+    set_property CONFIG_VOLTAGE 3.3 [current_design];
+
+    create_clock -add -name sys_clk_pin -period 10.00 -waveform {0 5} [get_ports i_clk];
+\end{minted}
+\captionof{listing}[Constraint-Datei für Artix-7 FPGA]{Constraint-Datei mit Mapping für LED, Reset-Knopf und Clock.}
+\label{lst:constraint-datei}
 
 \begin{minted}{python}
     #!/usr/bin/env python3

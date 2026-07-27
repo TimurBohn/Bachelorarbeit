@@ -90,7 +90,7 @@
     \end{minted}
     Da es sich hierbei jedoch um ein anderes Board als das vorliegende handelte, nutzte es andere Bezeichnungen für die Buttons, LEDs und Timer, sodass das Hardwaremapping fehlerhaft war.
     In einem ersten Schritt wurde deshalb das Hardwaremapping über die Constraint-Datei so angepasst, dass die auf dem Basys 3-Board vorhandenen Buttons, LED und Timer genutzt wurden.
-    Die finale Version der Constraint-Datei ist im Anhang zu finden. \todo{Constraint-Datei einfügen}
+    Die finale Version der Constraint-Datei ist im Anhang zu finden (\cref{lst:constraint-datei}).
     Diese Änderungen führten wiederum zu Inkompatiblitäten mit dem bereits gebauten Projekt, weshalb in den Projekteinstellungen in Vivado die vorhandene Ausführung des Artix-7 FPGA (xc7a35tcpg236-1) ausgewählt werden musste.
     Durch diese Anpassungen war das erste Mal ein vollständiger Entwicklungsablauf von RTL-Code bis zur Generierung des Bitstreams möglich.
     Beim Versuch, den Bitstream auf den FPGA zu übertragen bzw. den FPGA mittels Bitstream zu konfigurieren, traten zwei Probleme zeitgleich auf:
