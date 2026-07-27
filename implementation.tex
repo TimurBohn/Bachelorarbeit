@@ -62,8 +62,7 @@
     llvm-objdump --disassemble zephyr.elf > disassemblyCollatz.txt
     \end{minted}
     In der resultierenden Textdatei wurde anschließend der RISC-V Assembly-Code aus dem Abschnitt \verb|<main>| herauskopiert und in den Delay-Abschnitt des funktionierenden Blinky-Programms eingefügt.
-    Hier wurden die Zeilen, die Prints realisierten entfernt, Label für Sprünge eingesetzt und Register, die bereits im Rest des Blinky-Programms genutzt wurden, durch andere passende Register ersetzt, sodass die folgende Benchmark-Assemblydatei entstand, in der das Durchlaufen des Benchmarks durch einen Wechsel des LED-Zustandes signalisiert wurde:
-    \todo{collatz.S als Screenshot einbinden, oder gehört das eher in den Evaluationsteil (Methodologie)?}
+    Hier wurden die Zeilen, die Prints realisierten entfernt, Label für Sprünge eingesetzt und Register, die bereits im Rest des Blinky-Programms genutzt wurden, durch andere passende Register ersetzt, sodass eine Benchmark-Assemblydatei (\cref{lst:collatz.S}) entstand, in der das Durchlaufen des Benchmarks durch einen Wechsel des LED-Zustandes signalisiert wurde.
     Um aus dieser resultierenden Benchmark-Assemblydatei eine .hex-Datei zu erhalten, die von einem Servant-SoC ausgeführt werden kann, wurde wie bei der vorherigen blinky.S-Datei vorgegangen.
     In einem ersten Schritt wurde die .S-Datei mittels des RISC-V-Buildtoolings zu einer .elf-Datei kompiliert:
     \begin{minted}[breaklines]{bash}
