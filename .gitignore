@@ -421,7 +421,6 @@ $RECYCLE.BIN/
 
 # MicrosoftOffice files
 *.doc*
-*.xls*
 *.ppt*
 
 # Famous "temporary" files
