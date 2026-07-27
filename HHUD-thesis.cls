@@ -54,11 +54,11 @@
 \begin{titlepage}
     \IfLanguageName{ngerman}{\includegraphics[width=102.5mm]{static/HHU_Logo_Wort-Bild-Marke_horizontal_RGB}}{\includegraphics[width=102.5mm]{static/Logo_HHU_+Name_EN_horizontal_rgb_+Safezone}}
 
-\vspace{35mm}
+\vspace{30mm}
 
 % Titel
 \begin{center}
-    \textbf{\huge \@title}
+    \textbf{\huge \begin{spacing}{1.0}\@title\end{spacing}}
     
     \textbf{\Large \@author}
 \end{center}
