@@ -1,0 +1,98 @@
+#!/usr/bin/env python3
+
+import subprocess
+import time
+import csv
+import statistics
+import os
+import signal
+
+cmd = [
+    "stdbuf",
+    "-oL",    
+    "fusesoc",
+    "run",
+    "--target=verilator_tb",
+    "award-winning:serv:servant",
+    "--firmware=collatzBareMetal.hex",
+    "--memsize=1048576",
+]
+
+anzahl_messungen = 100
+laufzeiten = []
+
+csv_datei = "laufzeitenBareMetalAwardWinningServ.csv"
+
+process = subprocess.Popen(
+    cmd,
+    stdout=subprocess.PIPE,
+    stderr=subprocess.STDOUT,
+    text=True,
+    start_new_session=True,
+)
+print(f"\n=== Starte Zeitmessungen ===")
+
+start_time = None
+
+try:
+    for line in process.stdout:
+        line = line.rstrip("\r\n")
+        # print(line)
+    
+        if "output q is" not in line:
+            continue
+    
+        timestamp = time.perf_counter()
+    
+        if start_time is None:
+            start_time = timestamp
+            continue
+    
+        laufzeit = timestamp - start_time
+        start_time = timestamp
+    
+        laufzeiten.append(laufzeit)
+        # print(f"Laufzeit: {laufzeit:.6f} s")
+    
+        if len(laufzeiten) >= anzahl_messungen:
+            print("Alle Messungen gesammelt")
+            break
+
+# komplette Prozessgruppe beenden
+finally:
+    print("Beende Simulation...")
+    os.killpg(
+        os.getpgid(process.pid),
+        signal.SIGTERM
+    )
+
+
+    # falls der Prozess nicht sauber beendet wurde
+    try:
+        process.wait(timeout=5)
+    except subprocess.TimeoutExpired:
+        os.killpg(
+            os.getpgid(process.pid),
+            signal.SIGKILL
+        )
+
+
+# CSV schreiben
+with open(csv_datei, "w", newline="") as f:
+    writer = csv.writer(f)
+    writer.writerow(["MessungNr", "Laufzeit_s"])
+
+    for i, t in enumerate(laufzeiten, start=1):
+        writer.writerow([i, t])
+
+
+# Statistik
+
+print("\n=== Statistik ===")
+
+print(f"Anzahl Messungen: {len(laufzeiten)}")
+print(f"Mittelwert:       {statistics.mean(laufzeiten):.6f} s")
+print(f"Minimum:          {min(laufzeiten):.6f} s")
+print(f"Maximum:          {max(laufzeiten):.6f} s")
+
+print(f"\nCSV gespeichert: {csv_datei}")
