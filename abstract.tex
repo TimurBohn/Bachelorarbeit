@@ -12,11 +12,10 @@
 
 FPGAs sind im industriellen Kontext weit verbreitet und werden dort bei der (Weiter-)Entwicklung von Hardware, bspw. beim Prozessordesign, verwendet.
 Hier spielen Kosten, Geschwindigkeit und Energieeffizienz eine besondere Rolle.
-Daher werden oft Hardwareschaltungen simuliert, um kostengünstig eine bestmögliche Approximation des Verhaltens zu erreichen.
+Daher werden während der Entwicklung oft Hardwareschaltungen simuliert, um kostengünstig eine bestmögliche Approximation des Verhaltens zu erreichen.
 In diesem Kontext ist oft die Frage relevant, ob eine Simulation ausreichend ist, oder ob mit Hardware gearbeitet werden sollte.
 Simulationen sind während der Laufzeit langsamer als FPGAs, wobei zugleich die Synthetisierung des Hardwaredesigns initial deutlich mehr Zeit (je nach Komplexität mehrere Stunden bis Tage) in Anspruch nimmt.
 Um die Entscheidungsfindung in der Praxis zu erleichtern, ist zunächst die Quantifizierung der Performancedifferenz zwischen Hardware und Simulation erforderlich.
 Aus diesem Grund untersucht die vorliegende Arbeit Laufzeitunterschiede zwischen einer Simulation mit Verilator und eines auf einem Artix-7 FPGA synthetisierten RISC-V CPU-Kerns anhand eines selbst geschriebenen Benchmarks, welches mathematische Folgen berechnet.
 Hierbei zeigte sich ein Geschwindigkeitszugewinn um den Faktor 4,6 zwischen Simulation und FPGA.
 Dadurch liefert die Arbeit eine quantitative Grundlage für die Entscheidung, ob Hardwareentwicklung durch eine Simulation oder durch die Ausführung auf einem FPGA effizienter gestaltet werden kann.
-\todo{Gehören Schlüsselwörter an das Ende des Abstracts wie in Psychologie-Arbeiten? z.B. FPGA, Verilator, Artix-7, Benchmark, Performanceunterschiede}
