@@ -1,12 +1,13 @@
 \chapter{Hintergrund}
 
-%Gänsefüßchen!
+%TODO: Etwas Verilog erklären
+\section{Verilog}
 
 \section{FPGAs}
     Field Programmable Gate Arrays, oder FPGAs sind beliebig konfigurierbare Hardwareschaltungen.
     Im Gegensatz zu Microcontrollern oder CPUs, bei denen mit festgelegten Instruktionen gearbeitet und Software geschrieben wird, die mit diesen vorgegebenen \("\)Werkzeugen\("\) eine bestimmte Funktionalität umsetzt, wird bei FPGAs die Hardware selbst entwickelt.
     Hierbei wird mit einer Hardwarebeschreibungssprache eine Schaltung konfiguriert, die einen bestimmten Zweck erfüllt und eine bessere Passung zur gewünschten Funktionalität bietet, als dies z.B. generische Microcontroller tun.
-    Derselbe FPGA kann sich somit je nach Konfiguration bspw. wie eine ALU, ein Microcontroller, eine ARM-CPU oder eine x86-CPU verhalten.
+    Derselbe FPGA kann sich somit je nach Konfiguration bspw. wie eine ALU, ein digitaler Signalprozessor (DSP), eine anwendungsspezifische integrierte Schaltung (ASIC), eine ARM-CPU oder eine x86-CPU verhalten.
 
     Diese Flexibilität erreichen FPGAs, da sie aus mehreren frei konfigurierbaren Logikblöcken bestehen, wobei die Anzahl der Logikblöcke die Komplexität an umsetzbaren Schaltungen bestimmt.
     Je mehr Logikblöcke, desto komplexere Schaltungen können mit einem FPGA umgesetzt werden.
@@ -42,17 +43,20 @@
     Sie unterscheiden sich untereinander hinsichtlich der Leistung/Mächtigkeit vor allem in der Anzahl der Logikblöcke, der maximalen Taktfrequenz, im Stromverbrauch, der RAM-Größe und in der Anzahl an I/O Pins.
 
 \subsection{Basys 3-Board}
-    Beim Basys 3-Board handelt es sich um ein FPGA-Board mit Artix-7 FPGA und einiger Peripherie für den universitären Kontext, welches auf das initiale Befassen mit FPGAs ausgelegt ist.
-    Das Board besteht aus dem FPGA selber, Kommunikationschips für USB/serielle-Kommunikation, verschiedenen Buttons und Schaltern, einer 7-Segment-Anzeige, LEDs, einem VGA-Ausgang und USB-Port sowie aus Anschlüssen für Erweiterungen.
-    Normalerweise setzen FPGA-Boards auf general purpose Input/Output (GPIO) Pins, um nach Wunsch verschiedenste Peripherie nutzen zu können und haben eher selten diesen Umfang an Knöpfen, Schaltern, Anzeigen und eingeschränkten Anschlüssen.
-    Für die vorliegende Arbeit wurden lediglich der FPGA selber, eine Clock sowie eine fest installierte LED und ein Button verwendet.
-    Das Basys 3-Board verfügt über eine 100MHz Clock, welche voll ausgenutzt wurde, ca. 33.000 Logikblöcke mit etwa 310.000 Lookup-Tables, von denen nur ein kleiner Anteil genutzt wurde sowie 1800Kbit RAM.
     \begin{figure}[h!]
         \centering
         \includegraphics[width=\textwidth]{fig/basys3-foto}
         \caption{Digilent Basys 3-Board mit Artix-7 FPGA}
         \label{fig:basys3}
     \end{figure}
+
+    Beim Basys 3-Board handelt es sich um ein FPGA-Board mit Artix-7 FPGA und einiger Peripherie für den universitären Kontext, welches auf das initiale Befassen mit FPGAs ausgelegt ist.
+    Das Board besteht aus dem FPGA selber, Kommunikationschips für USB/serielle-Kommunikation, verschiedenen Buttons und Schaltern, einer 7-Segment-Anzeige, LEDs, einem VGA-Ausgang und USB-Port sowie aus Anschlüssen für Erweiterungen.
+    Normalerweise setzen FPGA-Boards auf general purpose Input/Output (GPIO) Pins, um nach Wunsch verschiedenste Peripherie nutzen zu können und haben eher selten diesen Umfang an Knöpfen, Schaltern, Anzeigen und eingeschränkten Anschlüssen.
+    Für die vorliegende Arbeit wurden lediglich der FPGA selber, eine Clock sowie eine fest installierte LED und ein Button verwendet.
+    Das Basys 3-Board verfügt über eine 100MHz Clock, welche voll ausgenutzt wurde, ca. 33.000 Logikblöcke mit etwa 310.000 Lookup-Tables, von denen nur ein kleiner Anteil genutzt wurde sowie 1800Kbit Block-RAM.
+
+\newpage
 
 \subsection{Vivado}
     Ähnlich wie bei der Entwicklung von Software, gibt es auch für den Hardwareentwicklungsprozess Entwicklungsumbgebungen (IDEs).
@@ -65,13 +69,16 @@
         \label{fig:vivado}
     \end{figure}
 
+\newpage
+
 \section{RISC-V, SERV und Servant}
     RISC-V \parencite{risc-v-website} ist eine open-source Instruction Set Architecture (ISA), die den Befehlssatz eines Prozessors festlegt.
     Somit bestimmt die ISA, welche Instruktionen von einer CPU verarbeitet werden können.
-    Im Gegensatz zu anderen verbreiteten ISAs wie x86 oder ARM kann RISC-V beliebig implementiert und erweitert werden.
+    Im Gegensatz zu anderen verbreiteten ISAs wie x86 oder ARM kann RISC-V beliebig implementiert und erweitert werden, ohne dass Lizenzkosten anfallen.
     Dadurch bietet RISC-V eine größere Flexibilität und Anpassungsfähigkeit im Rahmen der Hardwareentwicklung zur Erfüllung der gewünschten Funktionalität.
     Teile, die nicht gebraucht werden, bspw. Ganzzahlmultiplikation und -division können je nach Anwendungsfall aufgenommen oder weggelassen werden.
     Dies ermöglicht eine optimierte Nutzung verfügbarer Hardwareressourcen.
+%TODO: Instruktionen erklären
 
     SERV ist ein von Olof Kindgren entwickelter open-source RISC-V CPU-Kern \parencite{kindgren_serv}.
     Sie setzt die RISC-V ISA im Gegensatz zu anderen Prozessoren bit-seriell um, verarbeitet also pro Takt nur ein Bit statt ganzer 32-Bit-Wörter.
@@ -79,26 +86,62 @@
     Dadurch ist SERV einer der kleinsten RISC-V CPU-Kerne und eignet sich besonders für ressourcenkritische Bereiche und Forschungsanwendungen.
     Ein weiterer Vorteil von SERV besteht in der ausführlichen Dokumentation des Projektes, sodass die Replizierbarkeit erleichtert wird, was für wissenschaftliche Fragestellungen besonders relevant ist.
 
-    Servant erweitert den SERV-Kern durch möglichst wenig Peripherie zu einem vollständigen System on Chip (SoC). So wird der CPU-Kern durch Arbeitsspeicher, Timer und einen GPIO-Pin ergänzt.
+    Servant erweitert den SERV-Kern durch möglichst wenig Peripherie zu einem vollständigen System on a Chip (SoC). So wird der CPU-Kern durch Arbeitsspeicher, Timer und einen GPIO-Pin ergänzt.
     Auch hier wird auf Sparsamkeit bei der Nutzung von Hardwareressourcen gesetzt.
     Dies resultiert in einer minimalistischen Hardwareplattform, auf der z.B. das Zephyr-Betriebssystem, oder andere Software ausgeführt werden kann, weshalb Servant auch das SoC war, welches in der vorliegenden Arbeit auf dem Artix-7 FPGA synthetisiert wurde.
 
+    \begin{minted}[breaklines, fontsize=\small]{asm}
+        #ifndef GPIO_BASE
+        #define GPIO_BASE 0x40000000
+        #endif
+        .globl _start
+        _start:
+	        lui a0, %hi(GPIO_BASE)  /* a0 = GPIO base address*/
+	        addi a0, a0, %lo(GPIO_BASE)
+	        addi t0, zero, 1        /* Clear t0, t0 = Value */
+        loop:
+            sb t0, 0(a0)            /* Write to LEDs */
+            xori t0, t0, 1          /* invert LED */
+        delay:                            /* Delay loop */
+            li	a4, 0x1
+            li	a3, 0x1             /* a4 = a3 = i = 1 */
+            li	a2, 0x3e9           /* a2 = 1001 */
+        outer_loop:
+            mv	a5, a4              /* n = a5 = i */
+            j	check_loop_zu_Ende
+        ungerade:
+            slli	a1, a5, 0x1
+            add	a5, a1, a5
+            addi	a5, a5, 0x1     /* n = 3*n+1 */
+        check_even_odd:
+            andi	a1, a5, 0x1     /* n%2 == 1 ? jump ungerade : n = n/2 */
+            bnez	a1, ungerade
+            srai	a5, a5, 0x1
+        check_loop_zu_Ende:
+            bne	a5, a3, check_even_odd /* n!=1 ? weiter in Collatz : i++ */
+            addi	a4, a4, 0x1
+            bne	a4, a2, outer_loop     /* i != n ? Collatz mit i : LED wechseln */
+            j loop
+    \end{minted}
+    \captionof{listing}[Benchmark in RISC-V Assembly]{Finaler Benchmark in RISC-V Assembly, der in der Simulation und auf dem FPGA lief. Die daraus gebaute .hex-Datei ist im Github-Repository \parencite{GitHub-Bachelorarbeit} zu finden.}
+    \label{lst:collatz.S}
+
+
 \section{Verilator, FuseSoC und Zephyr}
     Bei Verilator handelt es sich um einen zyklus-akkuraten Simulator für Verilog-Code.
-    Verilator übersetzt den RTL-Code in ein eigenes, schnelles Verilog-Modell, das dann in C++-Code gewrappt wird und die Simulation des Hardwaredesigns darstellt.
-    Hierbei wird durch den Zwischenschritt der Übersetzung eine sehr schnelle Simulationsgeschwindigkeit erreicht, die deutlich schneller als die zyklus-akkurate Simulation in Vivado - und oft auch schneller als andere vergleichbare Simulatoren ist.
+    Verilator übersetzt den RTL-Code in C++-Code, welcher zusätzlich in weiteren C++-Code gewrappt werden kann und die Simulation des Hardwaredesigns darstellt.
+    Hierbei wird durch die Übersetzung eine sehr schnelle Simulationsgeschwindigkeit erreicht, die deutlich schneller als die zyklus-akkurate Simulation in Vivado - und oft auch schneller als andere vergleichbare Simulatoren ist.
     Während bei der Simulation in Vivado innerhalb mehrerer Minuten nur wenige Millisekunden simuliert werden können, kann bei Verilator der erwartete Programmverlauf nachvollzogen werden, welcher bei Vivado mehrere Stunden bis Tage in Anspruch nehmen würde.
-    Ein weiterer Unterschied besteht darin, dass Verilator ein two-state Simulationsmodell nutzt, also dass Leitungen und Register lediglich die Zustände \("\)low\("\) bzw. 0 und \("\)high\("\) bzw. 1 annehmen können.
+    Ein weiterer Unterschied besteht darin, dass Verilator standardmäßig ein two-state Simulationsmodell nutzt, also dass Leitungen und Register lediglich die Zustände \("\)low\("\) bzw. 0 und \("\)high\("\) bzw. 1 annehmen können.
     In den meisten Fällen ist eine two-state Simulation ausreichend und bietet Vorteile einer höheren Speichereffizienz sowie Geschwindigkeit.
-    Die Vivado-Simulation kennt zusätzlich den Zustand \("\)unknown value\("\) bzw. X, ist dadurch genauer und eignet sich besser zum Debugging.
+    Die Vivado-Simulation nutzt ein four-state Modell und kennt zusätzlich die Zustände \("\)unknown value\("\) bzw. X sowie \("\)high impedance (hochohmig)\("\) bzw. Z, ist dadurch genauer und eignet sich besser zum Debugging.
     Andere Simulatoren, wie bspw. QEMU \parencite{bellard2005qemu} oder FLASH \parencite{choi2020flash} sind zwar noch schneller als Verilator, jedoch wird der Geschwindigkeitszugewinn hierbei dadurch eine höhere Abstraktionsebene erreicht.
-    QEMU ist im Gegensatz zu Verilator eine high-level Simulation, bei der kein RTL-Code simuliert wird, sondern das gesamte System an sich und kann somit nicht genutzt werden, um die Korrektheit eines Hardwaredesigns prüfen.
+    QEMU ist im Gegensatz zu Verilator eine high-level Simulation, bei der kein RTL-Code simuliert wird, sondern die ISA eines Prozessors, weshalb QEMU sich nicht dazu eignet, die Korrektheit eines Hardwaredesigns zu prüfen.
     Aus diesem Grund wurde Verilator als schnellste verfügbare Simulation auf dem RTL genutzt, um Performanceunterschiede zwischen Simulation und FPGA zu untersuchen.
 
     Um dies umzusetzen, wurde zusätzlich das open-source Buildtool für Hardwareprojekte FuseSoC \parencite{kindgren_fusesoc} verwendet.
     FuseSoC organisiert Abhängigkeiten und kann durch die Einbindung von Verilator bspw. einen SERV-Kern mit einem Zephyr-Betriebssystem simulieren.
-    Zephyr ist hierbei das genutzte open-source real-time operating system (RTOS) für FPGAs \parencite{zephyr}.
-    \todo{Ist das die korrekte Zitation für Zephyr?}
-    Zephyr ist sehr minimalistisch designt, sodass es auch auf kleinen RISC-V Prozessoren laufen kann.
+    Zephyr ist hierbei das genutzte open-source real-time operating system (RTOS), welches im Bereich der eingebetteten Systeme Verbreitung findet \parencite{zephyr}.
+    Durch sein minimalistisches Design kann Zephyr auch auf kleinen RISC-V Prozessoren laufen.
     Das west-Tool verwaltet im Kontext von Zephyr Projekte und deren Abhängigkeiten und fasst den Bau von Projekten unter einer einzelnen Kommandozeile zusammen.
-    Als Alternative zur Nutzung von Zephyr und west existiert das eigene Buildtooling von RISC-V \parencite{risc-buildtool}, womit die Software ohne ein entsprechendes Betriebssystem direkt auf der Hardware laufen kann (\("\)bare metal\("\)).
+    Als Alternative zur Nutzung von Zephyr und west existiert die gnu-Toolchain mit Unterstützung von RISC-V Prozessoren \parencite{risc-buildtool}, womit die Software ohne ein entsprechendes Betriebssystem direkt auf der Hardware laufen kann (\("\)bare metal\("\)).
