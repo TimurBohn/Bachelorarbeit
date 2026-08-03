@@ -1,8 +1,10 @@
 \chapter{Einleitung und Motivation}
 
-FPGAs sind konfigurierbare Hardwareschaltungen, die vermehrt in der Industrie für die Entwicklung von Prototypen, bspw. beim Prozessordesign eingesetzt werden.
-Insbesondere in performancekritischen Bereichen, in denen Geschwindigkeit und Energieeffizienz eine große Rolle spielen, kommen FPGAs zum Einsatz.
-Diese werden weiterentwickelt, bspw. durch Optimierung und höhere mögliche Taktfrequenzen, um die Entwicklungsphase zu beschleunigen \textcite{boutros2021fpga, kuon2006measuring}.
+FPGAs sind konfigurierbare Hardwareschaltungen, die vermehrt in der Industrie und Wissenschaft verwendet werden.
+Insbesondere in performancekritischen, oder hoch spezialisierten Bereichen, in denen Geschwindigkeit und Energieeffizienz eine große Rolle spielen, kommen sie zum Einsatz.
+Durch ihre Flexibilität können sie präzise auf Anwendungen angepasst - und so auch in Produkten als Ersatz für einen Chip genutzt werden, wenn es z.B. aufgrund geringer Stückzahlen nicht wirtschaftlich wäre, diese Konfiguration als physikalischen Chip zu produzieren.
+Auch werden sie zum Teil für die Entwicklung von Prototypen, bspw. beim Prozessordesign, eingesetzt, um die mittels FPGA entwickelte Hardwarekonfiguration später in großer Menge herzustellen.
+FPGAs werden stetig weiterentwickelt, bspw. durch Optimierung und höhere mögliche Taktfrequenzen, um die Entwicklungsphase zu beschleunigen \textcite{boutros2021fpga, kuon2006measuring}.
 Einer der größten Faktoren bei der Nutzung von FPGAs zum Hardware-Design ist allerdings die Synthesedauer, die Stunden, oder bei besonders komplexen Schaltungen Tage in Anspruch nehmen kann.
 Wenn bspw. Bugs gefixt werden, kann dies zur Folge haben, dass die Synthese mehrfach durchlaufen werden muss, um Fixes anzupassen und zu testen.
 Der große Anteil an der Entwicklungszeit, den die Hardwaresynthese beansprucht, wird durch die Weiterentwicklung von FPGAs nicht wesentlich verkürzt.
@@ -10,7 +12,7 @@ Gleichzeitig steigern performante FPGAs, die Geschwindigkeit und Energieeffizien
 
 Ein Versuch, die Kosten zu minimieren und zeitgleich den Entwicklungsprozess zu beschleunigen, ist die Simulation des Hardware-Designs mit entsprechender Software.
 Diese hat den Vorteil, dass sie keine Mehrkosten durch Hardwareanschaffungen verursacht und zugleich keine langwierige Synthese voraussetzt.
-Allerdings büßen Simulationen zur Laufzeit an Performance ein, sind also in der Regel langsamer als fertig synthetisierte Hardware \todo{Quelle benötigt? Oder als general knowledge vorausgesetzt?}.
+Allerdings büßen Simulationen zur Laufzeit an Performance ein, sind also in der Regel langsamer als fertig synthetisierte Hardware.
 
 Daraus ergibt sich die Fragestellung, wann tatsächlich Hardware benötigt wird und wann auch eine Simulation ausreichend ist.
 Um diese Frage zu beantworten, ist die Quantifizierung der Performanceunterschiede zwischen Simulation und FPGA entscheidend, da auf dieser Grundlage Entwicklungsprozesse im Hardware-Design weiter optimiert werden können.
