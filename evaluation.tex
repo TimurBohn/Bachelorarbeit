@@ -32,6 +32,12 @@
     Insgesamt wurde das Video über zwei Minuten aufgezeichnet und enthielt somit >100 Phasenmessungen.
     Auch hier wurden die Messzeiten tabellarisch festgehalten.
     Die entsprechenden Tabellen mit Messdaten für die Simulation und die Ausführung auf dem FPGA sind im GitHub-Repository der Arbeit \parencite{GitHub-Bachelorarbeit} zu finden.
+    \begin{figure}[h!]
+        \centering
+        \includegraphics[width=\textwidth]{fig/Shotcut_Setup_Markiert}
+        \caption[FPGA Benchmarking-Setup in Shotcut]{FPGA Benchmarking-Setup in Shotcut \parencite{shotcut}. Messmethoden: Stoppuhr, Timestamp des Videos sowie Frames sind rot umkreist}
+        \label{fig:Benchmark_FPGA}
+    \end{figure}
 
 \section{Ergebnisse}
     Die Ergebnisse der Benchmarks sind in der nachfolgenden Tabelle aufgelistet, wobei der obere Abschnitt die ermittelte Dauer einer Berechnungsphase in der Simulation - und der untere Abschnitt die Dauer beim FPGA, aufgeteilt nach Methoden der Laufzeitbestimmung, aufzeigt.
@@ -41,9 +47,7 @@
     Abweichungen gab es hier maximal im Millisekundenbereich bzw. um einen Frame.
     Diese Abweichungen sind zudem sehr wahrscheinlich auf die Aufnahme per Kamera zurückzuführen, wo ggf. nicht genau der Zeitpunkt des Wechsels der An- und Aus-Phasen getroffen wurde und nicht auf eine tatsächliche Schwankung der Berechnungsdauer.
     Deshalb wurde es hierbei als ausreichend erachtet, die Ermittlung der Kennwerte auf Grundlage von 20 Messungen vorzunehmen.
-    Zusätzlich zur Bestimmung der Mittelwerte und Standardabweichungen wurden 95\%-Konfidenzintervalle mithilfe der Studentschen t-Verteilung sowie Minima und Maxima
-\todo{Quelle nötig? Für KI oder für t-Verteilung?}
-    berechnet.
+    Zusätzlich zur Bestimmung der Mittelwerte und Standardabweichungen wurden 95\%-Konfidenzintervalle mithilfe der Studentschen t-Verteilung sowie Minima und Maxima berechnet.
     \begin{table}
         \centering
         \begin{tabular}{lccccc}
@@ -61,13 +65,13 @@
         \label{tab:module}
     \end{table}
 
-\subsection{Interpretation der Ergebnisse}
+\section{Interpretation der Ergebnisse}
     Die Ergebnisse zeigen, dass es einen Geschwindigkeitszugewinn in etwa um den Faktor 4,6 bei der Nutzung eines FPGAs im Vergleich zur Simulation gibt.
     Dies entspricht der vorab angestellten Erwartung, dass FPGAs zur Laufzeit schneller sind als deren Simulationen.
     Doch spielen natürlich mehrere Faktoren bei dieser Beurteilung eine Rolle.
     Zunächst ist die Aussagekraft der Ergebnisse vor dem Hintergrund des Versuchsdesigns zu betrachten.
     Der Geschwindigkeitszugewinn um den Faktor 4,6 bezieht sich auf das in der vorliegenden Arbeit gewählte Setup mit Verilator als Simulator innerhalb einer VM, Basys 3-Board mit Artix-7 FPGA als Hardware und der Berechnung von Collatz-Folgen als Benchmark.
-    Bei anderen Simulatoren, FPGAs oder Benchmarks wäre mit anderen Geschwindigkeitsfaktoren zu rechnen.
+    Bei anderen Simulatoren, FPGAs, CPU-Kernen oder Benchmarks wäre mit anderen Geschwindigkeitsfaktoren zu rechnen.
     Die Geschwindigkeit der Simulation wird zudem begrenzt durch die Rechenleistung des Hosts und zusätzlich durch die der VM zur Verfügung gestellten Ressourcen.
     So wäre zu erwarten, dass eine Simulation auf einem leistungsstärkeren Computer schneller laufen könnte.
     Auch wäre vermutlich eine schnellere Simulation zu erwarten, wenn man der VM mehr Ressourcen zur Verfügung stellen, oder eine native Linux-Installation nutzen würde.
@@ -81,7 +85,7 @@
     Wird eine höhere Geschwindigkeitssteigerung benötigt, sind diese Boards nicht ausreichend und darüber hinausgehende Geschwindigkeitszugewinne immer auch mit höheren Kosten verbunden.
     Dies bedeutet aber auch, dass wenn auf diesen Geschwindigkeitszugewinn verzichtet werden kann, ein Großteil der Entwicklung simulationsgebunden und kostengünstig möglich ist.
     In Anwendungsfällen, wo der Faktor 4,6 klein genug sein wird, um eine praktikable Arbeitsgeschwindigkeit in der Simulation zu erreichen, wird es sinnvoll sein, ähnlich wie im Paper von \textcite{schkufza2019just} beschrieben, die Dauer der Synthese- und Implementationsschritte mittels Simulation zu überbrücken.
-    Im Anschluss kann dann auf den schnelleren FPGA gewechselt werden, sodass keine ungenutzte Zeit für die langwierigen Synthese- und Implementationsschritte aufkommt.
+    Im Anschluss kann dann auf den schnelleren FPGA gewechselt werden, sodass in der zuvor ungenutzten Zeit für die langwierigen Synthese- und Implementationsschritte bereits Instruktionen in der Simulation ausgeführt werden können.
 
     Weitere Forschung könnte untersuchen, ob ähnliche Geschwindigkeitszugewinne bei anderen, vergleichbaren Boards erreicht werden, um die Erkenntnisse weiter zu validieren.
     Auch könnten andere Benchmarks genutzt werden, die nicht primär die Berechnung mathematischer Folgen beinhalten, sondern auch andere Operationen umsetzen, um auch andere Aufgabenarten bezüglich des Performancezugewinns zu untersuchen.
