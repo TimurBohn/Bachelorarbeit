@@ -1,15 +1,13 @@
 \chapter{Implementierung} % oder Implementation?
 
 \section{Setup}
-    Für die Simulation und den Hardware-Designprozess wurden zwei verschiedene Systeme verwendet.
+    Für die Umsetzung des Simulations- und Hardware-Teils der Arbeit wurden zwei verschiedene Systeme verwendet.
     Der Großteil der Arbeit erfolgte auf einer virtuellen Maschine (VM) mit einem Linux mint Betriebssystem.
-    Hierbei wurden drei Prozessorkerne, 4 GB Arbeitsspeicher und 155 GB Festplattenspeicher vom Host-System zur Verfügung gestellt.
-    Auf dieser VM wurden jegliche Tools und Software installiert, die für die Simulation Hardwareentwicklung benötigt wurden.
-    Ein Windows-Rechner wurde neben dem Hosten der VM für den letzten Schritt der Hardwareentwicklung, der Übertragung des Bitstreams auf den FPGA mittels des Vivado-Hardwaremanagers genutzt.
-    Somit lief der Simulationsteil der Arbeit ausschließlich über die VM, die Hardwareentwicklung hingegen zum Großteil.
-    Der Rest wurde durch Nutzung des Host-PCs (Windows 11 Education, Version 23H2, AMD Ryzen 5 3600 Prozessor, 16 GB Arbeitsspeicher) umgesetzt.
+    Auf dieser VM wurden jegliche Tools und Software installiert, die für die Simulation und Hardwareentwicklung benötigt wurden.
+    Der Host-PC (Windows 11 Education, Version 23H2, AMD Ryzen 5 3600 Prozessor, 16 GB Arbeitsspeicher) stellte der VM drei Prozessorkerne, 4 GB Arbeitsspeicher und 155 GB Festplattenspeicher zur Verfügung.
+    Der Windows-Rechner wurde neben dem Hosten der VM lediglich für den letzten Schritt der Hardwareentwicklung, der Übertragung des Bitstreams auf den FPGA mittels des Vivado-Hardwaremanagers genutzt.
 
-\section{SERV-Simulation und Bau ausführbarer Benchmarks}
+\section{SERV-Simulation und Bau ausführbarer Benchmarks} \label{Bau ausführbarer Benchmarks}
     Um eine Simulation des SERV-Kerns zu realisieren, wurden die im SERV-repository \parencite{kindgren_serv} beschriebenen Schritte unter dem Abschnitt \("\)Getting started\("\) befolgt.
     Hierbei wurde, um Konfundierungen durch die der VM zur Verfügung gestellten Ressourcen zu vermeiden, zunächst versucht, die Simulation auch über die native Windows-Installation des zur Verfügung stehenden Computers zu bewerkstelligen.
     Allerdings waren die genutzten Tools für Linux ausgelegt, weshalb die Installation eines funktionalen Simulations-Setups auf Windows nicht möglich war.
@@ -20,27 +18,26 @@
     Zu Beginn erschien es praktikabler, die im SERV-repository beschriebene Unterstützung für das RTOS Zephyr zu nutzen.
     Somit wurden auch hier die Installationsschritte \parencite{zephyr-getting-started} befolgt.
     Zunächst wurde das einfache hello-world-Beispiel gebaut und ausgetestet.
-    Als jedoch versucht wurde, die Simulation zu starten, wurden verschiedene Fehlermeldungen angezeigt, die auf nicht ausreichenden Arbeitsspeicher hinwiesen.
+    Beim Starten der Simulation wurden verschiedene Fehlermeldungen angezeigt, die auf nicht ausreichenden Arbeitsspeicher hinwiesen.
     Es zeigte sich, dass durch die Einbindung von Zephyr und das west-Tooling Overhead entstand, sodass die resultierende .hex-Datei größer war als die im SERV-Beispiel mitgelieferten.
-    Das Problem konnte am Ende gelöst werden, indem beim Aufruf der --memsize-Parameter deutlich im Vergleich zu den im SERV-repository beschriebenen Beispielen erhöht wurde.
+    Das Problem konnte am Ende gelöst werden, indem beim Aufruf der \verb|--memsize|-Parameter deutlich im Vergleich zu den im SERV-repository beschriebenen Beispielen erhöht wurde.
     Um einem funktionalen Benchmark näherzukommen, wurde eine Schleife eingebaut, die bis zur Zahl 100 hochzählen und in jedem Schritt den aktuellen Wert ausgeben sollte.
     Hier zeigte sich die nächste Schwierigkeit: Bei der Umformatierung von Zahlen in Strings gingen Informationen verloren.
     So wurden in der Simulation statt des aktuellen Wertes eine wiederkehrende Zahlenfolge für maximal 10 Zeilen ausgegeben.
     Der Grund für dieses Verhalten konnte nicht gefunden werden, weshalb mit einem Workaround gearbeitet wurde.
     Statt die Zahlen als Ganzes in Strings umzuformatieren, wurde eine Hilfsfunktion geschrieben, die die Zahlen 0-9 mit \verb|putchar('0' + i);| ausgeben konnte.
     Zahlen >9 wurden dabei mit einem rekursiven Aufruf der Funktion Ziffer für Ziffer geprinted, was zuverlässig funktionierte.
-    Im Anschluss wurde der C-Code so verändert, dass Collatz-Folgen\todo{braucht es ein Zitat für Collatz-Folgen?} ausgegeben wurden.
+    Im Anschluss wurde der C-Code so verändert, dass Collatz-Folgen ausgegeben wurden.
     Diese benötigten genügend Rechenzeit, vor allem beim Durchlauf mehrerer Zahlen, um einen validen Microbenchmark darzustellen.
     Eine Schwierigkeit, die persistierte, war, dass nach Durchlauf des Programms, welches mit \("\)return 0\("\) beendet wurde, das Zephyr RTOS auf weitere Programme/Instruktionen wartete und immer mit der Tastenkombination \("\)Strg + C\("\) abgebrochen werden musste.
     Da mehrere Durchläufe gemessen werden sollten, um einen Durchschnittswert ermitteln und mögliche Abweichungen erkennen zu können, erschwerte dieser Umstand die Benchmarkmessung.
     Zunächst wurde probiert, mittels \verb|sys_poweroff| das System herunterzufahren und für den nächsten Durchlauf wieder neu zu starten, allerdings schien es in der Kombination von Zephyr und SERV nicht implementiert worden zu sein, sodass dies als Lösung nicht praktikabel war.
-    \todo{braucht es ein Zitat für sys-poweroff?}
-    Zu diesem Zeitpunkt zeigte sich auch, dass SERV-Designs, dei Zephyr betrieben nicht auf den FPGAs konfiguriert werden konnten.
+    Zu diesem Zeitpunkt zeigte sich auch, dass SERV-Designs, die Zephyr betrieben nicht auf den FPGAs konfiguriert werden konnten.
     Die Simulation mit Verilator war zum Großteil operabel, in der Vivado-Simulation konnte allerdings der Programmcode nicht geladen werden, die meisten internen Signale, insbesondere der Program-Counter waren dauerhaft mit dem Wert X belegt bzw. undefiniert.
     Dies trat nicht erst bei komplexeren Benchmark-Programmen wie der Collatz-Sequenz auf, sondern bereits bei einem simpleren Blinky-Beispiel (blinkende LED mit festem Delay für An/Aus-Phasen).
     Beim Blinky-Programm kam noch hinzu, dass dort eine Adresse in der Memory-Map beschrieben wurde, um die LED an- bzw. auszuschalten.
     Auch beim Beschreiben der Memory-Map gab es bei der Umsetzung mit Zephyr einen Bug, dass direkt nach dem Schreibzugriff die LED eingeschaltet und eine 1 ausgelesen werden konnte, nach dem Reset auf 0 jedoch je nach Abfragezeitpunkt eine 1 oder eine undefinierte Zahl ausgelesen wurde und die LED nicht ausgeschaltet werden konnte.
-    Durch die Probleme in den prints, der fehlenden Möglichkeit der Beendigung des Durchlaufs, den zusätzlichen Overhead und den nicht lösbaren Schwierigkeiten mit der Memory-Map sowie in der Konfiguration des FPGAs, wurde sich gegen die Nutzung von Zephyr entschieden.
+    Durch die Probleme in den prints, der fehlenden Möglichkeit der Beendigung des Durchlaufs, den zusätzlichen Overhead und den nicht lösbaren Schwierigkeiten mit der Memory-Map sowie in der Konfiguration des FPGAs, haben wir uns gegen die Nutzung von Zephyr entschieden.
 
     Der Ansatz zum Bau von Benchmarks, der stattdessen genutzt wurde, war die Software \("\)bare-metal\("\), also ohne Betriebssystem direkt auf der Hardware laufen zu lassen.
     Im SERV-repository wurde die Assemblydatei \verb|blinky.S| mitgeliefert.
@@ -68,7 +65,6 @@
     \begin{minted}[breaklines]{bash}
     riscv64-unknown-elf-gcc -march=rv32i -mabi=ilp32 -nostdlib -nostartfiles -Wl, --section-start=.text=0x00000000 -o collatzBareMetal.elf collatz.S
     \end{minted}
-    \todo{müssen hier die einzelnen Parameter noch zusätzlich erklärt werden?}
     Anschließend wurde die .elf-Datei in eine .bin-Datei übertragen:
     \begin{minted}[breaklines]{bash}
     riscv64-unknown-elf-objcopy -O binary collatzBareMetal.elf collatzBareMetal.bin
@@ -104,7 +100,7 @@
     Das erste Programm, das getestet werden sollte, war das im SERV-repository enthaltene blinky.hex-Programm.
     Doch nach dem erfolgreichen Durchlauf aller Schritte ohne Fehlermeldungen leuchtete die LED auf dem FPGA trotz langer Wartezeit nicht auf.
     Da das Problem in der Verilator-Simulation nicht auftrat, wurde die Vivado-Simulation zum Debugging genutzt.
-    Um die verlangsamte Simulationsgeschwindigkeit in Vivado zu berücksichtigen, wurde das blinky-Programm etwas umgeschrieben, wie im Abschnitt \("\)Bau ausführbarer Benchmarks\("\) beschrieben ist.
+    Um die verlangsamte Simulationsgeschwindigkeit in Vivado zu berücksichtigen, wurde das blinky-Programm etwas umgeschrieben, wie im \cref{Bau ausführbarer Benchmarks} (\("\)SERV-Simulation und Bau ausführbarer Benchmarks\("\)) beschrieben ist.
     Hierbei konnte durch die verringerte Zeit zwischen den LED-Phasen gesehen werden, dass auch die verschiedenen Register in der Simulation in Vivado (output-Register/LED q, Program-Counter, Clock etc.) das erwartete Verhalten zeigten.
     Daraufhin wurden separate Dummy-Synthesen von Hardwaredesigns durchgeführt, in denen Knöpfe und LEDs auf verschiedene Arten genutzt wurden, um die Funktionalität der Peripherie des Basys 3-Boards zu prüfen.
     Als auch diese Überprüfungen unauffällig waren, wurde der SERV-Bitstream mit Blinky-Einbindung erneut auf den FPGA übertragen.
@@ -116,11 +112,9 @@
     Daraus wurde geschlossen, dass die Reset-Logik verantwortlich für das Verhalten war.
     Bei erneuter Sichtung des Quellcodes des servix-Moduls fiel auf, dass das Reset-Signal bei Übergabe an den Clock-Generator invertiert wurde.
     Diese Invertierung wurde entfernt, zusätzlich wurden, da Reset-Verhalten über alle Programme hinweg gewünscht war, die Macro-Blöcke mit \verb|`ifdef WITH_RESET| als weitere mögliche Fehlerquelle entfernt.
-    In der Simulationsdatei
-    \todo{Simulationsdatei mE uninteressant, reicht Verweis auf GH-Repo?}
-    wurde anschließend das Reset-Signal ebenfalls invertiert, um dort das vorher bereits beobachtete, korrekte Verhalten der einzelnen Register wiederherzustellen.
+    In der Simulationsdatei (siehe GitHub-Repository \parencite{GitHub-Bachelorarbeit}) wurde anschließend das Reset-Signal ebenfalls invertiert, um dort das vorher bereits beobachtete, korrekte Verhalten der einzelnen Register wiederherzustellen.
     Daraus resultierte der finale SERV-Quellcode, der zum gewünschten Verhalten auf dem FPGA führte und auch für die Benchmarks genutzt wurde:
-    \begin{minted}[breaklines]{verilog}
+    \begin{minted}[breaklines, fontsize=\small]{verilog}
     `default_nettype none
     module servix
     (
