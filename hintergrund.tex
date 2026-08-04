@@ -1,7 +1,60 @@
 \chapter{Hintergrund}
 
-%TODO: Etwas Verilog erklären
 \section{Verilog}
+    Verilog ist neben SystemVerilog und VHDL die am weitesten verbreitete Hardwarebeschreibungssprache.
+    Hardwarebeschreibungssprachen definieren u.a. den Aufbau von Schaltungen auf dem Register-Transfer-Level (RTL) und stellen somit die Grundlage für die Hardwarekonfiguration dar.
+    Es werden Signale unterschiedlicher Typen (oft \verb|wire| (\("\)Leitung\("\)) und \verb|reg| (\("\)Register\("\))) genutzt sowie deren Verhalten beschrieben.
+    Hierbei werden oft if-else-, oder always-Blöcke in Verbindung mit Taktgebern genutzt, um das Hardwareverhalten wie gewünscht zu konfigurieren.
+    Ein wichtiger Aspekt ist hierbei, dass die Reihenfolge im Code i.d.R. keinen Rückschluss darüber zulässt, was zuerst ausgeführt wird.
+    Stattdessen wird Hardware beschrieben, die parallel arbeitet.
+    Nachfolgend ist ein Beispiel für einfachen Verilog-Code angegeben, in dem einige der genannten Konstrukte genutzt werden:
+
+    \begin{minted}[breaklines, fontsize=\small]{verilog}
+        module LED(
+                input wire clk,
+                input wire switch,
+                input wire[3:0] counter,
+                input wire button,
+                output wire[3:0] out4Bit,
+                output reg [7:0] out8Bit
+            );
+            assign out4Bit = (switch) ? counter : 4'b0;
+            always @(posedge clk) begin
+                if (switch) begin
+                    if (button)
+                        out8Bit <= 8'b10101010;
+                    else
+                        out8Bit <= 8'b01010101;
+                end
+            end
+        endmodule
+    \end{minted}
+    \captionof{listing}[Einfaches Verilog-Beispiel LED.v]{Verilog-Beispiel LED.v, welches genutzt wurde, um die Funktionalität des Boards zu testen.}
+    \label{lst:LED.v}
+
+
+    In dem Beispiel trägt das Modul den Namen der Datei.
+    In dieser Moduldefinition werden die Input- sowie Output-Signale (\verb|wire| und \verb|reg|) festgelegt.
+    In der separaten Constraint-Datei wird für die Input- und Output-Signale jeweils angegeben, welches Bauteil der Peripherie es abbildet.
+    So wird \verb|clk| als 100MHz-Taktgeber definiert, \verb|switch| und \verb|counter| werden auf Schalter, \verb|button| auf einen Button und \verb|out4Bit| sowie \verb|out8Bit| auf LEDs gemappt (vergleiche \cref{fig:basys3}).
+    Der globale Schalter \verb|switch| steuert beide Output-Leitungen auf jeweils verschiedene Weise.
+    Bei \verb|out4Bit| werden die LEDs durch ihre darunterliegenden Schalter ein- und ausgeschaltet, sofern der globale Schalter eingeschaltet ist.
+    Ist dieser ausgeschaltet, leuchten die LEDs nicht.
+    Dies wird durch den \verb|assign|-Ausdruck beschrieben, wobei der ternäre Operator genutzt wird, um abzufragen, ob \verb|switch| ein- oder ausgeschaltet ist.
+    Ist der globale Schalter an, werden die Werte der Schalter \verb|counter| durchgereicht, ansonsten enthält \verb|out4Bit| vier Nullen (\verb|4'b0|: \("\)4 Bit, 0 binär\("\)).
+    Der 8-Bit-Ausgang hingegen verwendet den \verb|switch| auf eine andere Art.
+    \verb|out8Bit| nutzt zunächst den Taktgeber mit einem \verb|always|-Block.
+    Dieser gibt an, dass zu jeder steigenden Flanke (\verb|posedge|) des Taktgebers/der Clock (\verb|clk|) zunächst mit einem \verb|if|-Block geprüft wird, ob der globale Schalter umgelegt ist.
+    Nur wenn \verb|switch| eingeschaltet ist, lässt sich das 8-Bit-Register verändern, sonst behält es seinen vorherigen Wert bei.
+    Ist dies der Fall, kann mit dem Drücken des Buttons \verb|button| eingestellt werden, in welchem der zwei Muster die 8 LEDs, die auf \verb|out8Bit| gemappt sind, leuchten sollen.
+    Wird der globale Schalter währenddessen wieder ausgeschaltet, behalten die LEDs ihr Muster bei, bis es wieder durch \verb|button| in Kombination mit \verb|switch| verändert wird.
+
+    Hier wird auch deutlich, dass die Reihenfolge im Code keinen Rückschluss über die Ausführungsreihenfolge geben kann.
+    Werden die Schalter von \verb|counter| umgelegt, nachdem der Button \verb|button| gedrückt wurde, ändern sich die LEDs dennoch, obwohl sie im Code weiter vorne stehen.
+    Auch ist bei RTL-Code eine echt parallele Ausführung möglich.
+    Im Gegensatz zu klassischen Programmiersprachen, bei denen eine Abfolge von Befehlen beschrieben wird, beschreibt RTL-Code eine Hardwarekonfiguration.
+    Dadurch, dass oft distinkte Bereiche des FPGA genutzt werden, arbeiten diese Bereiche unabhängig und tatsächlich parallel voneinander, wobei in klassischen Programmiersprachen teilweise der Anschein einer Parallelität durch schnelle Wechsel erweckt wird.
+    In unserem Beispiel würde dies bedeuten, dass beim zeitgleichen Drücken des Buttons und Umlegen eines Schalters, beide Schaltungsteile parallel reagieren.
 
 \section{FPGAs}
     Field Programmable Gate Arrays, oder FPGAs sind beliebig konfigurierbare Hardwareschaltungen.
@@ -26,9 +79,9 @@
     Für zeitabhängige Schaltungen werden zusätzlich Flipflops und Speicherbausteine genutzt.
 
     Um zu einer fertig konfigurierten Hardwareschaltung zu gelangen, wird ein Designprozess befolgt.
-    Zunächst wird in einer Hardwarebeschreibungssprache (meist Verilog oder VHDL) Code auf dem Register-Transfer-Level (RTL) geschrieben.
+    Zunächst wird in einer Hardwarebeschreibungssprache Code auf dem Register-Transfer-Level (RTL) geschrieben.
     Dieser RTL-Code kann in einem Analyse- bzw. Simulationsschritt einer ersten Prüfung unterzogen werden, wo grobe Fehler auffallen sollten.
-    Im Anschluss erfolgt der Syntheseschritt, indem der RTL-Code in eine Netzliste überführt wird.
+    Im Anschluss erfolgt der Syntheseschritt, in dem der RTL-Code in eine Netzliste überführt wird.
     Diese bildet ab, welche Bauteile theoretisch benötigt würden, um die Schaltung wie beschrieben umzusetzen.
     Eine Netzliste ist vergleichbar mit einem Zwischencode beim Kompilieren von Code in der Softwareentwicklung.
     Im Implementierungsschritt werden in einem sogenannten Place-and-Route-Verfahren die theoretischen Bauteile der Netzliste auf die tatsächlich auf dem FPGA vorhandenen Bauteile gemappt.
