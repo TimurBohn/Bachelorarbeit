@@ -1,6 +1,6 @@
 \chapter{Evaluation}
 
-\section{Methodologie}
+\section{Methodologie} \label{collatz-erklärung}
     Als Benchmark zur Feststellung der Geschwindigkeitsunterschiede wurde ein Programm geschrieben, welches Collatz-Folgen berechnet.
     Bei einer Collatz-Folge handelt es sich um eine mathematische Folge, die am Ende der Berechnung in einer 4-2-1-Schleife münden soll, die sich endlos wiederholt.
     Sie wird nach folgender Formel berechnet:
@@ -14,7 +14,7 @@
     \]
     Beim Benchmark wurden Collatz-Folgen für die Zahlen 1 bis 1000 bis zum Erreichen der 4-2-1-Schleife berechnet.
     Um zu signalisieren, wann die Berechnung startet und wann sie fertig ist, wurde eine LED gesteuert, die immer ihre Phase wechselte, wenn ein Durchlauf der Collatz-Folgen bis 1000 endete und die Folgenberechnung wieder bei 1 startete.
-    Dies erfolgte in einer Endlosschleife.
+    Dies erfolgte in einer Endlosschleife (siehe \cref{lst:collatz.S}).
     Der Benchmark für die Verilator-Simulation wurde mit folgendem Zeilenkommando
     \begin{minted}[breaklines]{bash}
     fusesoc run --target=verilator_tb award-winning:serv:servant --firmware=collatzBareMetal.hex --memsize=1048576
