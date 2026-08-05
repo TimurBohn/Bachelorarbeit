@@ -48,7 +48,7 @@
     Durch die langsame Geschwindigkeit der Vivado-Simulation war der Delay zwischen den Wechseln der 0 und 1-Phasen zu lang, sodass diese nicht innerhalb einer praktikablen Zeit in Vivado simuliert werden konnten.
     Zusätzlich war das Blinky-Programm so geschrieben, dass die LED im Zustand 0, also \("\)aus\("\) startete und man somit eine Phase abwarten musste, bis die LED anging.
     Um das Debugging zu erleichtern, wurde deshalb der Delay zwischen den Phasenwechseln um den Faktor 100 gekürzt und die LED bereits am Anfang auf 1 gesetzt.
-    Dies führte dazu, dass der zugrundeliegende Reset-Fehler gefunden werden konnte, der im Abschnitt \("\)Hardwareentwicklung\("\) näher beschrieben wird.
+    Dies führte dazu, dass der zugrundeliegende Reset-Fehler gefunden werden konnte, der im \cref{sec:hardwareentwicklung} (\("\)Hardwareentwicklung\("\)) näher beschrieben wird.
     Dadurch wurde das Ziel erreicht, dieselbe .hex-Datei sowohl auf einem mit Verilator simulierten als auch einem auf einem FPGA synthetisierten SERV-Kern laufen zu lassen.
 
     Der letzte Schritt bestand darin, die blinky.S-Datei, die gesichert in beiden Kontexten (Simulation und Hardware) nutzbar war, so zu erweitern, dass sie als Benchmark dienen konnte.
@@ -75,7 +75,7 @@
     \end{minted}
 
 
-\section{Hardwareentwicklung}
+\section{Hardwareentwicklung} \label{sec:hardwareentwicklung}
     Zur Synthese eines SERV-Kerns auf dem Artix-7 FPGA musste zunächst ein Vivado-Projekt konfiguriert werden.
     SERV bietet Unterstützung beim Bau des Projektes für verschiedene FPGA-Boards an, allerdings nicht für das zur Verfügung stehende Basys 3-Board.
     Da allerdings ein anderes Board mit Artix-7 FPGA unterstützt wird, wurde zunächst versucht, das Projekt für den konkreten Artix-7 FPGA zu konfigurieren.
