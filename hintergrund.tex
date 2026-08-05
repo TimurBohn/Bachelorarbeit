@@ -131,17 +131,7 @@
     Dadurch bietet RISC-V eine größere Flexibilität und Anpassungsfähigkeit im Rahmen der Hardwareentwicklung zur Erfüllung der gewünschten Funktionalität.
     Teile, die nicht gebraucht werden, bspw. Ganzzahlmultiplikation und -division können je nach Anwendungsfall aufgenommen oder weggelassen werden.
     Dies ermöglicht eine optimierte Nutzung verfügbarer Hardwareressourcen.
-%TODO: Instruktionen erklären
-
-    SERV ist ein von Olof Kindgren entwickelter open-source RISC-V CPU-Kern \parencite{kindgren_serv}.
-    Sie setzt die RISC-V ISA im Gegensatz zu anderen Prozessoren bit-seriell um, verarbeitet also pro Takt nur ein Bit statt ganzer 32-Bit-Wörter.
-    Somit ist SERV natürlich langsamer als andere RISC-V CPUs, erweitert allerdings die Idee der RISC-V-Architektur, weniger Hardwareressourcen zu nutzen, da für die Synthese eines SERV-Kerns deutlich weniger Logikblöcke verwendet werden müssen als für RISC-V CPUs, die vollständige Wörter verarbeiten.
-    Dadurch ist SERV einer der kleinsten RISC-V CPU-Kerne und eignet sich besonders für ressourcenkritische Bereiche und Forschungsanwendungen.
-    Ein weiterer Vorteil von SERV besteht in der ausführlichen Dokumentation des Projektes, sodass die Replizierbarkeit erleichtert wird, was für wissenschaftliche Fragestellungen besonders relevant ist.
-
-    Servant erweitert den SERV-Kern durch möglichst wenig Peripherie zu einem vollständigen System on a Chip (SoC). So wird der CPU-Kern durch Arbeitsspeicher, Timer und einen GPIO-Pin ergänzt.
-    Auch hier wird auf Sparsamkeit bei der Nutzung von Hardwareressourcen gesetzt.
-    Dies resultiert in einer minimalistischen Hardwareplattform, auf der z.B. das Zephyr-Betriebssystem, oder andere Software ausgeführt werden kann, weshalb Servant auch das SoC war, welches in der vorliegenden Arbeit auf dem Artix-7 FPGA synthetisiert wurde.
+    Der folgende RISC-V Assembly-Code wurde für die Erstellung der Benchmarks genutzt, was im \cref{Bau ausführbarer Benchmarks} (\("\)SERV-Simulation und Bau ausführbarer Benchmarks\("\)) ausführlich erklärt wird.
 
     \begin{minted}[breaklines, fontsize=\small]{asm}
         #ifndef GPIO_BASE
@@ -173,12 +163,52 @@
         check_loop_zu_Ende:
             bne	a5, a3, check_even_odd /* n!=1 ? weiter in Collatz : i++ */
             addi	a4, a4, 0x1
-            bne	a4, a2, outer_loop     /* i != n ? Collatz mit i : LED wechseln */
+            bne	a4, a2, outer_loop     /* i != 10001 ? Collatz mit i : LED wechseln */
             j loop
     \end{minted}
     \captionof{listing}[Benchmark in RISC-V Assembly]{Finaler Benchmark in RISC-V Assembly, der in der Simulation und auf dem FPGA lief. Die daraus gebaute .hex-Datei ist im Github-Repository \parencite{GitHub-Bachelorarbeit} zu finden.}
     \label{lst:collatz.S}
 
+
+    In dem Beispiel tauchen mehrere, oft genutzte RISC-V-Instruktionen auf.
+    Mit \verb|lui| (load upper immediate) werden die oberen 20 Bit in ein 32-Bit-Register geladen und die unteren 12 bit auf 0 gesetzt.
+    Addiert man mit \verb|addi| (add immediate) den Inhalt der unteren 12 Bit hinzu, kann man das Register mit den gewünschten 32 Bit füllen.
+    Verknüpft man \verb|addi| mit dem Register zero (Register, das immer 0 enthält) als einen Wert, kann das Register sicher mit einer Konstante geladen werden.
+    Auch wird hier mit Memory-Mapping gearbeitet, also mit Speicheradressen, die eine bestimmte Funktionalität erfüllen.
+    Im Abschnitt \verb|_start:| wird die Basisadresse des GPIO-Registers in \verb|a0| gespeichert.
+    Durch das Memory-Mapping bestimmen Werte, die an diese Adresse geschrieben werden, den Zustand des GPIO-Ausgangs.
+    Anschließend wird der Wert des Registers \verb|t0| auf 1 gesetzt.
+    Im darauffolgenden Abschnitt \verb|loop:| wird der Wert von \verb|t0| mittels der \verb|sb| (store byte)-Instruktion an die zuvor gespeicherte Adresse in \verb|a0| geschrieben.
+    Der Zugriff auf die Speicheradresse erfolgt mit \verb|0(a0)|, damit nicht die Speicheradresse selber, sondern das Byte an der Speicheradresse überschrieben wird.
+    Danach wird das niedrigste Bit in \verb|t0| durch die \verb|xori| (exclusive OR immediate)-Instruktion invertiert.
+    Ist der Wert vorher 1, wird er 0, war er vorher 0, wird er 1.
+    Der restliche Code beschreibt die Berechnung von Collatz-Folgen, deren Logik ausführlicher im \cref{collatz-erklärung} (\("\)Methodologie\("\)) erklärt werden.
+    Mittels der Pseudoinstruktion \verb|li| (load immediate) \parencite{riscv-pseudoinstructions} werden Register mit festen Werten geladen.
+    Dies wird hier genutzt, um eine for-Schleife von 1 bis 1000 zu realisieren.
+    \verb|mv| (move) kopiert den Inhalt eines Registers in ein anderes, mit \verb|j| (jump) wird zu einem Label bzw. einer Programmadresse gesprungen.
+    Durch den Abschnitt unter \verb|ungerade:| wird eine Berechnung umgesetzt, die eine Multiplikation beinhaltet, ohne das RISC-V Modul zur Ganzzahlmultiplikation miteinzubinden.
+    Mit \verb|slli| (shift logical left immediate) in Kombination mit \verb|add| wird die Zahl verdreifacht, da sie zunächst durch eine Verschiebung um eine Stelle nach links verdoppelt und anschließend noch einmal der Ursprungswert addiert wird.
+    Anschließend wird durch \verb|addi| der Wert um eins erhöht, sodass \verb|n = 3n+1| aus der Collatz-Folge realisiert wird.
+    Im folgenden Abschnitt \verb|check_even_odd:| wird eine Modulo-Operation mit dem Wert 2 zur Überprüfung, ob eine Zahl gerade oder ungerade ist, umgesetzt.
+    Dies erfolgt durch die Instruktion \verb|andi| (AND immediate), das Ergebnis der Verundung mit dem Wert 1 wird im Register \verb|a1| gespeichert.
+    Hierbei wird ausgenutzt, dass ungerade Zahlen im Binärsystem an letzter Stelle immer eine 1 haben.
+    Im Register \verb|a1| kann demzufolge nur eine 0 stehen, wenn die aktuelle Zahl in der Berechnung eine gerade Zahl war.
+    Dementsprechend wird mit \verb|bnez| (branch not equal zero) geprüft, ob im Register \verb|a1| eine 0 enthalten ist.
+    Ist dies nicht der Fall, war die Zahl ungerade und es wird zum Label \verb|ungerade:| gesprungen.
+    Ansonsten war die Zahl gerade und es wird die nächste Instruktion \verb|srai| (shift right arithmetic immediate) ausgeführt, bei der eine Verschiebung um eine Stelle nach rechts \verb|n = n/2| aus der Collatz-Folge umsetzt.
+    Der letzte Abschnitt \verb|check_loop_zu_Ende:| überprüft durch Nutztung der \verb|bne| (branch not equal)-Instruktion, ob der Wert 1 erreicht wurde.
+    Ist der Wert noch nicht 1, läuft die Collatz-Folge weiter, ansonsten wird mit den Instruktionen \verb|addi| und \verb|bne| der Zähler der for-Schleife inkrementiert sowie die Abbruchbedingung geprüft.
+    Ist die Abbruchbedingung (i=1001) noch nicht erreicht, läuft eine Collatz-Folgenberechnung mit neuem Startwert, ansonsten wird zu \verb|loop:| gesprungen, wieder das GPIO-Register beschrieben, \verb|t0| invertiert und die Collatz-Folgenberechnung wieder bei 1 gestartet.
+
+    Ein CPU-Kern, der diese Instruktionen verarbeiten kann ist SERV, ein von Olof Kindgren entwickelter open-source RISC-V CPU-Kern \parencite{kindgren_serv}.
+    Dieser setzt die RISC-V ISA im Gegensatz zu anderen Prozessoren bit-seriell um, verarbeitet also pro Takt nur ein Bit statt ganzer 32-Bit-Wörter.
+    Somit ist SERV natürlich langsamer als andere RISC-V CPUs, erweitert allerdings die Idee der RISC-V-Architektur, weniger Hardwareressourcen zu nutzen, da für die Synthese eines SERV-Kerns deutlich weniger Logikblöcke verwendet werden müssen als für RISC-V CPUs, die vollständige Wörter verarbeiten.
+    Dadurch ist SERV einer der kleinsten RISC-V CPU-Kerne und eignet sich besonders für ressourcenkritische Bereiche und Forschungsanwendungen.
+    Ein weiterer Vorteil von SERV besteht in der ausführlichen Dokumentation des Projektes, sodass die Replizierbarkeit erleichtert wird, was für wissenschaftliche Fragestellungen besonders relevant ist.
+
+    Servant erweitert den SERV-Kern durch möglichst wenig Peripherie zu einem vollständigen System on a Chip (SoC). So wird der CPU-Kern durch Arbeitsspeicher, Timer und einen GPIO-Pin ergänzt.
+    Auch hier wird auf Sparsamkeit bei der Nutzung von Hardwareressourcen gesetzt.
+    Dies resultiert in einer minimalistischen Hardwareplattform, auf der z.B. das Zephyr-Betriebssystem, oder andere Software ausgeführt werden kann, weshalb Servant auch das SoC war, welches in der vorliegenden Arbeit auf dem Artix-7 FPGA synthetisiert wurde.
 
 \section{Verilator, FuseSoC und Zephyr}
     Bei Verilator handelt es sich um einen zyklus-akkuraten Simulator für Verilog-Code.
