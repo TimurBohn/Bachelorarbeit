@@ -218,14 +218,14 @@
             (...)
         end
     \end{minted}
-    \captionof{listing}[Ausschnitt aus \texttt{serv\_alu.v}]{Ausschnitt aus der \texttt{serv\_alu.v} Verilog-Datei des SERV CPU-Kerns. Die eingefügten (...) zeigen Auslassungen an. Die Verilog-Datei in voller Länge sowie alle anderen zugehörigen Verilog-Dateien sind im SERV GitHub-Repository \parencite{kindgren_serv} zu finden.}
+    \captionof{listing}[Ausschnitt aus \texttt{serv\_alu.v}]{Ausschnitt aus der \texttt{serv\_alu.v} Verilog-Datei des SERV CPU-Kerns. Die eingefügten \texttt{(...)} zeigen Auslassungen an. Die Verilog-Datei in voller Länge sowie alle anderen zugehörigen Verilog-Dateien sind im SERV GitHub-Repository \parencite{kindgren_serv} zu finden.}
     \label{lst:serv_alu.v}
 
     Für das Verständnis des Codes ist zu beachten, dass \verb|i_op_b|, \verb|i_sub|, \verb|i_rs1| und \verb|i_en| 1-Bit-Input-Wires sind, die aus anderen Bestandteilen des SERV CPU-Kerns gefahren werden.
     Außerdem ist \verb|W| konstant 1 und es gilt \verb|B = W - 1 = 0|, sodass \verb|add_b| ebenfalls zu einem 1-Bit-Wire wird und sich die erste Zeile des Ausschnitts zu \verb|add_b = i_op_b ^ i_sub| verkürzt (\verb|^| entspricht XOR).
     Dadurch kann das Wire \verb|add_b| sowohl für Addition als auch Subtraktion im Zweierkomplement genutzt werden.
     \verb|i_sub| kontrolliert hierbei, ob addiert oder subtrahiert wird.
-    Wird addiert (\verb|i_sub == 0|), gilt \verb|add_b = i_op_b|, wird subtrahiert (\verb|i_sub == 1|), invertiert sich der Wert von \verb|i_op_b| und es gilt \verb|add_b = ~i_op_b|, was später zur Subtraktion im Zweierkomplement (\verb|A - B = A + ~B + 1|) genutzt werden kann.
+    Wird addiert (\verb|i_sub == 0|), gilt \verb|add_b = i_op_b|, wird subtrahiert (\verb|i_sub == 1|), invertiert sich der Wert von \verb|i_op_b| und es gilt \verb|add_b = ¬i_op_b|, was später zur Subtraktion im Zweierkomplement (\verb|A - B = A + ¬B + 1|) genutzt werden kann.
     In der nächsten Zeile erfolgt die tatsächliche Berechnung.
     Das Ergebnis wird in ein Carry-Bit \verb|add_cy| sowie ein Ergebnis-Bit \verb|result_add| geschrieben.
     Es werden drei 1-Bit-Werte addiert, sodass Werte zwischen 0\textsubscript{10} = 00\textsubscript{2} und 3\textsubscript{10} = 11\textsubscript{2} erreicht werden können, weshalb das Carry- und das Ergebnis-Bit konkateniert werden.
@@ -236,7 +236,7 @@
     Das Überschreiben wird durch das Enable-Signal \verb|i_en| gesteuert.
     Ist \verb|i_en == 0| bedeutet dies, dass eine neue Berechnung startet.
     In diesem Fall wird der Wert von \verb|i_sub| in das Carry-Bit für den nächsten Takt geschrieben.
-    Soll subtrahiert werden, ist \verb|i_sub| wie oben beschrieben 1 und durch das Setzen des Carry-Bits wird im nächsten Takt die Berechnung von \verb|A + ~B + 1| (Subtraktion im Zweierkomplement) gestartet.
+    Soll subtrahiert werden, ist \verb|i_sub| wie oben beschrieben 1 und durch das Setzen des Carry-Bits wird im nächsten Takt die Berechnung von \verb|A + ¬B + 1| (Subtraktion im Zweierkomplement) gestartet.
     Soll addiert werden, ist \verb|i_sub == 0|, es existiert noch kein Carry und es wird die Berechnung von \verb|A + B| für die folgenden Takte angestoßen.
     Gilt wiederum \verb|i_en == 1|, ist also das enable-Bit gesetzt, wird aktuell noch gerechnet.
     In diesem Fall wird immer das aktuelle Carry-Bit in den nächsten Takt weitergereicht.
