@@ -202,13 +202,49 @@
 
     Ein CPU-Kern, der diese Instruktionen verarbeiten kann ist SERV, ein von Olof Kindgren entwickelter open-source RISC-V CPU-Kern \parencite{kindgren_serv}.
     Dieser setzt die RISC-V ISA im Gegensatz zu anderen Prozessoren bit-seriell um, verarbeitet also pro Takt nur ein Bit statt ganzer 32-Bit-Wörter.
-    Somit ist SERV natürlich langsamer als andere RISC-V CPUs, erweitert allerdings die Idee der RISC-V-Architektur, weniger Hardwareressourcen zu nutzen, da für die Synthese eines SERV-Kerns deutlich weniger Logikblöcke verwendet werden müssen als für RISC-V CPUs, die vollständige Wörter verarbeiten.
+    Somit ist SERV langsamer als andere RISC-V CPUs, erweitert allerdings die Idee der RISC-V-Architektur, weniger Hardwareressourcen zu nutzen, da für die Synthese eines SERV-Kerns deutlich weniger Logikblöcke verwendet werden müssen als für RISC-V CPUs, die vollständige Wörter verarbeiten.
     Dadurch ist SERV einer der kleinsten RISC-V CPU-Kerne und eignet sich besonders für ressourcenkritische Bereiche und Forschungsanwendungen.
     Ein weiterer Vorteil von SERV besteht in der ausführlichen Dokumentation des Projektes, sodass die Replizierbarkeit erleichtert wird, was für wissenschaftliche Fragestellungen besonders relevant ist.
+    Im folgenden Code-Ausschnitt der \verb|serv_alu.v| Verilog-Datei wird die bit-serielle Arbeitsweise noch einmal verdeutlicht.
+
+    \begin{minted}[breaklines, fontsize=\small]{verilog}
+        (...)
+        wire [B:0] add_b = i_op_b ^ {W{i_sub}};
+        assign {add_cy, result_add} = i_rs1 + add_b + add_cy_r;
+        (...)
+        always @(posedge clk) begin
+            add_cy_r    <= {W{1'b0}};
+            add_cy_r[0] <= i_en ? add_cy : i_sub;
+            (...)
+        end
+    \end{minted}
+    \captionof{listing}[Ausschnitt aus serv_alu.v]{Ausschnitt aus der serv_alu.v Verilog-Datei des SERV CPU-Kerns. Die eingefügten (...) zeigen Auslassungen an. Die Verilog-Datei in voller Länge sowie alle anderen zugehörigen Verilog-Dateien sind im SERV GitHub-Repository \parencite{kindgren_serv} zu finden.}
+    \label{lst:serv_alu.v}
+
+    Für das Verständnis des Codes ist zu beachten, dass \verb|i_op_b|, \verb|i_sub|, \verb|i_rs1| und \verb|i_en| 1-Bit-Input-Wires sind, die aus anderen Bestandteilen des SERV CPU-Kerns gefahren werden.
+    Außerdem ist \verb|W| konstant 1 und es gilt \verb|B = W - 1 = 0|, sodass \verb|add_b| ebenfalls zu einem 1-Bit-Wire wird und sich die erste Zeile des Ausschnitts zu \verb|add_b = i_op_b ^ i_sub| verkürzt (\verb|^| entspricht XOR).
+    Dadurch kann das Wire \verb|add_b| sowohl für Addition als auch Subtraktion im Zweierkomplement genutzt werden.
+    \verb|i_sub| kontrolliert hierbei, ob addiert oder subtrahiert wird.
+    Wird addiert (\verb|i_sub == 0|), gilt \verb|add_b = i_op_b|, wird subtrahiert (\verb|i_sub == 1|), invertiert sich der Wert von \verb|i_op_b| und es gilt \verb|add_b = ~i_op_b|, was später zur Subtraktion im Zweierkomplement (\verb|A - B = A + ~B + 1|) genutzt werden kann.
+    In der nächsten Zeile erfolgt die tatsächliche Berechnung.
+    Das Ergebnis wird in ein Carry-Bit \verb|add_cy| sowie ein Ergebnis-Bit \verb|result_add| geschrieben.
+    Es werden drei 1-Bit-Werte addiert, sodass Werte zwischen 0\textsubscript{10} = 00\textsubscript{2} und 3\textsubscript{10} = 11\textsubscript{2} erreicht werden können, weshalb das Carry- und das Ergebnis-Bit konkateniert werden.
+    \verb|i_rs1| ist das nächste zu verrechnende Bit des ersten Operanten, \verb|add_b| ist der je nach Rechenoperation veränderte Wert des zweiten Operanten und \verb|add_cy_r| ist das Carry-Bit aus der vorherigen Berechnung.
+    Das Carry-Bit aus der vorherigen Berechnung ist entweder ein klassisches Carry-in aus der im letzten Takt erfolgten Addition, oder aber ein modifiziertes Carry, um die Berechnung der Subtraktion im Zweierkomplement zu starten.
+    Im always-Block wird nämlich das Carry-Bit für die nächste Berechnung \verb|add_cy_r| vorbereitet.
+    Es wird zunächst auf 0 gesetzt und anschließend überschrieben.
+    Das Überschreiben wird durch das Enable-Signal \verb|i_en| gesteuert.
+    Ist \verb|i_en == 0| bedeutet dies, dass eine neue Berechnung startet.
+    In diesem Fall wird der Wert von \verb|i_sub| in das Carry-Bit für den nächsten Takt geschrieben.
+    Soll subtrahiert werden, ist \verb|i_sub| wie oben beschrieben 1 und durch das Setzen des Carry-Bits wird im nächsten Takt die Berechnung von \verb|A + ~B + 1| (Subtraktion im Zweierkomplement) gestartet.
+    Soll addiert werden, ist \verb|i_sub == 0|, es existiert noch kein Carry und es wird die Berechnung von \verb|A + B| für die folgenden Takte angestoßen.
+    Gilt wiederum \verb|i_en == 1|, ist also das enable-Bit gesetzt, wird aktuell noch gerechnet.
+    In diesem Fall wird immer das aktuelle Carry-Bit in den nächsten Takt weitergereicht.
+    In diesem Ausschnitt wird das minimalistische, bit-serielle Design von SERV deutlich, da die Berechnung von sowohl Addition als auch Subtraktion mithilfe eines einzigen 1-Bit-Volladdierers über mehrere Takte, also bitweise realisiert wird und dementsprechend zwar langsamer ist, aber mit deutlich weniger Hardware auskommt.
 
     Servant erweitert den SERV-Kern durch möglichst wenig Peripherie zu einem vollständigen System on a Chip (SoC). So wird der CPU-Kern durch Arbeitsspeicher, Timer und einen GPIO-Pin ergänzt.
     Auch hier wird auf Sparsamkeit bei der Nutzung von Hardwareressourcen gesetzt.
-    Dies resultiert in einer minimalistischen Hardwareplattform, auf der z.B. das Zephyr-Betriebssystem, oder andere Software ausgeführt werden kann, weshalb Servant auch das SoC war, welches in der vorliegenden Arbeit auf dem Artix-7 FPGA synthetisiert wurde.
+    Dies resultiert in einer minimalistischen Hardwareplattform, auf der z.B. das Zephyr-Betriebssystem, oder andere Software ausgeführt werden kann, weshalb Servant als das SoC gewählt wurde, welches in der vorliegenden Arbeit auf dem Artix-7 FPGA synthetisiert wurde.
 
 \section{Verilator, FuseSoC und Zephyr}
     Bei Verilator handelt es sich um einen zyklus-akkuraten Simulator für Verilog-Code.
