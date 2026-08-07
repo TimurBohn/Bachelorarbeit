@@ -47,7 +47,7 @@
     Hierzu wurde ein Java-Skript geschrieben, welches im GitHub-Repository der Arbeit \parencite{GitHub-Bachelorarbeit} zu finden ist.
     Diese Häufigkeiten wurden genutzt, um mit der folgenden Formel die Gesamtanzahl an Instruktionen pro Benchmarkdurchlauf zu bestimmen:
     \[
-    N{Gesamt} = N{fix} + 4N{Folgen} + 4N{gerade} + 6N{ungerade} - 5N{Einsen}
+    N_{Gesamt} = N_{fix} + 4N_{Folgen} + 4N_{gerade} + 6N_{ungerade} - 5N_{Einsen}
     \]
     Hierbei wurde berücksichtigt, dass ein Teil der Instruktionen einmalig beim Benchmarkdurchlauf - und andere schleifen- und paritätsabhängig häufiger ausgeführt wurden.
     Zum Verständnis sollte der Benchmark-Assembly-Code \cref{lst:collatz.S} erneut betrachtet werden.
@@ -99,9 +99,11 @@
     Das Python-Skript \parencite{GitHub-Bachelorarbeit}, welches zur Berechnung der kumulativen Anzahl gerader und ungerader Zahlen über die 1000 Folgen hinweg eingesetzt wurde, errechnete insgesamt 39889 gerade sowie 20653 ungerade Zahlen.
     Setzt man diese in die oben genannte Formel ein, erhält man:
     \[
-    N{Gesamt} = N{fix} + 4N{Folgen} + 4N{gerade} + 6N{ungerade} - 5N{Einsen} \\
-              = 6 + 4 \cdot 1000 + 4 \cdot 39889 + 6 \cdot 20653 - 5 \cdot 1000 \\
-              = 282480
+    \begin{aligned}
+    N_{Gesamt} &= N_{fix} + 4N_{Folgen} + 4N_{gerade} + 6N_{ungerade} - 5N_{Einsen} \\
+               &= 6 + 4 \cdot 1000 + 4 \cdot 39889 + 6 \cdot 20653 - 5 \cdot 1000 \\
+               &= 282480
+    \end{aligned}
     \]
     Somit werden pro LED-Zyklus/Benchmark-Durchlauf 282480 Instruktionen ausgeführt.
     Teilt man dies durch die ermittelten Messzeiten für die Verilator-Simulation sowie für die Ausführung auf dem FPGA, erhält man ca. 67337 Instruktionen pro Sekunde für die Simulation sowie ca. 307712 Instruktionen pro Sekunde für die Ausführung auf dem FPGA.
