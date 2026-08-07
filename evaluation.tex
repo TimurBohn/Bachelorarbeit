@@ -39,6 +39,31 @@
         \label{fig:Benchmark_FPGA}
     \end{figure}
 
+    Um diese Hauptmessungen zu ergänzen, wurde zusätzlich überschlagen, wie viel Zeit das Startup der Simulation (von Eingabe der Kommandozeile bis Simulationsstart) sowie die Synthese-, Implementierungs- und Bitstreamgenerierungsschritte in Anspruch nahmen.
+    Da das Hauptziel der Arbeit die Untersuchung der Performanceunterschiede zur Laufzeit war und genaue Messungen den Rahmen der Bachelorarbeit überstiegen hätten, war hier das Ziel eine grobe Einschätzung der Zeitunterschiede.
+    Deshalb wurde als ökonomische Messmethode eine Stoppuhr genutzt, die zeitgleich mit der Ausführung der Kommandozeile bzw. Start des FPGA Build-Prozesses gestartet - und jeweils gestoppt wurde, als die Simulation startete bzw. als die Bitstreamgenerierung abgeschlossen war.
+
+    Zusätzlich wurde zur Bestimmung der zur Laufzeit ausgeführten Instruktionen pro Sekunde die Anzahl gerader und ungerader Zahlen in allen Collatz-Folgen mit Startwerten von 1 bis 1000 ermittelt, da die Anzahl der Instruktionen pro Collatz-Folge von den Paritäten der in der Folge enthaltenen Werte abhängig ist.
+    Hierzu wurde ein Java-Skript geschrieben, welches im GitHub-Repository der Arbeit \parencite{GitHub-Bachelorarbeit} zu finden ist.
+    Diese Häufigkeiten wurden genutzt, um mit der folgenden Formel die Gesamtanzahl an Instruktionen pro Benchmarkdurchlauf zu bestimmen:
+    \[
+    N{Gesamt} = N{fix} + 4N{Folgen} + 4N{gerade} + 6N{ungerade} - 5N{Einsen}
+    \]
+    Hierbei wurde berücksichtigt, dass ein Teil der Instruktionen einmalig beim Benchmarkdurchlauf - und andere schleifen- und paritätsabhängig häufiger ausgeführt wurden.
+    Zum Verständnis sollte der Benchmark-Assembly-Code \cref{lst:collatz.S} erneut betrachtet werden.
+    N\textsubscript{fix} beschreibt die Anzahl der Instruktionen (insgesamt sechs), die pro Benchmarkdurchlauf einmalig \("\)fix\("\) ausgeführt werden: Die Instruktionen aus den Abschnitten \verb|loop:| und \verb|delay:| sowie die \verb|j loop|-Instruktion.
+    Hinzugerechnet werden die vier Instruktionen, die jeweils pro Collatz-Folge anfallen und deshalb mit N\textsubscript{Folgen} multipliziert werden.
+    Diese vier Instruktionen setzen sich aus den Instruktionen im Abschnitt \verb|outer_loop:| sowie den beiden Instruktionen zur Inkrementierung des Zählerregisters \verb|a4| und zum Sprung in die \verb|outer_loop:| aus dem untersten Abschnitt zusammen.
+    Bei jeder Zahl der Collatz-Folge (mit Ausnahme der Eins) werden die erste Instruktion aus \verb|check_loop_zu_Ende:| sowie \verb|andi| und \verb|bnez| aus \verb|check_even_odd:| ausgeführt.
+    Ist die Zahl gerade, wird zusätzlich die Rechtsshift-Instruktion \verb|srai| genutzt, ist sie ungerade, werden zusätzlich die drei Instruktionen aus dem Abschnitt \verb|ungerade:| verarbeitet.
+    So ergeben sich die Vorfaktoren für N\textsubscript{gerade} und N\textsubscript{ungerade}.
+    Sind all diese Werte zusammengerechnet, muss noch berücksichtigt werden, dass Einsen als ungerade Zahl gezählt, aber im Code anders verarbeitet werden.
+    Diese durchlaufen nicht die sechs Instruktionen wie andere ungerade Zahlen, sondern lediglich eine, da sie immer aus der Zwei folgen und durch die \verb|bne|-Instruktion erkannt werden.
+    Daher werden weder die drei Instruktionen im Abschnitt \verb|ungerade| noch \verb|andi| und \verb|bnez| aus \verb|check_even_odd:| ausgeführt.
+    Somit benötigt die Eins fünf Instruktionen weniger als andere ungerade Zahlen, weshalb 5x die Anzahl der Einsen abgezogen werden.
+    Insgesamt ergibt dies die Gesamtzahl der pro Benchmarkdurchlauf abgearbeiteten Instruktionen.
+    Zum Schluss wurde dieser ermittelte Wert durch die gemessene Dauer eines Benchmarkdurchlaufes geteilt, um die Anzahl der zur Laufzeit ausgeführten Instruktionen pro Sekunde zu erhalten.
+
 \section{Ergebnisse}
     Die Ergebnisse der Benchmarks sind in der nachfolgenden Tabelle aufgelistet, wobei der obere Abschnitt die ermittelte Dauer einer Berechnungsphase in der Simulation - und der untere Abschnitt die Dauer beim FPGA, aufgeteilt nach Methoden der Laufzeitbestimmung, aufzeigt.
     Hierbei ist zu beachten, dass größere Streuungen in den Messwerten der Simulation zu verzeichnen waren als in den Messungen des FPGAs, was durch die Größe der berechneten Standardabweichungen verdeutlicht wird.
@@ -65,9 +90,31 @@
         \label{tab:module}
     \end{table}
 
+    Die Messung der Startup-Zeit für die Verilator-Simulation ergab 1,81s bis die Simulation anfing, Instruktionen zu verarbeiten.
+    Für den gesamten FPGA-Build-Prozess (also die Synthese-, Implementierungs- und Bitstreamgenerierungsschritte zusammen) wurden 167,24s benötigt.
+    Somit war die Startup-Zeit der Simulation ca. 165 Sekunden schneller bzw. 92-fach kürzer als die Build-Zeit des FPGA.
+
+    Insgesamt erfolgte pro Benchmark-Durchlauf die Berechnung von 1000 Collatz-Folgen.
+    Da jede der betrachteten Collatz-Folgen eine Eins enthält, entspricht die Anzahl der Collatz-Folgen auch der Anzahl der Einsen.
+    Das Python-Skript \parencite{GitHub-Bachelorarbeit}, welches zur Berechnung der kumulativen Anzahl gerader und ungerader Zahlen über die 1000 Folgen hinweg eingesetzt wurde, errechnete insgesamt 39889 gerade sowie 20653 ungerade Zahlen.
+    Setzt man diese in die oben genannte Formel ein, erhält man:
+    \[
+    N{Gesamt} = N{fix} + 4N{Folgen} + 4N{gerade} + 6N{ungerade} - 5N{Einsen} \\
+              = 6 + 4 \cdot 1000 + 4 \cdot 39889 + 6 \cdot 20653 - 5 \cdot 1000 \\
+              = 282480
+    \]
+    Somit werden pro LED-Zyklus/Benchmark-Durchlauf 282480 Instruktionen ausgeführt.
+    Teilt man dies durch die ermittelten Messzeiten für die Verilator-Simulation sowie für die Ausführung auf dem FPGA, erhält man ca. 67337 Instruktionen pro Sekunde für die Simulation sowie ca. 307712 Instruktionen pro Sekunde für die Ausführung auf dem FPGA.
+    Kombiniert man dieses Ergebnis mit den ermittelten Startup-Zeiten, zeigt sich, dass in der Simulation in den 165 Sekunden bereits ca. 11,14 Millionen Instruktionen verarbeitet werden können, bevor der FPGA anfängt, Instruktionen auszuführen.
+    Diese Ergebnisse wurden visuell in der folgenden Abbildung aufgearbeitet:
+
+
+
 \section{Interpretation der Ergebnisse}
-    Die Ergebnisse zeigen, dass es einen Geschwindigkeitszugewinn in etwa um den Faktor 4,6 bei der Nutzung eines FPGAs im Vergleich zur Simulation gibt.
-    Dies entspricht der vorab angestellten Erwartung, dass FPGAs zur Laufzeit schneller sind als deren Simulationen.
+    Die Ergebnisse zeigen, dass es einen Geschwindigkeitszugewinn zur Laufzeit in etwa um den Faktor 4,6 bei der Nutzung eines FPGAs im Vergleich zur Simulation gibt.
+    Gleichzeitig startet die Simulation ca. um das 92-fache schneller als der FPGA.
+    Somit können bereits deutlich früher
+    Dies entspricht der vorab angestellten Erwartung, dass FPGAs zur Laufzeit schneller sind als deren Simulationen, aber Simulationen früher beginnen, Instruktionen zu verarbeiten.
     Doch spielen natürlich mehrere Faktoren bei dieser Beurteilung eine Rolle.
     Zunächst ist die Aussagekraft der Ergebnisse vor dem Hintergrund des Versuchsdesigns zu betrachten.
     Der Geschwindigkeitszugewinn um den Faktor 4,6 bezieht sich auf das in der vorliegenden Arbeit gewählte Setup mit Verilator als Simulator innerhalb einer VM, Basys 3-Board mit Artix-7 FPGA als Hardware und der Berechnung von Collatz-Folgen als Benchmark.
@@ -77,6 +124,14 @@
     Auch wäre vermutlich eine schnellere Simulation zu erwarten, wenn man der VM mehr Ressourcen zur Verfügung stellen, oder eine native Linux-Installation nutzen würde.
     Zugleich ist die Geschwindigkeit des FPGAs zwar durch weniger Faktoren als die Simulation, aber dennoch bspw. durch seine Taktfrequenz limitiert.
     Ein FPGA mit einer höheren maximalen Taktfrequenz könnte dementsprechend auch zu einer größeren Beschleunigung beitragen.
+
+    Hinsichtlich der Startup-Zeiten sollte die inhärente Messfehlerbehaftung bei der gewählten Messung mittels Stoppuhr berücksichtigt werden.
+    Es ist damit zu rechnen, dass Verzögerungen beim Starten/Stoppen der Stoppuhr bis zum Sekundenbereich möglich sind.
+    Zudem wurde beim FPGA-Build-Prozess die Dauer der Übertragung des Bitstreams auf den FPGA unterschlagen.
+    Dennoch sollte bei der zeitlichen Differenz von ca. 165 Sekunden die Messgenauigkeit für die gewünschte grobe Abschätzung der Unterschiede ausreichend sein.
+
+
+    % Auch Annahme, dass Pseudoinstruktionen jeweils in nur eine RISC-V Instruktion übersetzt werden (aber bei der Größenordnung auch etwas irrelevant)
 
     Für den industriellen und wissenschaftlichen Kontext folgen aus den Ergebnissen mehrere Konsequenzen.
     Der Beschleunigungsfaktor stellt zunächst eine quantitative Grundlage dar, mit der errechnet werden kann, ob eine Simulation sinnvoll ist, oder ob sich die Zeitersparnis durch die entfallende Hardwaresynthese durch die langsamere Laufzeit ausgleicht.
